@@ -59,6 +59,8 @@ class BluetoothStateManager(
         }
         val intentFilter = IntentFilter().apply {
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
         }
 
         context.registerReceiver(receiver, intentFilter)

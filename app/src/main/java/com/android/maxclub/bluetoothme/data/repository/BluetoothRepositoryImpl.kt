@@ -81,7 +81,7 @@ class BluetoothRepositoryImpl @Inject constructor(
             }
         }.onEach { bondedDevices = it }
 
-    override fun connect(device: BondedDevice) = service.connect(device)
+    override suspend fun connect(device: BondedDevice) = service.connect(device)
 
     override fun disconnect(device: BondedDevice) = service.disconnect(device)
 }

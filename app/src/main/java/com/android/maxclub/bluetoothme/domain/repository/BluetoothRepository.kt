@@ -10,7 +10,7 @@ interface BluetoothRepository {
 
     fun getBondedDevices(): Flow<List<BondedDevice>>
 
-    fun connect(device: BondedDevice)
+    suspend fun connect(device: BondedDevice)
 
     fun disconnect(device: BondedDevice)
 }
