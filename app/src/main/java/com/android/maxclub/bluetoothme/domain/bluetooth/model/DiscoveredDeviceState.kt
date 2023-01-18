@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.domain.model
+package com.android.maxclub.bluetoothme.domain.bluetooth.model
 
 sealed class DiscoveredDeviceState {
     object Disconnected : DiscoveredDeviceState()

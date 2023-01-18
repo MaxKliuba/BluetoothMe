@@ -1,9 +1,9 @@
 package com.android.maxclub.bluetoothme.presentation.connection
 
-import com.android.maxclub.bluetoothme.domain.model.BluetoothState
-import com.android.maxclub.bluetoothme.domain.model.BondedDevice
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothState
 
 data class ConnectionUiState(
     val state: BluetoothState,
-    val devices: List<BondedDevice>,
+    val devices: List<BluetoothDevice>,
 )

@@ -14,8 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDeviceState
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConnectionScreen(
@@ -39,10 +39,15 @@ fun ConnectionScreen(
                             .heightIn(min = 50.dp)
                             .background(color = Color.Gray)
                             .clickable {
-                                // TODO Connection
+                                if (device.state == BluetoothDeviceState.Disconnected) {
+                                    viewModel.onConnect(device)
+                                } else {
+                                    viewModel.onDisconnect(device)
+                                }
+//                                viewModel.onConnect(device)
                             }
                             .animateItemPlacement(),
-                        text = "${device.name} - ${device.type::class.simpleName}(${device.type.connectionType.name}) \t\t\t [${device.state::class.simpleName}]"
+                        text = "${device.name} - ${device.type::class.simpleName}(${device.type.connectionType::class.simpleName}) \t\t\t [${device.state::class.simpleName}]"
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
