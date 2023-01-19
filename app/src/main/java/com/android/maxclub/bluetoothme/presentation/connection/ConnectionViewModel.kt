@@ -35,7 +35,10 @@ class ConnectionViewModel @Inject constructor(
 
     init {
         getState()
+
         getDevices()
+        startScan()
+
         getMessages()
     }
 
@@ -79,6 +82,12 @@ class ConnectionViewModel @Inject constructor(
                 e.printStackTrace()
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun startScan() {
+        viewModelScope.launch {
+            bluetoothUseCases.startScan()
+        }
     }
 
     private fun getMessages() {

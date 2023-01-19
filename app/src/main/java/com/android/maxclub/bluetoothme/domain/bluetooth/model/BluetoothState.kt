@@ -7,10 +7,10 @@ sealed class BluetoothState {
     object TurnOff : BluetoothState()
     object TurningOn : BluetoothState()
     sealed class TurnOn(val device: BluetoothDevice?) : BluetoothState() {
-        object Disconnected : TurnOn(null)
-        class Disconnecting(device: BluetoothDevice) : TurnOn(device)
         class Connecting(device: BluetoothDevice) : TurnOn(device)
         class Connected(device: BluetoothDevice) : TurnOn(device)
+        class Disconnecting(device: BluetoothDevice) : TurnOn(device)
+        object Disconnected : TurnOn(null)
     }
 }
 

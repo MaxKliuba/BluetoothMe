@@ -18,6 +18,7 @@ import javax.inject.Singleton
 class BluetoothRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val bluetoothAdapterStateObserver: BluetoothStateObserver,
+    private val bluetoothDeviceService: BluetoothDeviceService,
     private val bluetoothClassicService: BluetoothService,
     private val bluetoothLeService: BluetoothService,
     private val messagesDataSource: MessagesDataSource,
@@ -50,56 +51,18 @@ class BluetoothRepositoryImpl @Inject constructor(
             )
 
     override fun getBluetoothDevices(): Flow<List<BluetoothDevice>> =
-        bluetoothClassicService.getDevices()
-            .combine(bluetoothLeService.getDevices()) { classicDevices, bleDevices ->
-                classicDevices.plus(bleDevices)
+        bluetoothDeviceService.getBondedDevices()
+            .combine(bluetoothDeviceService.getScannedDevices()) { bondedDevices, scannedBleDevices ->
+                bondedDevices.plus(scannedBleDevices)
                     .distinctBy { it.address }
             }
             .combine(getState()) { devices, state ->
-//            return@combine listOf(
-//                BondedDevice("0", "name0", DeviceType.Unknown(ConnectionType.CLASSIC), BondedDeviceState.Disconnected),
-//                BondedDevice("1", "name1", DeviceType.Dual(ConnectionType.CLASSIC), BondedDeviceState.Disconnecting),
-//                BondedDevice("2", "name2", DeviceType.Unknown(ConnectionType.CLASSIC), BondedDeviceState.Disconnected),
-//                BondedDevice("3", "name3", DeviceType.Classic, BondedDeviceState.Disconnected),
-//                BondedDevice("4", "name4", DeviceType.Dual(ConnectionType.BLE), BondedDeviceState.Connecting),
-//                BondedDevice("5", "name5", DeviceType.Unknown(ConnectionType.BLE), BondedDeviceState.Connected),
-//                BondedDevice("6", "name6", DeviceType.BLE, BondedDeviceState.Disconnected),
-//                BondedDevice("7", "name7", DeviceType.Classic, BondedDeviceState.Disconnected),
-//            )
-
                 when (state) {
                     is BluetoothState.TurnOn -> {
                         devices.map { device ->
-                            val deviceState = when (state) {
-                                is BluetoothState.TurnOn.Disconnecting -> {
-                                    if (state.device?.address == device.address) {
-                                        BluetoothDeviceState.Disconnecting
-                                    } else {
-                                        BluetoothDeviceState.Disconnected
-                                    }
-                                }
-                                is BluetoothState.TurnOn.Disconnected -> {
-                                    BluetoothDeviceState.Disconnected
-                                }
-                                is BluetoothState.TurnOn.Connecting -> {
-                                    if (state.device?.address == device.address) {
-                                        BluetoothDeviceState.Connecting
-                                    } else {
-                                        BluetoothDeviceState.Disconnected
-                                    }
-                                }
-                                is BluetoothState.TurnOn.Connected -> {
-                                    if (state.device?.address == device.address) {
-                                        BluetoothDeviceState.Connected
-                                    } else {
-                                        BluetoothDeviceState.Disconnected
-                                    }
-                                }
-                            }
-
                             device.toBluetoothDevice(
                                 context = context,
-                                state = deviceState,
+                                state = state.toBluetoothDeviceState(device),
                                 connectionType = deviceAddressesToConnectionTypes.value[device.address]
                                     ?: ConnectionType.Classic,
                             )
@@ -116,7 +79,16 @@ class BluetoothRepositoryImpl @Inject constructor(
         deviceAddressesToConnectionTypes.value += device.address to device.type.connectionType
     }
 
+    override suspend fun startScan(duration: Long) {
+        bluetoothDeviceService.startScan(duration)
+    }
+
+    override fun stopScan() {
+        bluetoothDeviceService.stopScan()
+    }
+
     override suspend fun connect(device: BluetoothDevice) {
+        stopScan()
         disconnect()
 
         when (device.type.connectionType) {
@@ -126,14 +98,13 @@ class BluetoothRepositoryImpl @Inject constructor(
     }
 
     override fun disconnect(device: BluetoothDevice?) {
-        if (device != null) {
-            when (device.type.connectionType) {
-                ConnectionType.Classic -> bluetoothClassicService.disconnect(device)
-                ConnectionType.Ble -> bluetoothLeService.disconnect(device)
+        when (device?.type?.connectionType) {
+            ConnectionType.Classic -> bluetoothClassicService.disconnect(device)
+            ConnectionType.Ble -> bluetoothLeService.disconnect(device)
+            else -> {
+                bluetoothClassicService.disconnect()
+                bluetoothLeService.disconnect()
             }
-        } else {
-            bluetoothClassicService.disconnect()
-            bluetoothLeService.disconnect()
         }
     }
 

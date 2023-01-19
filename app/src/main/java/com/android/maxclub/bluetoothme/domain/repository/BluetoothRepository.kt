@@ -14,6 +14,10 @@ interface BluetoothRepository {
 
     fun updateBluetoothDevice(device: BluetoothDevice)
 
+    suspend fun startScan(duration: Long)
+
+    fun stopScan()
+
     suspend fun connect(device: BluetoothDevice)
 
     fun disconnect(device: BluetoothDevice? = null)

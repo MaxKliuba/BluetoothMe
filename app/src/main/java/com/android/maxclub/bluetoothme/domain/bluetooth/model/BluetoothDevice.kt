@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice as Device
 data class BluetoothDevice(
     val address: String,
     val name: String,
+    val isBonded: Boolean,
     val type: DeviceType,
     val state: BluetoothDeviceState,
 )
@@ -21,7 +22,8 @@ fun Device.toBluetoothDevice(
     withCheckSelfBluetoothPermission(context) {
         BluetoothDevice(
             address = address,
-            name = name,
+            name = name ?: "Unknown",
+            isBonded = bondState == Device.BOND_BONDED,
             type = when (type) {
                 Device.DEVICE_TYPE_CLASSIC -> DeviceType.Classic
                 Device.DEVICE_TYPE_LE -> DeviceType.Ble

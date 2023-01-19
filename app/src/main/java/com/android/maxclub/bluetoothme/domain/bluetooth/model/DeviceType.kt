@@ -14,15 +14,13 @@ sealed class DeviceType(
         listOf(ConnectionType.Ble),
     )
 
-    class Dual(connectionType: ConnectionType = ConnectionType.Classic) :
-        DeviceType(
-            connectionType,
-            listOf(ConnectionType.Classic, ConnectionType.Ble),
-        )
+    class Dual(connectionType: ConnectionType = ConnectionType.Classic) : DeviceType(
+        connectionType,
+        listOf(ConnectionType.Classic, ConnectionType.Ble),
+    )
 
-    class Unknown(connectionType: ConnectionType = ConnectionType.Classic) :
-        DeviceType(
-            connectionType,
-            listOf(ConnectionType.Classic, ConnectionType.Ble)
-        )
+    class Unknown(connectionType: ConnectionType = ConnectionType.Classic) : DeviceType(
+        connectionType,
+        listOf(ConnectionType.Classic, ConnectionType.Ble)
+    )
 }

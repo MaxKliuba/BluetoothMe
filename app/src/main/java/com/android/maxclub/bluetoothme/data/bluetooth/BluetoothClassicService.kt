@@ -8,14 +8,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.android.maxclub.bluetoothme.util.withCheckSelfBluetoothPermission
-import com.android.maxclub.bluetoothme.domain.bluetooth.*
+import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.*
 import com.android.maxclub.bluetoothme.domain.exceptions.BluetoothConnectionException
 import com.android.maxclub.bluetoothme.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.domain.messages.Message
 import com.android.maxclub.bluetoothme.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.util.getParcelable
+import com.android.maxclub.bluetoothme.util.withCheckSelfBluetoothPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -51,7 +51,7 @@ class BluetoothClassicService(
                             if (device.address == remoteDevice?.address) {
                                 val bluetoothDevice = device.toBluetoothDevice(
                                     context = this@BluetoothClassicService.context,
-                                    state = BluetoothDeviceState.Connected,
+                                    state = intent.action.toBluetoothDeviceState(),
                                     connectionType = ConnectionType.Classic,
                                 )
 
@@ -91,13 +91,6 @@ class BluetoothClassicService(
             .distinctUntilChanged()
 
     @SuppressLint("MissingPermission")
-    override fun getDevices(): Flow<List<Device>> = flow {
-        withCheckSelfBluetoothPermission(context) {
-            emit(adapter.bondedDevices.toList().filterNot { it.type == Device.DEVICE_TYPE_LE })
-        }
-    }
-
-    @SuppressLint("MissingPermission")
     @Throws(BluetoothConnectionException::class)
     override suspend fun connect(device: BluetoothDevice) {
         disconnect()
@@ -106,18 +99,17 @@ class BluetoothClassicService(
             throw BluetoothConnectionException(device)
         }
 
-        bluetoothStateFlow.value = BluetoothState.TurnOn.Connecting(
-            device.copy(state = BluetoothDeviceState.Connecting)
-        )
-
         withContext(Dispatchers.IO) {
             try {
                 val remoteDevice = adapter.getRemoteDevice(device.address)
                 socket = withCheckSelfBluetoothPermission(context) {
                     remoteDevice.createRfcommSocketToServiceRecord(uuid)
                 }
-                socket?.connect()
+                bluetoothStateFlow.value = BluetoothState.TurnOn.Connecting(
+                    device.copy(state = BluetoothDeviceState.Connecting)
+                )
 
+                socket?.connect()
                 bluetoothStateFlow.value = BluetoothState.TurnOn.Connected(
                     device.copy(state = BluetoothDeviceState.Connected)
                 )
@@ -134,12 +126,6 @@ class BluetoothClassicService(
     }
 
     override fun disconnect(device: BluetoothDevice?) {
-        device?.let {
-            bluetoothStateFlow.value = BluetoothState.TurnOn.Disconnecting(
-                it.copy(state = BluetoothDeviceState.Disconnecting)
-            )
-        }
-
         try {
             socket?.close()
         } catch (ioe: IOException) {
