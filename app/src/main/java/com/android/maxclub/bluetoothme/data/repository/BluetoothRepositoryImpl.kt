@@ -26,7 +26,7 @@ class BluetoothRepositoryImpl @Inject constructor(
 
     private var connectionType: ConnectionType? = null
 
-    private val deviceAddressesToConnectionTypes: MutableStateFlow<Map<String, ConnectionType>> =
+    private val updatedBluetoothDevices: MutableStateFlow<Map<String, BluetoothDevice>> =
         MutableStateFlow(emptyMap())
 
     override fun getState(): StateFlow<BluetoothState> =
@@ -63,7 +63,7 @@ class BluetoothRepositoryImpl @Inject constructor(
                             device.toBluetoothDevice(
                                 context = context,
                                 state = state.toBluetoothDeviceState(device),
-                                connectionType = deviceAddressesToConnectionTypes.value[device.address]
+                                connectionType = updatedBluetoothDevices.value[device.address]?.type?.connectionType
                                     ?: ConnectionType.Classic,
                             )
                         }
@@ -71,13 +71,19 @@ class BluetoothRepositoryImpl @Inject constructor(
                     else -> emptyList()
                 }
             }
-            .combine(deviceAddressesToConnectionTypes) { bluetoothDevices, _ ->
-                bluetoothDevices
+            .combine(updatedBluetoothDevices) { bluetoothDevices, _ ->
+                bluetoothDevices.map { bluetoothDevice ->
+                    updatedBluetoothDevices.value[bluetoothDevice.address]?.let {
+                        bluetoothDevice.copy(type = it.type)
+                    } ?: bluetoothDevice
+                }
             }
 
     override fun updateBluetoothDevice(device: BluetoothDevice) {
-        deviceAddressesToConnectionTypes.value += device.address to device.type.connectionType
+        updatedBluetoothDevices.value += device.address to device
     }
+
+    override fun getScanState(): StateFlow<Boolean> = bluetoothDeviceService.getScanState()
 
     override suspend fun startScan(duration: Long) {
         bluetoothDeviceService.startScan(duration)

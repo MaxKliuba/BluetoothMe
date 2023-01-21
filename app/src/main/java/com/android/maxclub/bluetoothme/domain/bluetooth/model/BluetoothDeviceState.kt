@@ -1,6 +1,7 @@
 package com.android.maxclub.bluetoothme.domain.bluetooth.model
 
 import android.bluetooth.BluetoothProfile
+import androidx.compose.runtime.Immutable
 import android.bluetooth.BluetoothDevice as Device
 
 sealed class BluetoothDeviceState {

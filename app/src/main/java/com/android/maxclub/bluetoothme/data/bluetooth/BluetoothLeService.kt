@@ -5,15 +5,13 @@ import android.bluetooth.*
 import android.content.Context
 import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.*
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
 import com.android.maxclub.bluetoothme.domain.exceptions.BluetoothConnectionException
 import com.android.maxclub.bluetoothme.domain.messages.Message
 import com.android.maxclub.bluetoothme.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.util.withCheckSelfBluetoothPermission
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.merge
-import android.bluetooth.BluetoothDevice as Device
 
 class BluetoothLeService(
     private val context: Context,

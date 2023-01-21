@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.domain.bluetooth.model
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.runtime.Immutable
 import com.android.maxclub.bluetoothme.util.withCheckSelfBluetoothPermission
 import android.bluetooth.BluetoothDevice as Device
 

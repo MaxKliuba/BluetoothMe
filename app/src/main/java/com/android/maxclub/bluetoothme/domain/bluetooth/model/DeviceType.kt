@@ -1,5 +1,7 @@
 package com.android.maxclub.bluetoothme.domain.bluetooth.model
 
+import androidx.compose.runtime.Immutable
+
 sealed class DeviceType(
     val connectionType: ConnectionType,
     val availableConnectionTypes: List<ConnectionType>,
@@ -23,4 +25,11 @@ sealed class DeviceType(
         connectionType,
         listOf(ConnectionType.Classic, ConnectionType.Ble)
     )
+
+    fun copy(connectionType: ConnectionType = this.connectionType) =
+        when (this) {
+            Classic, Ble -> this
+            is Dual -> Dual(connectionType)
+            is Unknown -> Unknown(connectionType)
+        }
 }
