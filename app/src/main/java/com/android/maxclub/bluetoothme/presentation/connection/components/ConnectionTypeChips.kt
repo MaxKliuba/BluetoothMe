@@ -12,27 +12,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.ConnectionType
-import com.android.maxclub.bluetoothme.domain.bluetooth.model.DeviceType
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionTypeChips(
-    deviceType: DeviceType,
-    isEnabled: Boolean,
-    onSelect: (ConnectionType) -> Unit,
+    device: BluetoothDevice,
+    onSelect: ((BluetoothDevice, ConnectionType) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
         modifier = modifier
     ) {
         items(
-            items = deviceType.availableConnectionTypes,
+            items = device.type.availableConnectionTypes,
         ) { connectionType ->
             FilterChip(
-                enabled = isEnabled,
-                selected = connectionType == deviceType.connectionType,
+                enabled = onSelect != null,
+                selected = connectionType == device.type.connectionType,
                 label = {
                     Text(
                         text = stringResource(
@@ -43,7 +42,7 @@ fun ConnectionTypeChips(
                         )
                     )
                 },
-                onClick = { onSelect(connectionType) },
+                onClick = { onSelect?.invoke(device, connectionType) },
             )
 
             Spacer(modifier = Modifier.width(8.dp))

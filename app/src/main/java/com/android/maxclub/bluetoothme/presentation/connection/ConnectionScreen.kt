@@ -15,17 +15,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDeviceState
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothState
+import com.android.maxclub.bluetoothme.domain.bluetooth.model.ConnectionType
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceConnectedItem
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceConnectingItem
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceItem
+import kotlinx.coroutines.delay
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -76,22 +80,33 @@ fun ConnectionScreen(
                         duration = SnackbarDuration.Short,
                     )
                 }
-                is ConnectionUiEvent.OnConnected -> scrollState.animateScrollToItem(0)
+                is ConnectionUiEvent.OnConnected -> {
+                    delay(500)
+                    scrollState.animateScrollToItem(0)
+                }
             }
         }
+    }
+
+    val onClickNavigationIcon = remember {
+        { /*TODO*/ }
+    }
+    val onStartScan = remember {
+        { viewModel.onEvent(ConnectionEvent.OnStartScan) }
+    }
+    val onStopScan = remember {
+        { viewModel.onEvent(ConnectionEvent.OnStopScan) }
+    }
+    val onShowBluetoothSettings = remember {
+        { viewModel.onEvent(ConnectionEvent.OnClickBluetoothSettings) }
     }
 
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.connection_screen_title),
-//                        style = MaterialTheme.typography.headlineLarge,
-                    )
-                },
+                title = { Text(text = stringResource(id = R.string.connection_screen_title)) },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = onClickNavigationIcon) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu_24),
                             contentDescription = stringResource(id = R.string.app_name)
@@ -101,14 +116,14 @@ fun ConnectionScreen(
                 actions = {
                     if (state.bluetoothState is BluetoothState.TurnOn) {
                         if (state.isScanning) {
-                            IconButton(onClick = { viewModel.onEvent(ConnectionEvent.OnStopScan) }) {
+                            IconButton(onClick = onStopScan) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_stop_scan_24),
                                     contentDescription = stringResource(id = R.string.stop_scan_button)
                                 )
                             }
                         } else {
-                            IconButton(onClick = { viewModel.onEvent(ConnectionEvent.OnStartScan) }) {
+                            IconButton(onClick = onStartScan) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_start_scan_24),
                                     contentDescription = stringResource(id = R.string.start_scan_button)
@@ -116,14 +131,14 @@ fun ConnectionScreen(
                             }
                         }
                     }
-                    IconButton(onClick = { viewModel.onEvent(ConnectionEvent.OnClickBluetoothSettings) }) {
+                    IconButton(onClick = onShowBluetoothSettings) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_bluetooth_settings_24),
                             contentDescription = stringResource(id = R.string.bluetooth_settings_button)
                         )
                     }
                 },
-//                scrollBehavior = scrollBehavior,
+                scrollBehavior = scrollBehavior,
             )
         },
         snackbarHost = {
@@ -137,7 +152,7 @@ fun ConnectionScreen(
 //                )
 //            }
         },
-//        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -145,7 +160,7 @@ fun ConnectionScreen(
                 .padding(paddingValues)
         ) {
             Column {
-                AnimatedVisibility(visible = state.isLoading) {
+                if (state.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
@@ -153,10 +168,29 @@ fun ConnectionScreen(
                     Text(text = "Empty")
                 }
 
+                val onClickIcon = remember<(String) -> Unit> {
+                    { viewModel.onEvent(ConnectionEvent.OnClickDeviceIcon(it)) }
+                }
+                val onConnect = remember<(BluetoothDevice) -> Unit> {
+                    { viewModel.onEvent(ConnectionEvent.OnConnect(it)) }
+                }
+                val onDisconnect = remember<(BluetoothDevice) -> Unit> {
+                    { viewModel.onEvent(ConnectionEvent.OnDisconnect(it)) }
+                }
+                val onSelectConnectionType = remember<(BluetoothDevice, ConnectionType) -> Unit> {
+                    { device, connectionType ->
+                        viewModel.onEvent(
+                            ConnectionEvent.OnUpdateBluetoothDevice(
+                                device.copy(type = device.type.copy(connectionType = connectionType))
+                            )
+                        )
+                    }
+                }
+
                 AnimatedVisibility(visible = state.devices.isNotEmpty()) {
                     LazyColumn(
                         state = scrollState,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         items(
                             items = state.devices,
@@ -165,38 +199,22 @@ fun ConnectionScreen(
                             when (device.state) {
                                 BluetoothDeviceState.Connected -> BluetoothDeviceConnectedItem(
                                     device = device,
-                                    onClickIcon = {
-                                        viewModel.onEvent(ConnectionEvent.OnClickDeviceIcon(it))
-                                    },
-                                    onClickItem = {
-                                        viewModel.onEvent(ConnectionEvent.OnDisconnect(it))
-                                    },
+                                    onClickIcon = onClickIcon,
+                                    onClickItem = onDisconnect,
                                     modifier = Modifier.animateItemPlacement(),
                                 )
                                 BluetoothDeviceState.Connecting,
                                 BluetoothDeviceState.Disconnecting -> BluetoothDeviceConnectingItem(
                                     device = device,
-                                    onClickIcon = {
-                                        viewModel.onEvent(ConnectionEvent.OnClickDeviceIcon(it))
-                                    },
-                                    onClickItem = {
-                                        viewModel.onEvent(ConnectionEvent.OnDisconnect(it))
-                                    },
+                                    onClickIcon = onClickIcon,
+                                    onClickItem = onDisconnect,
                                     modifier = Modifier.animateItemPlacement(),
                                 )
                                 else -> BluetoothDeviceItem(
                                     device = device,
-                                    onClickIcon = {
-                                        viewModel.onEvent(ConnectionEvent.OnClickDeviceIcon(it))
-                                    },
-                                    onSelectConnectionType = {
-                                        viewModel.onEvent(
-                                            ConnectionEvent.OnUpdateBluetoothDevice(
-                                                device.copy(type = device.type.copy(connectionType = it))
-                                            )
-                                        )
-                                    },
-                                    onClickItem = { viewModel.onEvent(ConnectionEvent.OnConnect(it)) },
+                                    onClickIcon = onClickIcon,
+                                    onClickItem = onConnect,
+                                    onSelectConnectionType = onSelectConnectionType,
                                     modifier = Modifier.animateItemPlacement(),
                                 )
                             }

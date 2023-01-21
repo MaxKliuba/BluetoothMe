@@ -46,9 +46,8 @@ fun BluetoothDeviceConnectingItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         ConnectionTypeChips(
-            deviceType = device.type,
-            isEnabled = false,
-            onSelect = {},
+            device = device,
+            onSelect = null,
         )
 
         Spacer(modifier = Modifier.width(24.dp))

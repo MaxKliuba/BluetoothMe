@@ -19,8 +19,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object BluetoothRepositoryModule {
-    @Singleton
     @Provides
+    @Singleton
     fun provideBluetoothRepository(
         @ApplicationContext context: Context,
         messagesDataSource: MessagesDataSource,
@@ -38,8 +38,8 @@ object BluetoothRepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object MessagesDataSourceModule {
-    @Singleton
     @Provides
+    @Singleton
     fun provideMessagesDataSource(): MessagesDataSource =
         MessagesLocalDataSource()
 }

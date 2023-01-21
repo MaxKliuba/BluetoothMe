@@ -13,8 +13,8 @@ import com.android.maxclub.bluetoothme.domain.bluetooth.model.ConnectionType
 fun BluetoothDeviceItem(
     device: BluetoothDevice,
     onClickIcon: (String) -> Unit,
-    onSelectConnectionType: (ConnectionType) -> Unit,
     onClickItem: (BluetoothDevice) -> Unit,
+    onSelectConnectionType: (BluetoothDevice, ConnectionType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -45,8 +45,7 @@ fun BluetoothDeviceItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         ConnectionTypeChips(
-            deviceType = device.type,
-            isEnabled = true,
+            device = device,
             onSelect = onSelectConnectionType,
         )
 
