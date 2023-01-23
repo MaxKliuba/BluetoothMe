@@ -44,6 +44,7 @@ class ConnectionViewModel @Inject constructor(
     init {
         getState()
 
+        getDevices()
         getScanState()
         startScan()
 
@@ -77,7 +78,7 @@ class ConnectionViewModel @Inject constructor(
         getStateJob = bluetoothUseCases.getState()
             .onEach { state ->
                 _uiState.value = uiState.value.copy(bluetoothState = state)
-                if (state is BluetoothState.TurnOn.Connected) {
+                if (state is BluetoothState.On.Connected) {
                     _uiEvent.emit(ConnectionUiEvent.OnConnected)
                 }
             }
@@ -111,8 +112,6 @@ class ConnectionViewModel @Inject constructor(
     }
 
     private fun startScan() {
-        getDevices()
-
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             try {

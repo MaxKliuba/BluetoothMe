@@ -26,18 +26,18 @@ fun BluetoothDeviceConnectedItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(20.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(24.dp),
             )
     ) {
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(20.dp))
 
         BluetoothDeviceIcon(
             deviceType = device.type,
             onClick = onClickIcon,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = 20.dp)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -64,7 +64,7 @@ fun BluetoothDeviceConnectedItem(
             onCheckedChange = { onClickItem(device) },
         )
 
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(20.dp))
     }
 
     Divider()

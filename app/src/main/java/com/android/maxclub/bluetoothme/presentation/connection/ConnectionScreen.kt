@@ -29,6 +29,7 @@ import com.android.maxclub.bluetoothme.domain.bluetooth.model.ConnectionType
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceConnectedItem
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceConnectingItem
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceItem
+import com.android.maxclub.bluetoothme.presentation.connection.components.EmptyListPlaceholder
 import kotlinx.coroutines.delay
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
@@ -114,7 +115,7 @@ fun ConnectionScreen(
                     }
                 },
                 actions = {
-                    if (state.bluetoothState is BluetoothState.TurnOn) {
+                    if (state.bluetoothState is BluetoothState.On) {
                         if (state.isScanning) {
                             IconButton(onClick = onStopScan) {
                                 Icon(
@@ -141,17 +142,7 @@ fun ConnectionScreen(
                 scrollBehavior = scrollBehavior,
             )
         },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-//            { snackbarData ->
-//                Snackbar(
-//                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-//                    actionColor = MaterialTheme.colorScheme.primary,
-//                    snackbarData = snackbarData,
-//                )
-//            }
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { paddingValues ->
         Box(
@@ -164,8 +155,8 @@ fun ConnectionScreen(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
 
-                AnimatedVisibility(visible = state.devices.isEmpty()) {
-                    Text(text = "Empty")
+                if (state.devices.isEmpty()) {
+                    EmptyListPlaceholder()
                 }
 
                 val onClickIcon = remember<(String) -> Unit> {

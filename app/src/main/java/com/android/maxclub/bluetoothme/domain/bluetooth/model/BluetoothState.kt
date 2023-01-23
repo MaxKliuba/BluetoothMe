@@ -4,13 +4,13 @@ import android.bluetooth.BluetoothAdapter
 
 sealed class BluetoothState {
     object TurningOff : BluetoothState()
-    object TurnOff : BluetoothState()
+    object Off : BluetoothState()
     object TurningOn : BluetoothState()
-    sealed class TurnOn(val device: BluetoothDevice?) : BluetoothState() {
-        class Connecting(device: BluetoothDevice) : TurnOn(device)
-        class Connected(device: BluetoothDevice) : TurnOn(device)
-        class Disconnecting(device: BluetoothDevice) : TurnOn(device)
-        object Disconnected : TurnOn(null)
+    sealed class On(val device: BluetoothDevice?) : BluetoothState() {
+        class Connecting(device: BluetoothDevice) : On(device)
+        class Connected(device: BluetoothDevice) : On(device)
+        class Disconnecting(device: BluetoothDevice) : On(device)
+        object Disconnected : On(null)
     }
 }
 
@@ -19,15 +19,14 @@ fun Int.toBluetoothState(device: BluetoothDevice? = null): BluetoothState =
         BluetoothAdapter.STATE_ON -> {
             device?.let {
                 when (it.state) {
-                    is BluetoothDeviceState.Connected -> BluetoothState.TurnOn.Connected(device)
-                    is BluetoothDeviceState.Connecting -> BluetoothState.TurnOn.Connecting(device)
-                    is BluetoothDeviceState.Disconnecting ->
-                        BluetoothState.TurnOn.Disconnecting(device)
-                    is BluetoothDeviceState.Disconnected -> BluetoothState.TurnOn.Disconnected
+                    is BluetoothDeviceState.Connected -> BluetoothState.On.Connected(device)
+                    is BluetoothDeviceState.Connecting -> BluetoothState.On.Connecting(device)
+                    is BluetoothDeviceState.Disconnecting -> BluetoothState.On.Disconnecting(device)
+                    is BluetoothDeviceState.Disconnected -> BluetoothState.On.Disconnected
                 }
-            } ?: BluetoothState.TurnOn.Disconnected
+            } ?: BluetoothState.On.Disconnected
         }
         BluetoothAdapter.STATE_TURNING_OFF -> BluetoothState.TurningOff
         BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.TurningOn
-        else -> BluetoothState.TurnOff
+        else -> BluetoothState.Off
     }

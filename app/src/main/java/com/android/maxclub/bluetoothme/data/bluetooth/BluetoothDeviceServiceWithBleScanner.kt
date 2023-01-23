@@ -21,7 +21,7 @@ class BluetoothDeviceServiceWithBleScanner(private val context: Context) : Bluet
 
     private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
     private val adapter: BluetoothAdapter = manager.adapter
-    private val bluetoothLeScanner: BluetoothLeScanner
+    private val bluetoothLeScanner: BluetoothLeScanner?
         get() = adapter.bluetoothLeScanner
 
     private val scannedDevices: MutableStateFlow<List<BluetoothDevice>> =
@@ -61,9 +61,12 @@ class BluetoothDeviceServiceWithBleScanner(private val context: Context) : Bluet
         withCheckSelfBluetoothScanPermission(context) {
             scannedDevices.value = emptyList()
 
-            bluetoothLeScanner.startScan(bleScanCallback)
-            scanStateFlow.value = true
-            delay(duration * 1000)
+            if (adapter.isEnabled) {
+                bluetoothLeScanner?.startScan(bleScanCallback)
+                scanStateFlow.value = true
+                delay(duration * 1000)
+            }
+
             stopScan()
         }
     }
@@ -71,8 +74,10 @@ class BluetoothDeviceServiceWithBleScanner(private val context: Context) : Bluet
     @SuppressLint("MissingPermission")
     override fun stopScan() {
         withCheckSelfBluetoothScanPermission(context) {
-            bluetoothLeScanner.stopScan(bleScanCallback)
-            adapter.cancelDiscovery()
+            if (adapter.isEnabled) {
+                bluetoothLeScanner?.stopScan(bleScanCallback)
+                adapter.cancelDiscovery()
+            }
             scanStateFlow.value = false
         }
     }

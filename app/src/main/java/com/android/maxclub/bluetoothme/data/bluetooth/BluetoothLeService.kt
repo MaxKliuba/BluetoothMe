@@ -42,14 +42,14 @@ class BluetoothLeService(
 
                 when (newState) {
                     BluetoothProfile.STATE_CONNECTING -> {
-                        bluetoothStateFlow.value = BluetoothState.TurnOn.Connecting(bluetoothDevice)
+                        bluetoothStateFlow.value = BluetoothState.On.Connecting(bluetoothDevice)
                     }
                     BluetoothProfile.STATE_CONNECTED -> {
-                        bluetoothStateFlow.value = BluetoothState.TurnOn.Connected(bluetoothDevice)
+                        bluetoothStateFlow.value = BluetoothState.On.Connected(bluetoothDevice)
                     }
                     BluetoothProfile.STATE_DISCONNECTING -> {
                         bluetoothStateFlow.value =
-                            BluetoothState.TurnOn.Disconnecting(bluetoothDevice)
+                            BluetoothState.On.Disconnecting(bluetoothDevice)
                     }
                     BluetoothProfile.STATE_DISCONNECTED -> {
                         isDisconnected = true
@@ -60,7 +60,7 @@ class BluetoothLeService(
             }
 
             if (isDisconnected) {
-                bluetoothStateFlow.value = BluetoothState.TurnOn.Disconnected
+                bluetoothStateFlow.value = BluetoothState.On.Disconnected
                 withCheckSelfBluetoothPermission(context) {
                     bluetoothGatt?.close()
                 }
@@ -92,7 +92,7 @@ class BluetoothLeService(
         }
 
         withCheckSelfBluetoothPermission(context) {
-            bluetoothStateFlow.value = BluetoothState.TurnOn.Connecting(
+            bluetoothStateFlow.value = BluetoothState.On.Connecting(
                 device.copy(state = BluetoothDeviceState.Connecting)
             )
             bluetoothGatt = remoteDevice.connectGatt(context, false, gattCallback)

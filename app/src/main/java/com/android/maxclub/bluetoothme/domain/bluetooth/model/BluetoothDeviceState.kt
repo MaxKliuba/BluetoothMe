@@ -1,7 +1,6 @@
 package com.android.maxclub.bluetoothme.domain.bluetooth.model
 
 import android.bluetooth.BluetoothProfile
-import androidx.compose.runtime.Immutable
 import android.bluetooth.BluetoothDevice as Device
 
 sealed class BluetoothDeviceState {
@@ -12,12 +11,12 @@ sealed class BluetoothDeviceState {
 }
 
 fun BluetoothState.toBluetoothDeviceState(device: Device) =
-    if (this is BluetoothState.TurnOn && this.device?.address == device.address) {
+    if (this is BluetoothState.On && this.device?.address == device.address) {
         when (this) {
-            is BluetoothState.TurnOn.Connecting -> BluetoothDeviceState.Connecting
-            is BluetoothState.TurnOn.Connected -> BluetoothDeviceState.Connected
-            is BluetoothState.TurnOn.Disconnecting -> BluetoothDeviceState.Disconnecting
-            is BluetoothState.TurnOn.Disconnected -> BluetoothDeviceState.Disconnected
+            is BluetoothState.On.Connecting -> BluetoothDeviceState.Connecting
+            is BluetoothState.On.Connected -> BluetoothDeviceState.Connected
+            is BluetoothState.On.Disconnecting -> BluetoothDeviceState.Disconnecting
+            is BluetoothState.On.Disconnected -> BluetoothDeviceState.Disconnected
         }
     } else {
         BluetoothDeviceState.Disconnected

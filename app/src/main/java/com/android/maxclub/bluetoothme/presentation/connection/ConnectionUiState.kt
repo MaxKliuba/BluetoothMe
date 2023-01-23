@@ -12,6 +12,6 @@ data class ConnectionUiState(
         get() = isScanning ||
                 bluetoothState is BluetoothState.TurningOn ||
                 bluetoothState is BluetoothState.TurningOff ||
-                bluetoothState is BluetoothState.TurnOn.Connecting ||
-                bluetoothState is BluetoothState.TurnOn.Disconnecting
+                bluetoothState is BluetoothState.On.Connecting ||
+                bluetoothState is BluetoothState.On.Disconnecting
 }

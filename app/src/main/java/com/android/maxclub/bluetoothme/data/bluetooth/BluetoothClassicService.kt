@@ -58,10 +58,10 @@ class BluetoothClassicService(
                                 trySend(
                                     when (intent.action) {
                                         Device.ACTION_ACL_CONNECTED ->
-                                            BluetoothState.TurnOn.Connected(bluetoothDevice)
+                                            BluetoothState.On.Connected(bluetoothDevice)
                                         Device.ACTION_ACL_DISCONNECT_REQUESTED ->
-                                            BluetoothState.TurnOn.Disconnecting(bluetoothDevice)
-                                        else -> BluetoothState.TurnOn.Disconnected
+                                            BluetoothState.On.Disconnecting(bluetoothDevice)
+                                        else -> BluetoothState.On.Disconnected
                                     }
                                 )
                             }
@@ -88,7 +88,6 @@ class BluetoothClassicService(
     override fun getState(): Flow<BluetoothState> =
         listOf(bluetoothStateFlow, bluetoothStateCallbackFlow)
             .merge()
-            .distinctUntilChanged()
 
     @SuppressLint("MissingPermission")
     @Throws(BluetoothConnectionException::class)
@@ -105,12 +104,12 @@ class BluetoothClassicService(
                 socket = withCheckSelfBluetoothPermission(context) {
                     remoteDevice.createRfcommSocketToServiceRecord(uuid)
                 }
-                bluetoothStateFlow.value = BluetoothState.TurnOn.Connecting(
+                bluetoothStateFlow.value = BluetoothState.On.Connecting(
                     device.copy(state = BluetoothDeviceState.Connecting)
                 )
 
                 socket?.connect()
-                bluetoothStateFlow.value = BluetoothState.TurnOn.Connected(
+                bluetoothStateFlow.value = BluetoothState.On.Connected(
                     device.copy(state = BluetoothDeviceState.Connected)
                 )
 
@@ -132,7 +131,7 @@ class BluetoothClassicService(
             ioe.printStackTrace()
         } finally {
             socket = null
-            bluetoothStateFlow.value = BluetoothState.TurnOn.Disconnected
+            bluetoothStateFlow.value = BluetoothState.On.Disconnected
         }
     }
 

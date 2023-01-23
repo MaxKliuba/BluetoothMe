@@ -23,7 +23,7 @@ fun BluetoothDeviceItem(
             .fillMaxWidth()
             .clickable { onClickItem(device) }
     ) {
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(20.dp))
 
         BluetoothDeviceIcon(
             deviceType = device.type,
@@ -49,6 +49,6 @@ fun BluetoothDeviceItem(
             onSelect = onSelectConnectionType,
         )
 
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(12.dp))
     }
 }

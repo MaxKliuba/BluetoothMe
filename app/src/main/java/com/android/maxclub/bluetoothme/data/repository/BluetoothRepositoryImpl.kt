@@ -1,7 +1,9 @@
 package com.android.maxclub.bluetoothme.data.repository
 
 import android.content.Context
-import com.android.maxclub.bluetoothme.domain.bluetooth.*
+import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothDeviceService
+import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothService
+import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothStateObserver
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.*
 import com.android.maxclub.bluetoothme.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.domain.messages.Message
@@ -36,12 +38,15 @@ class BluetoothRepositoryImpl @Inject constructor(
             bluetoothLeService.getState(),
         )
             .merge()
-            .distinctUntilChanged()
             .onEach {
-                connectionType = if (it is BluetoothState.TurnOn.Connected) {
+                connectionType = if (it is BluetoothState.On.Connected) {
                     it.device?.type?.connectionType
                 } else {
                     null
+                }
+
+                if (it is BluetoothState.Off) {
+                    stopScan()
                 }
             }
             .stateIn(
@@ -51,26 +56,25 @@ class BluetoothRepositoryImpl @Inject constructor(
             )
 
     override fun getBluetoothDevices(): Flow<List<BluetoothDevice>> =
-        bluetoothDeviceService.getBondedDevices()
-            .combine(bluetoothDeviceService.getScannedDevices()) { bondedDevices, scannedBleDevices ->
-                bondedDevices.plus(scannedBleDevices)
-                    .distinctBy { it.address }
-            }
-            .combine(getState()) { devices, state ->
-                when (state) {
-                    is BluetoothState.TurnOn -> {
-                        devices.map { device ->
-                            device.toBluetoothDevice(
-                                context = context,
-                                state = state.toBluetoothDeviceState(device),
-                                connectionType = updatedBluetoothDevices.value[device.address]?.type?.connectionType
-                                    ?: ConnectionType.Classic,
-                            )
-                        }
+        getState().combine(bluetoothDeviceService.getScannedDevices()) { state, scannedBleDevices ->
+            val devices = bluetoothDeviceService.getBondedDevices().first()
+                .plus(scannedBleDevices)
+                .distinctBy { it.address }
+
+            when (state) {
+                is BluetoothState.On -> {
+                    devices.map { device ->
+                        device.toBluetoothDevice(
+                            context = context,
+                            state = state.toBluetoothDeviceState(device),
+                            connectionType = updatedBluetoothDevices.value[device.address]?.type?.connectionType
+                                ?: ConnectionType.Classic,
+                        )
                     }
-                    else -> emptyList()
                 }
+                else -> emptyList()
             }
+        }
             .combine(updatedBluetoothDevices) { bluetoothDevices, _ ->
                 bluetoothDevices.map { bluetoothDevice ->
                     updatedBluetoothDevices.value[bluetoothDevice.address]?.let {
