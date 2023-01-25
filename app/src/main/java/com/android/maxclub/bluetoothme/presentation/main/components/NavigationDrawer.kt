@@ -63,7 +63,7 @@ fun NavigationDrawer(
                             }
                         },
                         selected = item.route == currentRoute,
-                        onClick = item.onClick,
+                        onClick = { item.onClick(item.route) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                     )
                 }

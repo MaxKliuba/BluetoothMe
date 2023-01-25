@@ -30,6 +30,7 @@ import com.android.maxclub.bluetoothme.presentation.connection.components.Blueto
 import com.android.maxclub.bluetoothme.presentation.connection.components.BluetoothDeviceItem
 import com.android.maxclub.bluetoothme.presentation.connection.components.EmptyListPlaceholder
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -56,33 +57,39 @@ fun ConnectionScreen(
                         .show()
                 }
                 is ConnectionUiEvent.OnShowConnectionErrorMessage -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.device.name,
-                        actionLabel = context.getString(R.string.reconnect_button),
-                        withDismissAction = true,
-                        duration = SnackbarDuration.Short,
-                    ).let { result ->
-                        if (result == SnackbarResult.ActionPerformed) {
-                            viewModel.onEvent(ConnectionEvent.OnConnect(event.device))
+                    launch {
+                        snackbarHostState.showSnackbar(
+                            message = event.device.name,
+                            actionLabel = context.getString(R.string.reconnect_button),
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Short,
+                        ).let { result ->
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.onEvent(ConnectionEvent.OnConnect(event.device))
+                            }
                         }
                     }
                 }
-                is ConnectionUiEvent.OnShowBluetoothSettings -> {
+                is ConnectionUiEvent.OnOpenBluetoothSettings -> {
                     val bluetoothSettingIntent = Intent().apply {
                         action = Settings.ACTION_BLUETOOTH_SETTINGS
                     }
                     context.startActivity(bluetoothSettingIntent)
                 }
                 is ConnectionUiEvent.OnShowDeviceType -> {
-                    snackbarHostState.showSnackbar(
-                        message = event.deviceType,
-                        withDismissAction = true,
-                        duration = SnackbarDuration.Short,
-                    )
+                    launch {
+                        snackbarHostState.showSnackbar(
+                            message = event.deviceType,
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Short,
+                        )
+                    }
                 }
                 is ConnectionUiEvent.OnConnected -> {
-                    delay(500)
-                    scrollState.animateScrollToItem(0)
+                    launch {
+                        delay(500)
+                        scrollState.animateScrollToItem(0)
+                    }
                 }
             }
         }
@@ -95,7 +102,7 @@ fun ConnectionScreen(
         { viewModel.onEvent(ConnectionEvent.OnStopScan) }
     }
     val onShowBluetoothSettings = remember {
-        { viewModel.onEvent(ConnectionEvent.OnClickBluetoothSettings) }
+        { viewModel.onEvent(ConnectionEvent.OnOpenBluetoothSettings) }
     }
 
     Scaffold(

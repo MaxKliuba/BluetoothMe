@@ -9,7 +9,6 @@ import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothState
 import com.android.maxclub.bluetoothme.domain.exceptions.MissingBluetoothPermissionException
 import com.android.maxclub.bluetoothme.domain.usecase.bluetooth.BluetoothUseCases
-import com.android.maxclub.bluetoothme.domain.usecase.messages.MessagesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -48,11 +47,12 @@ class ConnectionViewModel @Inject constructor(
 
     fun onEvent(event: ConnectionEvent) {
         when (event) {
+            is ConnectionEvent.OnEnableAdapter -> enableAdapter()
             is ConnectionEvent.OnStartScan -> startScan()
             is ConnectionEvent.OnStopScan -> stopScan()
-            is ConnectionEvent.OnClickBluetoothSettings -> {
+            is ConnectionEvent.OnOpenBluetoothSettings -> {
                 viewModelScope.launch {
-                    _uiEvent.emit(ConnectionUiEvent.OnShowBluetoothSettings)
+                    _uiEvent.emit(ConnectionUiEvent.OnOpenBluetoothSettings)
                 }
             }
             is ConnectionEvent.OnClickDeviceIcon -> {
@@ -63,8 +63,8 @@ class ConnectionViewModel @Inject constructor(
             is ConnectionEvent.OnUpdateBluetoothDevice -> {
                 bluetoothUseCases.updateBluetoothDevice(event.device)
             }
-            is ConnectionEvent.OnConnect -> onConnect(event.device)
-            is ConnectionEvent.OnDisconnect -> onDisconnect(event.device)
+            is ConnectionEvent.OnConnect -> connect(event.device)
+            is ConnectionEvent.OnDisconnect -> disconnect(event.device)
         }
     }
 
@@ -73,8 +73,8 @@ class ConnectionViewModel @Inject constructor(
         getStateJob = bluetoothUseCases.getState()
             .onEach { state ->
                 _uiState.value = uiState.value.copy(bluetoothState = state)
-                if (state is BluetoothState.On.Connected) {
-                    _uiEvent.emit(ConnectionUiEvent.OnConnected)
+                if (state is BluetoothState.On.Connected && state.device != null) {
+                    _uiEvent.emit(ConnectionUiEvent.OnConnected(state.device))
                 }
             }
             .catch { e ->
@@ -129,7 +129,18 @@ class ConnectionViewModel @Inject constructor(
         }
     }
 
-    private fun onConnect(device: BluetoothDevice) {
+    private fun enableAdapter() {
+        try {
+            bluetoothUseCases.enableAdapter()
+        } catch (e: MissingBluetoothPermissionException) {
+            e.printStackTrace()
+            viewModelScope.launch {
+                _uiEvent.emit(ConnectionUiEvent.OnShowMissingPermissionMessage(*e.permissions))
+            }
+        }
+    }
+
+    private fun connect(device: BluetoothDevice) {
         connectJob?.cancel()
         connectJob = viewModelScope.launch {
             try {
@@ -144,7 +155,7 @@ class ConnectionViewModel @Inject constructor(
         }
     }
 
-    private fun onDisconnect(device: BluetoothDevice) {
+    private fun disconnect(device: BluetoothDevice?) {
         try {
             bluetoothUseCases.disconnect(device)
         } catch (e: MissingBluetoothPermissionException) {

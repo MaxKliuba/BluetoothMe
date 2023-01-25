@@ -10,6 +10,7 @@ data class BluetoothUseCases @Inject constructor(
     val getScanState: GetScanState,
     val startScan: StartScan,
     val stopScan: StopScan,
+    val enableAdapter: EnableAdapter,
     val connect: Connect,
     val disconnect: Disconnect,
 )

@@ -1,7 +1,7 @@
 package com.android.maxclub.bluetoothme.di
 
 import android.content.Context
-import com.android.maxclub.bluetoothme.data.bluetooth.BluetoothAdapterStateObserver
+import com.android.maxclub.bluetoothme.data.bluetooth.BluetoothAdapterManagerImpl
 import com.android.maxclub.bluetoothme.data.bluetooth.BluetoothClassicService
 import com.android.maxclub.bluetoothme.data.bluetooth.BluetoothDeviceServiceWithBleScanner
 import com.android.maxclub.bluetoothme.data.bluetooth.BluetoothLeService
@@ -27,7 +27,7 @@ object BluetoothRepositoryModule {
     ): BluetoothRepository =
         BluetoothRepositoryImpl(
             context = context,
-            bluetoothAdapterStateObserver = BluetoothAdapterStateObserver(context),
+            bluetoothAdapterManager = BluetoothAdapterManagerImpl(context),
             bluetoothDeviceService = BluetoothDeviceServiceWithBleScanner(context),
             bluetoothClassicService = BluetoothClassicService(context, messagesDataSource),
             bluetoothLeService = BluetoothLeService(context, messagesDataSource),

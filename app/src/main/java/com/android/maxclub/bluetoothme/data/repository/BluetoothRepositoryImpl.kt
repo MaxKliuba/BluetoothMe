@@ -1,9 +1,9 @@
 package com.android.maxclub.bluetoothme.data.repository
 
 import android.content.Context
+import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothService
-import com.android.maxclub.bluetoothme.domain.bluetooth.BluetoothStateObserver
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.*
 import com.android.maxclub.bluetoothme.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.domain.messages.Message
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class BluetoothRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val bluetoothAdapterStateObserver: BluetoothStateObserver,
+    private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val bluetoothDeviceService: BluetoothDeviceService,
     private val bluetoothClassicService: BluetoothService,
     private val bluetoothLeService: BluetoothService,
@@ -35,7 +35,7 @@ class BluetoothRepositoryImpl @Inject constructor(
 
     override fun getState(): StateFlow<BluetoothState> =
         listOf(
-            bluetoothAdapterStateObserver.getState(),
+            bluetoothAdapterManager.getState(),
             bluetoothClassicService.getState(),
             bluetoothLeService.getState(),
         )
@@ -54,7 +54,7 @@ class BluetoothRepositoryImpl @Inject constructor(
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
                 started = SharingStarted.Eagerly,
-                initialValue = bluetoothAdapterStateObserver.initialState,
+                initialValue = bluetoothAdapterManager.initialState,
             )
 
     override fun getBluetoothDevices(): Flow<List<BluetoothDevice>> =
@@ -106,6 +106,10 @@ class BluetoothRepositoryImpl @Inject constructor(
 
     override fun stopScan() {
         bluetoothDeviceService.stopScan()
+    }
+
+    override fun enableAdapter() {
+        bluetoothAdapterManager.enable()
     }
 
     override suspend fun connect(device: BluetoothDevice) {
