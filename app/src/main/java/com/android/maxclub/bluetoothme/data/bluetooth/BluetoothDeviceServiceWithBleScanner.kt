@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 
-class BluetoothDeviceServiceWithBleScanner(private val context: Context) : BluetoothDeviceService {
+class BluetoothDeviceServiceWithBleScanner(
+    private val context: Context
+) : BluetoothDeviceService {
 
     private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
     private val adapter: BluetoothAdapter = manager.adapter

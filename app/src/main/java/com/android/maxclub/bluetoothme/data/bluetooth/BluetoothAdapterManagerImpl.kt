@@ -17,7 +17,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class BluetoothAdapterManagerImpl(private val context: Context) : BluetoothAdapterManager {
+class BluetoothAdapterManagerImpl(
+    private val context: Context
+) : BluetoothAdapterManager {
 
     private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
 

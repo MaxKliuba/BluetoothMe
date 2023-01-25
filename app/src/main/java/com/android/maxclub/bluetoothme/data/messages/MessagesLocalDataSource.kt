@@ -4,9 +4,7 @@ import com.android.maxclub.bluetoothme.domain.messages.Message
 import com.android.maxclub.bluetoothme.domain.messages.MessagesDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Singleton
 
-@Singleton
 class MessagesLocalDataSource : MessagesDataSource {
 
     private val messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())

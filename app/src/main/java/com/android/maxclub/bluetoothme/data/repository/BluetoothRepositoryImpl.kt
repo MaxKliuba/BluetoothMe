@@ -9,16 +9,12 @@ import com.android.maxclub.bluetoothme.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.domain.messages.Message
 import com.android.maxclub.bluetoothme.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.domain.repository.BluetoothRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class BluetoothRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+class BluetoothRepositoryImpl(
+    private val context: Context,
     private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val bluetoothDeviceService: BluetoothDeviceService,
     private val bluetoothClassicService: BluetoothService,
