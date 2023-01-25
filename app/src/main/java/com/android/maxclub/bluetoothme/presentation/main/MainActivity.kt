@@ -214,7 +214,7 @@ class MainActivity : ComponentActivity() {
                                     drawerState = drawerState,
                                 ) {
                                     ConnectionScreen(
-                                        onClickNavigationIcon = onClickNavigationIcon
+                                        onClickNavigationIcon = onClickNavigationIcon,
                                     )
                                 }
                             }
@@ -233,7 +233,9 @@ class MainActivity : ComponentActivity() {
                                     items = navigationDrawerItems,
                                     drawerState = drawerState,
                                 ) {
-                                    TerminalScreen()
+                                    TerminalScreen(
+                                        onClickNavigationIcon = onClickNavigationIcon,
+                                    )
                                 }
                             }
                         }
