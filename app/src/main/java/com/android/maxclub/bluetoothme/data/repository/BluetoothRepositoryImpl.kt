@@ -31,6 +31,8 @@ class BluetoothRepositoryImpl @Inject constructor(
     private val updatedBluetoothDevices: MutableStateFlow<Map<String, BluetoothDevice>> =
         MutableStateFlow(emptyMap())
 
+    private var favoriteDevice: MutableStateFlow<BluetoothDevice?> = MutableStateFlow(null)
+
     override fun getState(): StateFlow<BluetoothState> =
         listOf(
             bluetoothAdapterStateObserver.getState(),
@@ -67,25 +69,34 @@ class BluetoothRepositoryImpl @Inject constructor(
                         device.toBluetoothDevice(
                             context = context,
                             state = state.toBluetoothDeviceState(device),
-                            connectionType = updatedBluetoothDevices.value[device.address]?.type?.connectionType
-                                ?: ConnectionType.Classic,
                         )
                     }
                 }
                 else -> emptyList()
             }
         }
-            .combine(updatedBluetoothDevices) { bluetoothDevices, _ ->
+            .combine(updatedBluetoothDevices) { bluetoothDevices, updatedBluetoothDevices ->
                 bluetoothDevices.map { bluetoothDevice ->
-                    updatedBluetoothDevices.value[bluetoothDevice.address]?.let {
+                    updatedBluetoothDevices[bluetoothDevice.address]?.let {
                         bluetoothDevice.copy(type = it.type)
                     } ?: bluetoothDevice
+                }
+            }
+            .combine(favoriteDevice) { bluetoothDevices, favoriteDevice ->
+                bluetoothDevices.map { bluetoothDevice ->
+                    if (bluetoothDevice.address == favoriteDevice?.address) {
+                        bluetoothDevice.copy(isFavorite = true)
+                    } else {
+                        bluetoothDevice
+                    }
                 }
             }
 
     override fun updateBluetoothDevice(device: BluetoothDevice) {
         updatedBluetoothDevices.value += device.address to device
     }
+
+    override fun getFavoriteBluetoothDevice(): StateFlow<BluetoothDevice?> = favoriteDevice
 
     override fun getScanState(): StateFlow<Boolean> = bluetoothDeviceService.getScanState()
 
@@ -100,6 +111,8 @@ class BluetoothRepositoryImpl @Inject constructor(
     override suspend fun connect(device: BluetoothDevice) {
         stopScan()
         disconnect()
+
+        favoriteDevice.value = device
 
         when (device.type.connectionType) {
             ConnectionType.Classic -> bluetoothClassicService.connect(device)

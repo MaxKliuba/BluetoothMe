@@ -14,6 +14,8 @@ interface BluetoothRepository {
 
     fun updateBluetoothDevice(device: BluetoothDevice)
 
+    fun getFavoriteBluetoothDevice(): StateFlow<BluetoothDevice?>
+
     fun getScanState(): StateFlow<Boolean>
 
     suspend fun startScan(duration: Long)

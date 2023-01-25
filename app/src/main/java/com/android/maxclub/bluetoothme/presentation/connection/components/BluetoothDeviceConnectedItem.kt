@@ -49,6 +49,7 @@ fun BluetoothDeviceConnectedItem(
             }
         )
         BluetoothDeviceInfoSection(
+            isFavorite = false,
             deviceName = device.name,
             deviceAddress = device.address,
             connectionType = connectionType,

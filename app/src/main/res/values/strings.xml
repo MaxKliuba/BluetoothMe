@@ -1,18 +1,23 @@
 <resources>
     <string name="app_name">BluetoothMe</string>
 
-    <string name="state_turning_off">Turning Off…</string>
+    <string name="connection_screen_title">Connection</string>
+    <string name="controllers_screen_title">My Controllers</string>
+    <string name="terminal_screen_title">Terminal</string>
+    <string name="help_screen_title">Help</string>
+
+    <string name="state_turning_off">Turning Off</string>
     <string name="state_off">Off</string>
-    <string name="state_turning_on">Turning On…</string>
-    <string name="state_connecting">Connecting…</string>
+    <string name="state_turning_on">Turning On</string>
+    <string name="state_connecting">Connecting</string>
     <string name="state_connected">Connected</string>
-    <string name="state_disconnecting">Disconnecting…</string>
+    <string name="state_disconnecting">Disconnecting</string>
     <string name="state_disconnected">Disconnected</string>
 
-    <string name="connection_screen_title">Connection</string>
     <string name="start_scan_button">Scan</string>
     <string name="stop_scan_button">Stop</string>
     <string name="bluetooth_settings_button">Bluetooth Settings</string>
+    <string name="favorite_label">Favorite</string>
     <string name="reconnect_button">Reconnect</string>
     <string name="empty_list_message">The list is empty</string>
 

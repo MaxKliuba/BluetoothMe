@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ConnectionViewModel @Inject constructor(
     private val bluetoothUseCases: BluetoothUseCases,
-    private val messagesUseCases: MessagesUseCases,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ConnectionUiState(
@@ -39,16 +38,12 @@ class ConnectionViewModel @Inject constructor(
     private var scanJob: Job? = null
     private var connectJob: Job? = null
 
-    private var getMessagesJob: Job? = null
-
     init {
         getState()
 
         getDevices()
         getScanState()
         startScan()
-
-        getMessages()
     }
 
     fun onEvent(event: ConnectionEvent) {
@@ -158,13 +153,5 @@ class ConnectionViewModel @Inject constructor(
                 _uiEvent.emit(ConnectionUiEvent.OnShowMissingPermissionMessage(*e.permissions))
             }
         }
-    }
-
-    private fun getMessages() {
-        getMessagesJob?.cancel()
-        getMessagesJob = messagesUseCases.getMessages()
-            .onEach { println(it) }
-            .catch { it.printStackTrace() }
-            .launchIn(viewModelScope)
     }
 }

@@ -12,13 +12,14 @@ data class BluetoothDevice(
     val isBonded: Boolean,
     val type: DeviceType,
     val state: BluetoothDeviceState,
+    val isFavorite: Boolean = false,
 )
 
 @SuppressLint("MissingPermission")
 fun Device.toBluetoothDevice(
     context: Context,
     state: BluetoothDeviceState,
-    connectionType: ConnectionType,
+    connectionType: ConnectionType = ConnectionType.Classic,
 ): BluetoothDevice =
     withCheckSelfBluetoothPermission(context) {
         BluetoothDevice(

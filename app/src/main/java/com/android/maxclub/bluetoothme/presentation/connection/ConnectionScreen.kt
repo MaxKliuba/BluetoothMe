@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDevice
 import com.android.maxclub.bluetoothme.domain.bluetooth.model.BluetoothDeviceState
@@ -36,15 +35,15 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionScreen(
-    navController: NavController,
+    onClickNavigationIcon: () -> Unit,
     viewModel: ConnectionViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val state: ConnectionUiState by viewModel.uiState
 
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val scrollState = rememberLazyListState()
 
+    val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         state = rememberTopAppBarState()
     )
@@ -89,9 +88,6 @@ fun ConnectionScreen(
         }
     }
 
-    val onClickNavigationIcon = remember {
-        { /*TODO*/ }
-    }
     val onStartScan = remember {
         { viewModel.onEvent(ConnectionEvent.OnStartScan) }
     }
@@ -168,15 +164,16 @@ fun ConnectionScreen(
                 val onDisconnect = remember<(BluetoothDevice) -> Unit> {
                     { viewModel.onEvent(ConnectionEvent.OnDisconnect(it)) }
                 }
-                val onSelectConnectionType = remember<(BluetoothDevice, ConnectionType) -> Unit> {
-                    { device, connectionType ->
-                        viewModel.onEvent(
-                            ConnectionEvent.OnUpdateBluetoothDevice(
-                                device.copy(type = device.type.copy(connectionType = connectionType))
+                val onSelectConnectionType =
+                    remember<(BluetoothDevice, ConnectionType) -> Unit> {
+                        { device, connectionType ->
+                            viewModel.onEvent(
+                                ConnectionEvent.OnUpdateBluetoothDevice(
+                                    device.copy(type = device.type.copy(connectionType = connectionType))
+                                )
                             )
-                        )
+                        }
                     }
-                }
 
                 AnimatedVisibility(visible = state.devices.isNotEmpty()) {
                     LazyColumn(

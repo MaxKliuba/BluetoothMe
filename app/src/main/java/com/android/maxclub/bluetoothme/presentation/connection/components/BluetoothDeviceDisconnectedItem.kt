@@ -34,6 +34,7 @@ fun BluetoothDeviceItem(
         Spacer(modifier = Modifier.width(16.dp))
 
         BluetoothDeviceInfoSection(
+            isFavorite = device.isFavorite,
             deviceName = device.name,
             deviceAddress = device.address,
             connectionType = null,
