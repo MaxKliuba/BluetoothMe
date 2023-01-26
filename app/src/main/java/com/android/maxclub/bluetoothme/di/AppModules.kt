@@ -1,12 +1,12 @@
 package com.android.maxclub.bluetoothme.di
 
 import android.content.Context
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories.BluetoothRepositoryImpl
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothAdapterManagerImpl
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothClassicService
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothDeviceServiceWithBleScanner
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothLeService
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.messages.MessagesLocalDataSource
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories.BluetoothRepositoryImpl
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
@@ -63,8 +63,12 @@ object BluetoothDeviceServiceModule {
     @Provides
     @Singleton
     fun provideBluetoothDeviceService(
-        @ApplicationContext context: Context
-    ): BluetoothDeviceService = BluetoothDeviceServiceWithBleScanner(context)
+        @ApplicationContext context: Context,
+        bluetoothAdapterManager: BluetoothAdapterManager,
+    ): BluetoothDeviceService = BluetoothDeviceServiceWithBleScanner(
+        context = context,
+        bluetoothAdapterManager = bluetoothAdapterManager,
+    )
 }
 
 
@@ -85,8 +89,13 @@ object BluetoothServiceModule {
     @Singleton
     fun provideBluetoothClassicService(
         @ApplicationContext context: Context,
+        bluetoothAdapterManager: BluetoothAdapterManager,
         messagesDataSource: MessagesDataSource,
-    ): BluetoothService = BluetoothClassicService(context, messagesDataSource)
+    ): BluetoothService = BluetoothClassicService(
+        context = context,
+        bluetoothAdapterManager = bluetoothAdapterManager,
+        messagesDataSource = messagesDataSource,
+    )
 
 
     @BluetoothLe
@@ -94,8 +103,13 @@ object BluetoothServiceModule {
     @Singleton
     fun provideBluetoothLeService(
         @ApplicationContext context: Context,
+        bluetoothAdapterManager: BluetoothAdapterManager,
         messagesDataSource: MessagesDataSource,
-    ): BluetoothService = BluetoothLeService(context, messagesDataSource)
+    ): BluetoothService = BluetoothLeService(
+        context = context,
+        bluetoothAdapterManager = bluetoothAdapterManager,
+        messagesDataSource = messagesDataSource,
+    )
 }
 
 

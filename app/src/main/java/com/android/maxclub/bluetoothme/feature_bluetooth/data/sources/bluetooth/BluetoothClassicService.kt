@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.*
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.BluetoothConnectionException
@@ -26,11 +27,12 @@ import android.bluetooth.BluetoothDevice as Device
 
 class BluetoothClassicService(
     private val context: Context,
+    private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {
 
-    private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
-    private val adapter: BluetoothAdapter = manager.adapter
+    private val adapter: BluetoothAdapter
+        get() = bluetoothAdapterManager.adapter
 
     private var socket: BluetoothSocket? = null
     private val remoteDevice: Device?

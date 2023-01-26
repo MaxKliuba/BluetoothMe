@@ -1,13 +1,11 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.toBluetoothState
@@ -21,9 +19,8 @@ class BluetoothAdapterManagerImpl(
     private val context: Context
 ) : BluetoothAdapterManager {
 
-    private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
-
-    override val adapter: BluetoothAdapter = manager.adapter
+    override val adapter: BluetoothAdapter
+        get() = context.getSystemService(BluetoothManager::class.java).adapter
 
     override val initialState: BluetoothState
         get() = adapter.state.toBluetoothState()
@@ -46,21 +43,16 @@ class BluetoothAdapterManagerImpl(
 
         awaitClose {
             context.unregisterReceiver(receiver)
+            enable()
         }
     }
 
-    @Suppress("DEPRECATION")
-    @SuppressLint("MissingPermission")
     @Throws(EnableBluetoothAdapterException::class)
     override fun enable() {
         if (!adapter.isEnabled) {
             withCheckSelfBluetoothPermission(context) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    adapter.enable()
-                } else {
-                    val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                    throw EnableBluetoothAdapterException(intent)
-                }
+                val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                throw EnableBluetoothAdapterException(intent)
             }
         }
     }

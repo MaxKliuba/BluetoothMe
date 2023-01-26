@@ -3,6 +3,7 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.*
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
@@ -15,11 +16,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class BluetoothLeService(
     private val context: Context,
+    private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {
 
-    private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
-    private val adapter: BluetoothAdapter = manager.adapter
+    private val adapter: BluetoothAdapter
+        get() = bluetoothAdapterManager.adapter
 
     private var bluetoothGatt: BluetoothGatt? = null
 

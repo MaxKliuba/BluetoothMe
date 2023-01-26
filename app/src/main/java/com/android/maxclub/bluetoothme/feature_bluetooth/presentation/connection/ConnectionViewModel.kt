@@ -39,10 +39,8 @@ class ConnectionViewModel @Inject constructor(
 
     init {
         getState()
-
-        getDevices()
         getScanState()
-        startScan()
+        refreshDevices()
     }
 
     fun onEvent(event: ConnectionEvent) {
@@ -83,6 +81,19 @@ class ConnectionViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    private fun getScanState() {
+        getScanStateJob?.cancel()
+        getScanStateJob = bluetoothUseCases.getScanState()
+            .onEach { _uiState.value = uiState.value.copy(isScanning = it) }
+            .catch { it.printStackTrace() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun refreshDevices() {
+        startScan()
+        getDevices()
+    }
+
     private fun getDevices() {
         getDevicesJob?.cancel()
         getDevicesJob = bluetoothUseCases.getBluetoothDevices()
@@ -95,14 +106,6 @@ class ConnectionViewModel @Inject constructor(
                     _uiEvent.emit(ConnectionUiEvent.OnShowMissingPermissionMessage(*e.permissions))
                 }
             }
-            .launchIn(viewModelScope)
-    }
-
-    private fun getScanState() {
-        getScanStateJob?.cancel()
-        getScanStateJob = bluetoothUseCases.getScanState()
-            .onEach { _uiState.value = uiState.value.copy(isScanning = it) }
-            .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
     }
 

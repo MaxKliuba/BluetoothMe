@@ -8,6 +8,7 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothScanPermission
@@ -18,11 +19,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 
 class BluetoothDeviceServiceWithBleScanner(
-    private val context: Context
+    private val context: Context,
+    private val bluetoothAdapterManager: BluetoothAdapterManager,
 ) : BluetoothDeviceService {
 
-    private val manager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
-    private val adapter: BluetoothAdapter = manager.adapter
+    private val adapter: BluetoothAdapter
+        get() = bluetoothAdapterManager.adapter
+
     private val bluetoothLeScanner: BluetoothLeScanner?
         get() = adapter.bluetoothLeScanner
 
@@ -60,27 +63,25 @@ class BluetoothDeviceServiceWithBleScanner(
 
     @SuppressLint("MissingPermission")
     override suspend fun startScan(duration: Long) {
-        withCheckSelfBluetoothScanPermission(context) {
-            scannedDevices.value = emptyList()
-
-            if (adapter.isEnabled) {
+        scannedDevices.value = emptyList()
+        if (adapter.isEnabled) {
+            withCheckSelfBluetoothScanPermission(context) {
                 bluetoothLeScanner?.startScan(bleScanCallback)
                 scanStateFlow.value = true
                 delay(duration * 1000)
             }
-
-            stopScan()
         }
+        stopScan()
     }
 
     @SuppressLint("MissingPermission")
     override fun stopScan() {
-        withCheckSelfBluetoothScanPermission(context) {
-            if (adapter.isEnabled) {
+        if (adapter.isEnabled) {
+            withCheckSelfBluetoothScanPermission(context) {
                 bluetoothLeScanner?.stopScan(bleScanCallback)
                 adapter.cancelDiscovery()
             }
-            scanStateFlow.value = false
         }
+        scanStateFlow.value = false
     }
 }
