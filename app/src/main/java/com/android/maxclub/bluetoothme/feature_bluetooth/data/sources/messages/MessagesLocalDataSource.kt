@@ -9,6 +9,8 @@ class MessagesLocalDataSource : MessagesDataSource {
 
     private val messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
 
+    override fun getMessages(): Flow<List<Message>> = messages
+
     override fun addMessage(message: Message) {
         messages.value += message
     }
@@ -17,9 +19,7 @@ class MessagesLocalDataSource : MessagesDataSource {
         messages.value -= message
     }
 
-    override fun deleteAllMessages() {
+    override fun deleteMessages() {
         messages.value = emptyList()
     }
-
-    override fun getMessages(): Flow<List<Message>> = messages
 }

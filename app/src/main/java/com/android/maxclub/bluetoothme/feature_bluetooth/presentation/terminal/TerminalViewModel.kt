@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.usecases.messages.MessagesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,5 +35,18 @@ class TerminalViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
+    }
+
+    fun writeMessage(value: String) {
+        try {
+            messagesUseCases.writeMessage(value)
+        } catch (e: WriteMessageException) {
+            e.printStackTrace()
+            // TODO
+        }
+    }
+
+    fun deleteMessages() {
+        messagesUseCases.deleteMessages()
     }
 }

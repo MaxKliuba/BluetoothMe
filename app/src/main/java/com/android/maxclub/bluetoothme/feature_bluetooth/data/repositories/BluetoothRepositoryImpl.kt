@@ -131,6 +131,8 @@ class BluetoothRepositoryImpl(
         }
     }
 
+    override fun getMessages(): Flow<List<Message>> = messagesDataSource.getMessages()
+
     @Throws(WriteMessageException::class)
     override fun writeMessage(message: Message) {
         when (connectionType) {
@@ -143,5 +145,7 @@ class BluetoothRepositoryImpl(
         }
     }
 
-    override fun getMessages(): Flow<List<Message>> = messagesDataSource.getMessages()
+    override fun deleteMessages() {
+        messagesDataSource.deleteMessages()
+    }
 }

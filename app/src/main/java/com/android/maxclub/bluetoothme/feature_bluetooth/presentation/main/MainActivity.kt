@@ -69,7 +69,10 @@ class MainActivity : ComponentActivity() {
                                 is MainUiEvent.OnShowConnectionErrorMessage -> {
                                     launch {
                                         snackbarHostState.showSnackbar(
-                                            message = event.device.name,
+                                            message = context.getString(
+                                                R.string.connection_error_message,
+                                                event.device.name
+                                            ),
                                             actionLabel = context.getString(R.string.reconnect_button),
                                             withDismissAction = true,
                                             duration = SnackbarDuration.Short,

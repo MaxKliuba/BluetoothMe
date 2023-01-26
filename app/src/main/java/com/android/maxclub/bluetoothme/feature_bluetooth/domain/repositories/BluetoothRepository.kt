@@ -28,7 +28,9 @@ interface BluetoothRepository {
 
     fun disconnect(device: BluetoothDevice? = null)
 
+    fun getMessages(): Flow<List<Message>>
+
     fun writeMessage(message: Message)
 
-    fun getMessages(): Flow<List<Message>>
+    fun deleteMessages()
 }

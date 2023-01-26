@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface MessagesDataSource {
 
+    fun getMessages(): Flow<List<Message>>
+
     fun addMessage(message: Message)
 
     fun deleteMessage(message: Message)
 
-    fun deleteAllMessages()
-
-    fun getMessages(): Flow<List<Message>>
+    fun deleteMessages()
 }

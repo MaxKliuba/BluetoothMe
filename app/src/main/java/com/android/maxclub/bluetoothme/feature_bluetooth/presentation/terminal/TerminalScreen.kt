@@ -37,7 +37,14 @@ fun TerminalScreen(
                     }
                 },
                 actions = {
-                    // TODO
+                    if (messages.isNotEmpty()) {
+                        IconButton(onClick = viewModel::deleteMessages) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete_messages_24),
+                                contentDescription = stringResource(id = R.string.delete_messages_button)
+                            )
+                        }
+                    }
                 },
             )
         }

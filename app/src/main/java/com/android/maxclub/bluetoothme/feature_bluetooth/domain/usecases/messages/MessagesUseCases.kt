@@ -3,6 +3,7 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.domain.usecases.messag
 import javax.inject.Inject
 
 data class MessagesUseCases @Inject constructor(
-    val writeMessage: WriteMessage,
     val getMessages: GetMessages,
+    val writeMessage: WriteMessage,
+    val deleteMessages: DeleteMessages,
 )
