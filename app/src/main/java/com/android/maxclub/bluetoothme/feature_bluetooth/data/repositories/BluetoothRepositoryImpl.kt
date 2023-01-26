@@ -1,6 +1,8 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories
 
 import android.content.Context
+import com.android.maxclub.bluetoothme.di.BluetoothClassic
+import com.android.maxclub.bluetoothme.di.BluetoothLe
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
@@ -9,16 +11,20 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.Write
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.repositories.BluetoothRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BluetoothRepositoryImpl(
-    private val context: Context,
+@Singleton
+class BluetoothRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val bluetoothDeviceService: BluetoothDeviceService,
-    private val bluetoothClassicService: BluetoothService,
-    private val bluetoothLeService: BluetoothService,
+    @BluetoothClassic private val bluetoothClassicService: BluetoothService,
+    @BluetoothLe private val bluetoothLeService: BluetoothService,
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothRepository {
 

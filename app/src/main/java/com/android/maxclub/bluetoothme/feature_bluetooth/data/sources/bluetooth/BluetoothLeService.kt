@@ -11,11 +11,15 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.Bluet
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BluetoothLeService(
-    private val context: Context,
+@Singleton
+class BluetoothLeService @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {

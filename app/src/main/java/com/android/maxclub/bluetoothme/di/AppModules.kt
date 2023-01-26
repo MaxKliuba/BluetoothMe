@@ -1,6 +1,5 @@
 package com.android.maxclub.bluetoothme.di
 
-import android.content.Context
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories.BluetoothRepositoryImpl
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothAdapterManagerImpl
 import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothClassicService
@@ -12,63 +11,46 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.Blueto
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.repositories.BluetoothRepository
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object BluetoothRepositoryModule {
+abstract class BluetoothRepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideBluetoothRepository(
-        @ApplicationContext context: Context,
-        bluetoothAdapterManager: BluetoothAdapterManager,
-        bluetoothDeviceService: BluetoothDeviceService,
-        @BluetoothClassic bluetoothClassicService: BluetoothService,
-        @BluetoothLe bluetoothLeService: BluetoothService,
-        messagesDataSource: MessagesDataSource,
-    ): BluetoothRepository = BluetoothRepositoryImpl(
-        context = context,
-        bluetoothAdapterManager = bluetoothAdapterManager,
-        bluetoothDeviceService = bluetoothDeviceService,
-        bluetoothClassicService = bluetoothClassicService,
-        bluetoothLeService = bluetoothLeService,
-        messagesDataSource = messagesDataSource,
-    )
+    abstract fun bindBluetoothRepository(
+        bluetoothRepository: BluetoothRepositoryImpl
+    ): BluetoothRepository
 }
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-object BluetoothAdapterManagerModule {
+abstract class BluetoothAdapterManagerModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideBluetoothAdapterManager(
-        @ApplicationContext context: Context
-    ): BluetoothAdapterManager = BluetoothAdapterManagerImpl(context)
+    abstract fun bindBluetoothAdapterManager(
+        bluetoothAdapterManager: BluetoothAdapterManagerImpl
+    ): BluetoothAdapterManager
 }
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-object BluetoothDeviceServiceModule {
+abstract class BluetoothDeviceServiceModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideBluetoothDeviceService(
-        @ApplicationContext context: Context,
-        bluetoothAdapterManager: BluetoothAdapterManager,
-    ): BluetoothDeviceService = BluetoothDeviceServiceWithBleScanner(
-        context = context,
-        bluetoothAdapterManager = bluetoothAdapterManager,
-    )
+    abstract fun bindBluetoothDeviceService(
+        bluetoothDeviceService: BluetoothDeviceServiceWithBleScanner
+    ): BluetoothDeviceService
 }
 
 
@@ -82,42 +64,32 @@ annotation class BluetoothLe
 
 @Module
 @InstallIn(SingletonComponent::class)
-object BluetoothServiceModule {
+abstract class BluetoothServiceModule {
 
     @BluetoothClassic
-    @Provides
+    @Binds
     @Singleton
-    fun provideBluetoothClassicService(
-        @ApplicationContext context: Context,
-        bluetoothAdapterManager: BluetoothAdapterManager,
-        messagesDataSource: MessagesDataSource,
-    ): BluetoothService = BluetoothClassicService(
-        context = context,
-        bluetoothAdapterManager = bluetoothAdapterManager,
-        messagesDataSource = messagesDataSource,
-    )
+    abstract fun bindBluetoothClassicService(
+        bluetoothService: BluetoothClassicService
+    ): BluetoothService
 
 
     @BluetoothLe
-    @Provides
+    @Binds
     @Singleton
-    fun provideBluetoothLeService(
-        @ApplicationContext context: Context,
-        bluetoothAdapterManager: BluetoothAdapterManager,
-        messagesDataSource: MessagesDataSource,
-    ): BluetoothService = BluetoothLeService(
-        context = context,
-        bluetoothAdapterManager = bluetoothAdapterManager,
-        messagesDataSource = messagesDataSource,
-    )
+    abstract fun bindBluetoothLeService(
+        bluetoothService: BluetoothLeService
+    ): BluetoothService
 }
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MessagesDataSourceModule {
+abstract class MessagesDataSourceModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideMessagesDataSource(): MessagesDataSource = MessagesLocalDataSource()
+    abstract fun bindMessagesDataSource(
+        messagesDataSource: MessagesLocalDataSource
+    ): MessagesDataSource
 }

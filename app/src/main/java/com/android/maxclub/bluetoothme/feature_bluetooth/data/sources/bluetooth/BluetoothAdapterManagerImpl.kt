@@ -11,12 +11,16 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.toBluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.EnableBluetoothAdapterException
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BluetoothAdapterManagerImpl(
-    private val context: Context
+@Singleton
+class BluetoothAdapterManagerImpl @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : BluetoothAdapterManager {
 
     override val adapter: BluetoothAdapter

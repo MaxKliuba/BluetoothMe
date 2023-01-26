@@ -3,7 +3,6 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -12,14 +11,18 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.Blueto
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothScanPermission
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BluetoothDeviceServiceWithBleScanner(
-    private val context: Context,
+@Singleton
+class BluetoothDeviceServiceWithBleScanner @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val bluetoothAdapterManager: BluetoothAdapterManager,
 ) : BluetoothDeviceService {
 

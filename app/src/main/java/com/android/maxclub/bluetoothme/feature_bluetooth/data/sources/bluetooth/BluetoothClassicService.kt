@@ -2,7 +2,6 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -17,16 +16,23 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.getParcelable
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import android.bluetooth.BluetoothDevice as Device
 
-class BluetoothClassicService(
-    private val context: Context,
+@Singleton
+class BluetoothClassicService @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val bluetoothAdapterManager: BluetoothAdapterManager,
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {
