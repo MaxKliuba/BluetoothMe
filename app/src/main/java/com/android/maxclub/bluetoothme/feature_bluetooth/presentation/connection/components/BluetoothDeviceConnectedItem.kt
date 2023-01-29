@@ -9,11 +9,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.ConnectionType
 
 @Composable
 fun BluetoothDeviceConnectedItem(
@@ -50,7 +47,7 @@ fun BluetoothDeviceConnectedItem(
             connectionType = device.type.connectionType,
             modifier = Modifier
                 .padding(vertical = 16.dp)
-                .weight(weight = 1.0f)
+                .weight(weight = 1f)
         )
 
         Spacer(modifier = Modifier.width(16.dp))

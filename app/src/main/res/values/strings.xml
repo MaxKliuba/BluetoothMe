@@ -17,21 +17,18 @@
     <string name="start_scan_button">Scan</string>
     <string name="stop_scan_button">Stop</string>
     <string name="bluetooth_settings_button">Bluetooth Settings</string>
-    <string name="favorite_label">Favorite</string>
-    <string name="connection_error_message">Failed to connect to %1$s</string>
-    <string name="reconnect_button">Reconnect</string>
     <string name="empty_list_message">The list is empty</string>
-
     <string name="bluetooth_classic_device">Bluetooth Classic</string>
     <string name="bluetooth_le_device">Bluetooth LE</string>
     <string name="bluetooth_dual_device">Bluetooth Dual</string>
     <string name="bluetooth_unknown_device">Bluetooth Unknown</string>
-
+    <string name="favorite_label">Favorite</string>
     <string name="state_bonded_device">Paired</string>
     <string name="state_not_bonded_device">Not paired</string>
-
     <string name="bluetooth_classic">Classic</string>
     <string name="bluetooth_le">BLE</string>
+    <string name="connection_error_message">Failed to connect to %1$s</string>
+    <string name="reconnect_button">Reconnect</string>
 
     <string name="delete_messages_button">Delete messages</string>
 </resources>

@@ -1,8 +1,8 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 
-import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothLeProfileManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import java.util.*
 
@@ -20,7 +20,7 @@ class CustomProfileManager private constructor(
     override val writeCharacteristic: BluetoothGattCharacteristic?
         get() = _writeCharacteristic
 
-    override fun connectCharacteristics(gatt: BluetoothGatt): Boolean {
+    override fun connectCharacteristics(): Boolean {
         _readCharacteristic = gattService.getCharacteristic(profile.readCharacteristicUuid)
         _writeCharacteristic = gattService.getCharacteristic(profile.writeCharacteristicUuid)
 
@@ -51,7 +51,7 @@ class CC254XProfileManager private constructor(gattService: BluetoothGattService
     override val writeCharacteristic: BluetoothGattCharacteristic?
         get() = readWriteCharacteristic
 
-    override fun connectCharacteristics(gatt: BluetoothGatt): Boolean {
+    override fun connectCharacteristics(): Boolean {
         readWriteCharacteristic = gattService.getCharacteristic(readWriteCharacteristicUuid)
 
         return readWriteCharacteristic != null
@@ -82,7 +82,7 @@ class RN4870ProfileManager private constructor(gattService: BluetoothGattService
     override val writeCharacteristic: BluetoothGattCharacteristic?
         get() = readWriteCharacteristic
 
-    override fun connectCharacteristics(gatt: BluetoothGatt): Boolean {
+    override fun connectCharacteristics(): Boolean {
         readWriteCharacteristic = gattService.getCharacteristic(readWriteCharacteristicUuid)
 
         return readWriteCharacteristic != null
@@ -114,7 +114,7 @@ class NRFProfileManager private constructor(gattService: BluetoothGattService) :
     override val writeCharacteristic: BluetoothGattCharacteristic?
         get() = _writeCharacteristic
 
-    override fun connectCharacteristics(gatt: BluetoothGatt): Boolean {
+    override fun connectCharacteristics(): Boolean {
         val readWrite2Characteristic =
             gattService.getCharacteristic(readWrite2CharacteristicUuid) ?: return false
         val readWrite3Characteristic =

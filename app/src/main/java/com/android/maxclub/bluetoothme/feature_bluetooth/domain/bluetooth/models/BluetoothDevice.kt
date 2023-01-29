@@ -26,8 +26,12 @@ fun Device.toBluetoothDevice(
             name = name ?: "Unknown",
             isBonded = bondState == Device.BOND_BONDED,
             type = when (type) {
-                Device.DEVICE_TYPE_CLASSIC -> DeviceType.Classic
-                Device.DEVICE_TYPE_LE -> DeviceType.Ble
+                Device.DEVICE_TYPE_CLASSIC -> DeviceType.Classic(
+                    (connectionType as? ConnectionType.Classic) ?: ConnectionType.Classic
+                )
+                Device.DEVICE_TYPE_LE -> DeviceType.Ble(
+                    (connectionType as? ConnectionType.Ble) ?: ConnectionType.Ble()
+                )
                 Device.DEVICE_TYPE_DUAL -> DeviceType.Dual(connectionType)
                 else -> DeviceType.Unknown(connectionType)
             },

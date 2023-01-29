@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothLeProfileManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.*
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
@@ -287,8 +288,10 @@ class BluetoothLeService @Inject constructor(
             }
 
         profileManager?.let {
-            if (it.connectCharacteristics(this)) {
+            if (it.connectCharacteristics()) {
                 this.connectCharacteristics2()
+            } else {
+                null
             }
         } ?: return this@BluetoothLeService.disconnect()
     }

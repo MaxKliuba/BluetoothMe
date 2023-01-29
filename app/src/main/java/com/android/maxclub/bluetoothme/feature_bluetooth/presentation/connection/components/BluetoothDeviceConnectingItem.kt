@@ -53,7 +53,7 @@ fun BluetoothDeviceConnectingItem(
             connectionType = null,
             modifier = Modifier
                 .padding(vertical = 16.dp)
-                .weight(weight = 1.0f)
+                .weight(weight = 1f)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -61,6 +61,7 @@ fun BluetoothDeviceConnectingItem(
         ConnectionTypeChips(
             device = device,
             onSelect = null,
+            onReselect = null,
         )
 
         Spacer(modifier = Modifier.width(12.dp))

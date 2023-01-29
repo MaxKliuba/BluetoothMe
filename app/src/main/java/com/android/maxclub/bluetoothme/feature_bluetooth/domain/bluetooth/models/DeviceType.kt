@@ -4,14 +4,14 @@ sealed class DeviceType(
     val connectionType: ConnectionType,
     val availableConnectionTypes: List<ConnectionType>,
 ) {
-    object Classic : DeviceType(
-        ConnectionType.Classic,
-        listOf(ConnectionType.Classic),
+    class Classic(connectionType: ConnectionType.Classic) : DeviceType(
+        connectionType,
+        listOf(connectionType),
     )
 
-    object Ble : DeviceType(
-        ConnectionType.Ble(),
-        listOf(ConnectionType.Ble()),
+    class Ble(connectionType: ConnectionType.Ble) : DeviceType(
+        connectionType,
+        listOf(connectionType),
     )
 
     class Dual(connectionType: ConnectionType = ConnectionType.Classic) : DeviceType(
@@ -26,7 +26,8 @@ sealed class DeviceType(
 
     fun copy(connectionType: ConnectionType = this.connectionType) =
         when (this) {
-            Classic, Ble -> this
+            is Classic -> (connectionType as? ConnectionType.Classic)?.let { Classic(it) } ?: this
+            is Ble -> (connectionType as? ConnectionType.Ble)?.let { Ble(it) } ?: this
             is Dual -> Dual(connectionType)
             is Unknown -> Unknown(connectionType)
         }

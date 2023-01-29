@@ -13,7 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.ConnectionType
+import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,6 +23,7 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models
 fun ConnectionTypeChips(
     device: BluetoothDevice,
     onSelect: ((BluetoothDevice, ConnectionType) -> Unit)?,
+    onReselect: ((BluetoothDevice, ConnectionType) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -29,9 +32,10 @@ fun ConnectionTypeChips(
         items(
             items = device.type.availableConnectionTypes,
         ) { connectionType ->
+            val isSelected = connectionType::class == device.type.connectionType::class
             FilterChip(
                 enabled = onSelect != null,
-                selected = connectionType == device.type.connectionType,
+                selected = isSelected,
                 label = {
                     Text(
                         text = stringResource(
@@ -42,7 +46,24 @@ fun ConnectionTypeChips(
                         )
                     )
                 },
-                onClick = { onSelect?.invoke(device, connectionType) },
+                onClick = {
+                    if (isSelected) {
+                        if (connectionType is ConnectionType.Ble) {
+                            onReselect?.invoke(
+                                device,
+                                ConnectionType.Ble(
+                                    profile = BluetoothLeProfile.Custom(
+                                        serviceUuid = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb"),
+                                        readCharacteristicUuid = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"),
+                                        writeCharacteristicUuid = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"),
+                                    )
+                                )
+                            )
+                        }
+                    } else {
+                        onSelect?.invoke(device, connectionType)
+                    }
+                },
             )
 
             Spacer(modifier = Modifier.width(8.dp))
