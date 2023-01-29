@@ -49,6 +49,7 @@ fun BluetoothDeviceConnectingItem(
             isFavorite = device.isFavorite,
             deviceName = device.name,
             deviceAddress = device.address,
+            isBonded = if (device.isBonded) null else false,
             connectionType = null,
             modifier = Modifier
                 .padding(vertical = 16.dp)

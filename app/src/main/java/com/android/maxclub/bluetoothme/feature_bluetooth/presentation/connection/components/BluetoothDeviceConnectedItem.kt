@@ -42,17 +42,12 @@ fun BluetoothDeviceConnectedItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        val connectionType = stringResource(
-            id = when (device.type.connectionType) {
-                ConnectionType.Classic -> R.string.bluetooth_classic
-                ConnectionType.Ble -> R.string.bluetooth_le
-            }
-        )
         BluetoothDeviceInfoSection(
             isFavorite = false,
             deviceName = device.name,
             deviceAddress = device.address,
-            connectionType = connectionType,
+            isBonded = null,
+            connectionType = device.type.connectionType,
             modifier = Modifier
                 .padding(vertical = 16.dp)
                 .weight(weight = 1.0f)

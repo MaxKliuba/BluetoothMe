@@ -3,7 +3,6 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connectio
 import android.content.Intent
 import android.provider.Settings
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -90,7 +89,7 @@ fun ConnectionScreen(
                 }
                 is ConnectionUiEvent.OnConnected -> {
                     launch {
-                        delay(500)
+                        delay(150)
                         scrollState.animateScrollToItem(0)
                     }
                 }
@@ -185,7 +184,7 @@ fun ConnectionScreen(
                         }
                     }
 
-                AnimatedVisibility(visible = state.devices.isNotEmpty()) {
+                if (state.devices.isNotEmpty()) {
                     LazyColumn(
                         state = scrollState,
                         modifier = Modifier.fillMaxSize(),

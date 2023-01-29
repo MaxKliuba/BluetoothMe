@@ -14,6 +14,7 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.Bluet
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.toMessage
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.getParcelable
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -159,18 +160,19 @@ class BluetoothClassicService @Inject constructor(
         }
     }
 
-    private suspend fun read() = withContext(Dispatchers.IO) {
-        while (socket?.isConnected == true) {
-            socket?.inputStream?.apply {
-                try {
-                    val message = bufferedReader().readLine()
-                    messagesDataSource.addMessage(Message(Message.Type.Input, message))
-                } catch (ioe: IOException) {
-                    ioe.printStackTrace()
+    private suspend fun read() =
+        withContext(Dispatchers.IO) {
+            while (socket?.isConnected == true) {
+                socket?.inputStream?.apply {
+                    try {
+                        val message = bufferedReader().readLine()
+                        messagesDataSource.addMessage(message.toMessage(Message.Type.Input))
+                    } catch (ioe: IOException) {
+                        ioe.printStackTrace()
+                    }
                 }
             }
         }
-    }
 
     companion object {
         private val uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")

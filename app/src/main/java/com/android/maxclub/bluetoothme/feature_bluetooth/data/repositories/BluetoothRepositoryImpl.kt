@@ -53,6 +53,7 @@ class BluetoothRepositoryImpl @Inject constructor(
                     stopScan()
                 }
             }
+            .flowOn(Dispatchers.IO)
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
                 started = SharingStarted.Eagerly,
@@ -93,6 +94,7 @@ class BluetoothRepositoryImpl @Inject constructor(
                     }
                 }
             }
+            .flowOn(Dispatchers.IO)
 
     override fun updateBluetoothDevice(device: BluetoothDevice) {
         updatedBluetoothDevices.value += device.address to device
@@ -121,15 +123,15 @@ class BluetoothRepositoryImpl @Inject constructor(
         favoriteDevice.value = device
 
         when (device.type.connectionType) {
-            ConnectionType.Classic -> bluetoothClassicService.connect(device)
-            ConnectionType.Ble -> bluetoothLeService.connect(device)
+            is ConnectionType.Classic -> bluetoothClassicService.connect(device)
+            is ConnectionType.Ble -> bluetoothLeService.connect(device)
         }
     }
 
     override fun disconnect(device: BluetoothDevice?) {
         when (device?.type?.connectionType) {
-            ConnectionType.Classic -> bluetoothClassicService.disconnect(device)
-            ConnectionType.Ble -> bluetoothLeService.disconnect(device)
+            is ConnectionType.Classic -> bluetoothClassicService.disconnect(device)
+            is ConnectionType.Ble -> bluetoothLeService.disconnect(device)
             else -> {
                 bluetoothClassicService.disconnect()
                 bluetoothLeService.disconnect()
@@ -142,8 +144,8 @@ class BluetoothRepositoryImpl @Inject constructor(
     @Throws(WriteMessageException::class)
     override fun writeMessage(message: Message) {
         when (connectionType) {
-            ConnectionType.Classic -> bluetoothClassicService.write(message)
-            ConnectionType.Ble -> bluetoothLeService.write(message)
+            is ConnectionType.Classic -> bluetoothClassicService.write(message)
+            is ConnectionType.Ble -> bluetoothLeService.write(message)
             else -> {
                 messagesDataSource.addMessage(message.copy(type = Message.Type.Error))
                 throw WriteMessageException(message)

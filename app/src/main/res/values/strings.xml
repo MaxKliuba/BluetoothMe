@@ -27,6 +27,9 @@
     <string name="bluetooth_dual_device">Bluetooth Dual</string>
     <string name="bluetooth_unknown_device">Bluetooth Unknown</string>
 
+    <string name="state_bonded_device">Paired</string>
+    <string name="state_not_bonded_device">Not paired</string>
+
     <string name="bluetooth_classic">Classic</string>
     <string name="bluetooth_le">BLE</string>
 

@@ -2,5 +2,7 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.model
 
 sealed class ConnectionType {
     object Classic : ConnectionType()
-    object Ble : ConnectionType()
+    data class Ble(
+        val profile: BluetoothLeProfile = BluetoothLeProfile.Default
+    ) : ConnectionType()
 }

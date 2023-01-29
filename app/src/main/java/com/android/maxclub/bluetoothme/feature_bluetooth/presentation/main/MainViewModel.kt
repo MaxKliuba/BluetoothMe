@@ -129,7 +129,7 @@ class MainViewModel @Inject constructor(
                 _uiEvent.emit(MainUiEvent.OnShowMissingPermissionMessage(*e.permissions))
             } catch (e: BluetoothConnectionException) {
                 e.printStackTrace()
-                _uiEvent.emit(MainUiEvent.OnShowConnectionErrorMessage(e.bluetoothDevice))
+                _uiEvent.emit(MainUiEvent.OnShowConnectionErrorMessage(e.bluetoothDevice ?: device))
             }
         }
     }

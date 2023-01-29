@@ -36,8 +36,8 @@ fun ConnectionTypeChips(
                     Text(
                         text = stringResource(
                             id = when (connectionType) {
-                                ConnectionType.Classic -> R.string.bluetooth_classic
-                                ConnectionType.Ble -> R.string.bluetooth_le
+                                is ConnectionType.Classic -> R.string.bluetooth_classic
+                                is ConnectionType.Ble -> R.string.bluetooth_le
                             }
                         )
                     )

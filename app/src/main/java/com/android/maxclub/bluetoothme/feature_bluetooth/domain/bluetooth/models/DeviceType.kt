@@ -10,18 +10,18 @@ sealed class DeviceType(
     )
 
     object Ble : DeviceType(
-        ConnectionType.Ble,
-        listOf(ConnectionType.Ble),
+        ConnectionType.Ble(),
+        listOf(ConnectionType.Ble()),
     )
 
     class Dual(connectionType: ConnectionType = ConnectionType.Classic) : DeviceType(
         connectionType,
-        listOf(ConnectionType.Classic, ConnectionType.Ble),
+        listOf(ConnectionType.Classic, ConnectionType.Ble()),
     )
 
     class Unknown(connectionType: ConnectionType = ConnectionType.Classic) : DeviceType(
         connectionType,
-        listOf(ConnectionType.Classic, ConnectionType.Ble)
+        listOf(ConnectionType.Classic, ConnectionType.Ble())
     )
 
     fun copy(connectionType: ConnectionType = this.connectionType) =

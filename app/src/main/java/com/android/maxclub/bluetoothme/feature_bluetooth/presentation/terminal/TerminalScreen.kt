@@ -1,5 +1,6 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.terminal
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -49,17 +50,27 @@ fun TerminalScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            reverseLayout = true,
-            contentPadding = PaddingValues(16.dp),
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
         ) {
-            items(
-                items = messages,
-            ) { message ->
-                Text(text = message.value)
+            LazyColumn(
+                reverseLayout = true,
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+            ) {
+                items(
+                    items = messages,
+                ) { message ->
+                    Text(text = message.value)
+                }
+            }
+
+            Button(onClick = { viewModel.writeMessage("12345678901234567890Test") }) {
+                Text(text = "Send message")
             }
         }
     }
