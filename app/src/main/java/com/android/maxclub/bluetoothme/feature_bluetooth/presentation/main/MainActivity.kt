@@ -26,6 +26,7 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.*
 import com.android.maxclub.bluetoothme.ui.theme.BluetoothMeTheme
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.toString
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
                                     startActivity(event.intent)
                                 }
                                 is MainUiEvent.OnShowConnectionErrorMessage -> {
-                                    launch {
+                                    launch(Dispatchers.Main) {
                                         snackbarHostState.showSnackbar(
                                             message = context.getString(
                                                 R.string.connection_error_message,
@@ -84,10 +85,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                                 is MainUiEvent.OnOpenNavigationDrawer -> {
-                                    launch { drawerState.open() }
+                                    launch(Dispatchers.Main) { drawerState.open() }
                                 }
                                 is MainUiEvent.OnShowMessagesCount -> {
-                                    launch {
+                                    launch(Dispatchers.Main) {
                                         snackbarHostState.showSnackbar(
                                             message = "${event.inputMessagesCount} input messages, ${event.outputMessagesCount} output messages",
                                             withDismissAction = true,
@@ -97,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 is MainUiEvent.OnNavigate -> {
                                     navController.smartNavigate(event.route)
-                                    launch {
+                                    launch(Dispatchers.Main) {
                                         delay(150)
                                         drawerState.close()
                                     }
@@ -113,44 +114,42 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    val onClickNavigationIcon: () -> Unit = remember {
-                        { viewModel.onEvent(MainEvent.OnClickNavigationIcon) }
+                    val onClickNavigationIcon: () -> Unit = {
+                        viewModel.onEvent(MainEvent.OnClickNavigationIcon)
                     }
-                    val onNavigate: (String) -> Unit = remember {
-                        { viewModel.onEvent(MainEvent.OnNavigate(it)) }
+                    val onNavigate: (String) -> Unit = {
+                        viewModel.onEvent(MainEvent.OnNavigate(it))
                     }
-                    val onLaunchUrl: (String) -> Unit = remember {
-                        { viewModel.onEvent(MainEvent.OnLaunchUrl(it)) }
+                    val onLaunchUrl: (String) -> Unit = {
+                        viewModel.onEvent(MainEvent.OnLaunchUrl(it))
                     }
-                    val onClickConnectionBadge: () -> Unit = remember {
-                        {
-                            when (state.bluetoothState) {
-                                is BluetoothState.TurningOff,
-                                is BluetoothState.Off,
-                                is BluetoothState.TurningOn -> {
-                                    viewModel.onEvent(MainEvent.OnEnableAdapter)
-                                }
-                                is BluetoothState.On.Connecting,
-                                is BluetoothState.On.Connected,
-                                is BluetoothState.On.Disconnecting -> {
-                                    viewModel.onEvent(MainEvent.OnDisconnect(state.favoriteBluetoothDevice))
-                                }
-                                is BluetoothState.On.Disconnected -> {
-                                    state.favoriteBluetoothDevice?.let {
-                                        viewModel.onEvent(MainEvent.OnConnect(it))
-                                    }
+                    val onClickConnectionBadge: () -> Unit = {
+                        when (state.bluetoothState) {
+                            is BluetoothState.TurningOff,
+                            is BluetoothState.Off,
+                            is BluetoothState.TurningOn -> {
+                                viewModel.onEvent(MainEvent.OnEnableAdapter)
+                            }
+                            is BluetoothState.On.Connecting,
+                            is BluetoothState.On.Connected,
+                            is BluetoothState.On.Disconnecting -> {
+                                viewModel.onEvent(MainEvent.OnDisconnect(state.favoriteBluetoothDevice))
+                            }
+                            is BluetoothState.On.Disconnected -> {
+                                state.favoriteBluetoothDevice?.let {
+                                    viewModel.onEvent(MainEvent.OnConnect(it))
                                 }
                             }
                         }
                     }
-                    val getConnectionState: () -> String = remember {
-                        { state.bluetoothState.toString(context) }
+                    val getConnectionState: () -> String = {
+                        state.bluetoothState.toString(context)
                     }
-                    val onClickMessagesBadge: () -> Unit = remember {
-                        { viewModel.onEvent(MainEvent.OnClickMessagesCountBudge) }
+                    val onClickMessagesBadge: () -> Unit = {
+                        viewModel.onEvent(MainEvent.OnClickMessagesCountBudge)
                     }
-                    val getMessagesCount: () -> String = remember {
-                        { state.messagesCount.toString() }
+                    val getMessagesCount: () -> String = {
+                        state.messagesCount.toString()
                     }
 
                     val navigationDrawerItems = listOf(

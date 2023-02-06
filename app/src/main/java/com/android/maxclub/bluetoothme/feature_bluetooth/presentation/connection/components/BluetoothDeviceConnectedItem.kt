@@ -19,46 +19,48 @@ fun BluetoothDeviceConnectedItem(
     onClickItem: (BluetoothDevice) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(24.dp),
-            )
-    ) {
-        Spacer(modifier = Modifier.width(20.dp))
-
-        BluetoothDeviceIcon(
-            deviceType = device.type,
-            onClick = onClickIcon,
-            modifier = Modifier.padding(vertical = 20.dp)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        BluetoothDeviceInfoSection(
-            isFavorite = false,
-            deviceName = device.name,
-            deviceAddress = device.address,
-            isBonded = null,
-            connectionType = device.type.connectionType,
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(vertical = 16.dp)
-                .weight(weight = 1f)
-        )
+                .fillMaxWidth()
+                .padding(20.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(24.dp),
+                )
+        ) {
+            Spacer(modifier = Modifier.width(20.dp))
 
-        Spacer(modifier = Modifier.width(16.dp))
+            BluetoothDeviceIcon(
+                deviceType = device.type,
+                onClick = onClickIcon,
+                modifier = Modifier.padding(vertical = 20.dp)
+            )
 
-        Switch(
-            checked = true,
-            onCheckedChange = { onClickItem(device) },
-        )
+            Spacer(modifier = Modifier.width(16.dp))
 
-        Spacer(modifier = Modifier.width(20.dp))
+            BluetoothDeviceInfoSection(
+                isFavorite = false,
+                deviceName = device.name,
+                deviceAddress = device.address,
+                isBonded = null,
+                connectionType = device.type.connectionType,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .weight(weight = 1f)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Switch(
+                checked = true,
+                onCheckedChange = { onClickItem(device) },
+            )
+
+            Spacer(modifier = Modifier.width(20.dp))
+        }
+
+        Divider()
     }
-
-    Divider()
 }

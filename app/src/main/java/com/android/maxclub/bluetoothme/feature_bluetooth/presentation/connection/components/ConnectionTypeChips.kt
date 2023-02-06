@@ -1,9 +1,8 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
@@ -15,7 +14,7 @@ import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.ConnectionType
-import java.util.UUID
+import java.util.*
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,12 +25,10 @@ fun ConnectionTypeChips(
     onReselect: ((BluetoothDevice, ConnectionType) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    LazyRow(
+    Row(
         modifier = modifier
     ) {
-        items(
-            items = device.type.availableConnectionTypes,
-        ) { connectionType ->
+        device.type.availableConnectionTypes.forEach { connectionType ->
             val isSelected = connectionType::class == device.type.connectionType::class
             FilterChip(
                 enabled = onSelect != null,

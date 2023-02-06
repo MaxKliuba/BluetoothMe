@@ -19,8 +19,8 @@ class GetBluetoothDevices @Inject constructor(
     )
 
     operator fun invoke(): Flow<List<BluetoothDevice>> = repository.getBluetoothDevices()
-        .map { bondedDevices ->
-            bondedDevices.sortedWith(
+        .map { bluetoothDevices ->
+            bluetoothDevices.sortedWith(
                 compareBy<BluetoothDevice> { it.state !is BluetoothDeviceState.Connected }
                     .thenBy { sortedDeviceTypes.indexOf(it.type::class) }
                     .thenBy { it.name }
