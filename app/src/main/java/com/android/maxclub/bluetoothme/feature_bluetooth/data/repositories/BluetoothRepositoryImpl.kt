@@ -3,6 +3,8 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories
 import android.content.Context
 import com.android.maxclub.bluetoothme.di.BluetoothClassic
 import com.android.maxclub.bluetoothme.di.BluetoothLe
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDevice
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDeviceState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
@@ -53,7 +55,6 @@ class BluetoothRepositoryImpl @Inject constructor(
                     stopScan()
                 }
             }
-            .flowOn(Dispatchers.IO)
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
                 started = SharingStarted.Eagerly,

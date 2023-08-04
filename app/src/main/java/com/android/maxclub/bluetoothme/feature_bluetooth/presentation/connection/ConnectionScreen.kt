@@ -3,9 +3,7 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connectio
 import android.content.Intent
 import android.provider.Settings
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,10 +25,7 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDeviceState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.ConnectionType
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components.BluetoothDeviceConnectedItem
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components.BluetoothDeviceConnectingItem
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components.BluetoothDeviceItem
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components.EmptyListPlaceholder
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.components.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,10 +38,9 @@ fun ConnectionScreen(
     viewModel: ConnectionViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+
     val state: ConnectionUiState by viewModel.uiState
-
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         state = rememberTopAppBarState()
@@ -59,6 +53,7 @@ fun ConnectionScreen(
                     Toast.makeText(context, event.permissions.joinToString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is ConnectionUiEvent.OnShowConnectionErrorMessage -> {
                     launch(Dispatchers.Main) {
                         snackbarHostState.showSnackbar(
@@ -76,12 +71,14 @@ fun ConnectionScreen(
                         }
                     }
                 }
+
                 is ConnectionUiEvent.OnOpenBluetoothSettings -> {
                     val bluetoothSettingIntent = Intent().apply {
                         action = Settings.ACTION_BLUETOOTH_SETTINGS
                     }
                     context.startActivity(bluetoothSettingIntent)
                 }
+
                 is ConnectionUiEvent.OnShowDeviceType -> {
                     launch(Dispatchers.Main) {
                         snackbarHostState.showSnackbar(
@@ -91,10 +88,11 @@ fun ConnectionScreen(
                         )
                     }
                 }
+
                 is ConnectionUiEvent.OnConnected -> {
                     launch(Dispatchers.Main) {
                         delay(150)
-                        scrollState.animateScrollToItem(0)
+                        scrollState.scrollToItem(0)
                     }
                 }
             }
@@ -170,52 +168,67 @@ fun ConnectionScreen(
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
             AnimatedVisibility(
-                visible = state.isLoading,
-                enter = expandVertically(),
-                exit = shrinkVertically(),
+                visible = state.devices.isEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-
-            if (state.devices.isEmpty()) {
                 EmptyListPlaceholder()
             }
 
-            if (state.devices.isNotEmpty()) {
-                LazyColumn(
-                    state = scrollState,
-                    modifier = Modifier.fillMaxWidth(),
+            Column(modifier = Modifier.fillMaxSize()) {
+                AnimatedVisibility(
+                    visible = state.isLoading,
+                    enter = expandVertically(),
+                    exit = shrinkVertically(),
                 ) {
-                    items(
-                        items = state.devices,
-                        key = { it.address },
-                    ) { device ->
-                        Box(modifier = Modifier.animateItemPlacement()) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+
+                AnimatedVisibility(
+                    visible = state.devices.isNotEmpty(),
+                    enter = expandVertically(),
+                    exit = shrinkVertically(),
+                ) {
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        items(
+                            items = state.devices,
+                            key = { it.address },
+                        ) { device ->
                             when (device.state) {
                                 BluetoothDeviceState.Connected -> BluetoothDeviceConnectedItem(
                                     device = device,
                                     onClickIcon = onClickIcon,
                                     onClickItem = onDisconnect,
+                                    modifier = Modifier.animateItemPlacement(),
                                 )
+
                                 BluetoothDeviceState.Connecting,
                                 BluetoothDeviceState.Disconnecting -> BluetoothDeviceConnectingItem(
                                     device = device,
                                     onClickIcon = onClickIcon,
                                     onClickItem = onDisconnect,
+                                    modifier = Modifier.animateItemPlacement(),
                                 )
-                                else -> BluetoothDeviceItem(
+
+                                else -> BluetoothDeviceDisconnectedItem(
                                     device = device,
                                     onClickIcon = onClickIcon,
                                     onClickItem = onConnect,
                                     onSelectConnectionType = onSelectConnectionType,
+                                    modifier = Modifier.animateItemPlacement(),
                                 )
                             }
                         }

@@ -7,6 +7,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDevice
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDeviceState
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.*
@@ -49,6 +52,7 @@ class BluetoothClassicService @Inject constructor(
         adapter.state.toBluetoothState()
     )
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private val bluetoothStateCallbackFlow: Flow<BluetoothState> = callbackFlow {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {

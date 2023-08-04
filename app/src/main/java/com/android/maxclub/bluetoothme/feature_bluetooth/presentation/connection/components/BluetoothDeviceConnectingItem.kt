@@ -9,9 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.util.toDeviceIcon
 
 @Composable
 fun BluetoothDeviceConnectingItem(
@@ -38,7 +40,7 @@ fun BluetoothDeviceConnectingItem(
         Spacer(modifier = Modifier.width(20.dp))
 
         BluetoothDeviceIcon(
-            deviceType = device.type,
+            deviceIcon = device.type.toDeviceIcon(LocalContext.current),
             onClick = onClickIcon,
             modifier = Modifier.padding(vertical = 16.dp)
         )

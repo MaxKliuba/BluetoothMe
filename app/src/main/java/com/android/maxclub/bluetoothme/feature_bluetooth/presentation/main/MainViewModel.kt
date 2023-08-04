@@ -11,6 +11,7 @@ import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.Missi
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.usecases.bluetooth.BluetoothUseCases
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.usecases.messages.MessagesUseCases
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -24,6 +25,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         MainUiState(
+            selectedNavDrawerItem = Screen.Connection.route,
             bluetoothState = bluetoothUseCases.getState().value,
             favoriteBluetoothDevice = bluetoothUseCases.getFavoriteBluetoothDevice().value,
             controllersCount = 0,
@@ -68,6 +70,7 @@ class MainViewModel @Inject constructor(
                 }
             }
             is MainEvent.OnNavigate -> {
+                _uiState.value = uiState.value.copy(selectedNavDrawerItem = event.route)
                 viewModelScope.launch {
                     _uiEvent.emit(MainUiEvent.OnNavigate(event.route))
                 }

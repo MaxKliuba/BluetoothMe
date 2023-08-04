@@ -6,9 +6,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothState
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.toBluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.exceptions.EnableBluetoothAdapterException
 import com.android.maxclub.bluetoothme.feature_bluetooth.util.withCheckSelfBluetoothPermission
 import dagger.hilt.android.qualifiers.ApplicationContext

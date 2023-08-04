@@ -1,12 +1,12 @@
-package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util
+package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-data class NavigationDrawerItem(
+data class NavDrawerItem(
     val route: String,
     @DrawableRes val icon: Int,
     @StringRes val label: Int,
-    val badge: Badge?,
+    val badge: NavDrawerBadge?,
     val onClick: (String) -> Unit,
 )

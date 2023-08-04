@@ -6,6 +6,8 @@ import androidx.compose.ui.res.stringResource
 import com.android.maxclub.bluetoothme.R
 
 @Composable
-fun ControllersScreen() {
+fun ControllersScreen(
+    onClickNavigationIcon: () -> Unit,
+) {
     Text(text = stringResource(id = R.string.controllers_screen_title))
 }

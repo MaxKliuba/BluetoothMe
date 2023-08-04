@@ -2,9 +2,13 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.domain.usecases.blueto
 
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothDeviceState
+import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.ConnectionType
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.DeviceType
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.repositories.BluetoothRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -18,7 +22,8 @@ class GetBluetoothDevices @Inject constructor(
         DeviceType.Unknown::class,
     )
 
-    operator fun invoke(): Flow<List<BluetoothDevice>> = repository.getBluetoothDevices()
+    operator fun invoke(): Flow<List<BluetoothDevice>> =
+        repository.getBluetoothDevices()
         .map { bluetoothDevices ->
             bluetoothDevices.sortedWith(
                 compareBy<BluetoothDevice> { it.state !is BluetoothDeviceState.Connected }
@@ -26,4 +31,22 @@ class GetBluetoothDevices @Inject constructor(
                     .thenBy { it.name }
             )
         }
+//        flowOf(
+//            (0..100).map {
+//                BluetoothDevice(
+//                    address = "Address $it",
+//                    name = "Name $it",
+//                    isBonded = true,
+//                    type = listOf(
+//                        DeviceType.Classic(ConnectionType.Classic),
+//                        DeviceType.Ble(ConnectionType.Ble()),
+//                        DeviceType.Dual(),
+//                        DeviceType.Unknown(),
+//                    ).random(),
+//                    state = BluetoothDeviceState.Disconnected,
+//                    isFavorite = false,
+//                )
+//            }
+//        )
+//            .flowOn(Dispatchers.IO)
 }

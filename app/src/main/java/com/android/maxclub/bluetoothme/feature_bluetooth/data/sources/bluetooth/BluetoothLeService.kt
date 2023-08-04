@@ -3,6 +3,9 @@ package com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDevice
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothDeviceState
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toBluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothLeProfileManager
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
@@ -59,15 +62,17 @@ class BluetoothLeService @Inject constructor(
                     BluetoothProfile.STATE_CONNECTING -> {
                         bluetoothStateFlow.value = BluetoothState.On.Connecting(bluetoothDevice)
                     }
+
                     BluetoothProfile.STATE_CONNECTED -> {
                         if (!gatt.discoverServices()) {
                             isDisconnected = true
                         }
                     }
+
                     BluetoothProfile.STATE_DISCONNECTING -> {
-                        bluetoothStateFlow.value =
-                            BluetoothState.On.Disconnecting(bluetoothDevice)
+                        bluetoothStateFlow.value = BluetoothState.On.Disconnecting(bluetoothDevice)
                     }
+
                     BluetoothProfile.STATE_DISCONNECTED -> {
                         isDisconnected = true
                     }
@@ -277,6 +282,7 @@ class BluetoothLeService @Inject constructor(
                 is BluetoothLeProfile.Default -> CC254XProfileManager.fromService(service)
                     ?: RN4870ProfileManager.fromService(service)
                     ?: NRFProfileManager.fromService(service)
+
                 is BluetoothLeProfile.Custom -> CustomProfileManager.fromService(service, profile)
             }
         }

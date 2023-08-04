@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util
+package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util
 
 import androidx.navigation.NavController
 
@@ -15,7 +15,7 @@ fun NavController.smartNavigate(route: String) {
     }
 }
 
-fun NavController.containsBackStack(route: String): Boolean =
+private fun NavController.containsBackStack(route: String): Boolean =
     try {
         getBackStackEntry(route)
         true

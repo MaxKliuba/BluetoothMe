@@ -1,20 +1,33 @@
 package com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.Badge
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.NavigationDrawerItem
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util.NavDrawerBadge
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util.NavDrawerItem
 
 @Composable
 fun NavigationDrawer(
-    currentRoute: String?,
-    items: List<NavigationDrawerItem>,
+    selectedItem: String,
+    items: List<NavDrawerItem>,
     drawerState: DrawerState,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -25,7 +38,7 @@ fun NavigationDrawer(
             ModalDrawerSheet {
                 Text(
                     text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(28.dp)
                 )
 
@@ -40,10 +53,11 @@ fun NavigationDrawer(
                         label = { Text(text = stringResource(id = item.label)) },
                         badge = {
                             when (item.badge) {
-                                is Badge.Text -> {
+                                is NavDrawerBadge.Text -> {
                                     Text(text = item.badge.getValue())
                                 }
-                                is Badge.Button -> {
+
+                                is NavDrawerBadge.Button -> {
                                     TextButton(
                                         onClick = item.badge.onClick,
                                         enabled = item.badge.isEnabled,
@@ -59,10 +73,11 @@ fun NavigationDrawer(
                                         Text(text = item.badge.getValue())
                                     }
                                 }
-                                null -> {}
+
+                                null -> Unit
                             }
                         },
-                        selected = item.route == currentRoute,
+                        selected = item.route == selectedItem,
                         onClick = { item.onClick(item.route) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                     )

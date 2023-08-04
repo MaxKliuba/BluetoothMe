@@ -17,20 +17,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature_bluetooth.data.mappers.toString
 import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.connection.ConnectionScreen
 import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.controllers.ControllersScreen
 import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.components.NavigationDrawer
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util.NavDrawerBadge
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.main.util.smartNavigate
 import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.terminal.TerminalScreen
-import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.*
+import com.android.maxclub.bluetoothme.feature_bluetooth.presentation.util.Screen
 import com.android.maxclub.bluetoothme.ui.theme.BluetoothMeTheme
-import com.android.maxclub.bluetoothme.feature_bluetooth.util.toString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private const val HELP_URL = "url"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -64,9 +65,11 @@ class MainActivity : ComponentActivity() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
+
                                 is MainUiEvent.OnLaunchIntent -> {
                                     startActivity(event.intent)
                                 }
+
                                 is MainUiEvent.OnShowConnectionErrorMessage -> {
                                     launch(Dispatchers.Main) {
                                         snackbarHostState.showSnackbar(
@@ -84,9 +87,11 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
+
                                 is MainUiEvent.OnOpenNavigationDrawer -> {
                                     launch(Dispatchers.Main) { drawerState.open() }
                                 }
+
                                 is MainUiEvent.OnShowMessagesCount -> {
                                     launch(Dispatchers.Main) {
                                         snackbarHostState.showSnackbar(
@@ -96,6 +101,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 }
+
                                 is MainUiEvent.OnNavigate -> {
                                     navController.smartNavigate(event.route)
                                     launch(Dispatchers.Main) {
@@ -103,12 +109,9 @@ class MainActivity : ComponentActivity() {
                                         drawerState.close()
                                     }
                                 }
+
                                 is MainUiEvent.OnLaunchUrl -> {
-                                    Toast.makeText(
-                                        context,
-                                        event.url,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, event.url, Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -130,11 +133,13 @@ class MainActivity : ComponentActivity() {
                             is BluetoothState.TurningOn -> {
                                 viewModel.onEvent(MainEvent.OnEnableAdapter)
                             }
+
                             is BluetoothState.On.Connecting,
                             is BluetoothState.On.Connected,
                             is BluetoothState.On.Disconnecting -> {
                                 viewModel.onEvent(MainEvent.OnDisconnect(state.favoriteBluetoothDevice))
                             }
+
                             is BluetoothState.On.Disconnected -> {
                                 state.favoriteBluetoothDevice?.let {
                                     viewModel.onEvent(MainEvent.OnConnect(it))
@@ -152,38 +157,40 @@ class MainActivity : ComponentActivity() {
                         state.messagesCount.toString()
                     }
 
-                    val navigationDrawerItems = listOf(
-                        NavigationDrawerItem(
-                            route = Screen.ConnectionScreen.route,
+                    val navDrawerItems = listOf(
+                        NavDrawerItem(
+                            route = Screen.Connection.route,
                             icon = R.drawable.ic_bluetooth_connection_24,
                             label = R.string.connection_screen_title,
-                            badge = Badge.Button(
+                            badge = NavDrawerBadge.Button(
                                 onClick = onClickConnectionBadge,
-                                isEnabled = state.bluetoothState !is BluetoothState.On || state.favoriteBluetoothDevice != null,
+                                isEnabled = state.bluetoothState !is BluetoothState.On
+                                        || state.favoriteBluetoothDevice != null,
                                 withIndicator = when (state.bluetoothState) {
                                     is BluetoothState.TurningOff,
                                     is BluetoothState.TurningOn,
                                     is BluetoothState.On.Connecting,
                                     is BluetoothState.On.Disconnecting -> true
+
                                     else -> false
                                 },
                                 getValue = getConnectionState,
                             ),
                             onClick = onNavigate
                         ),
-                        NavigationDrawerItem(
-                            route = Screen.ControllersScreen.route,
+                        NavDrawerItem(
+                            route = Screen.Controllers.route,
                             icon = R.drawable.ic_controllers_24,
                             label = R.string.controllers_screen_title,
                             badge = null,
                             onClick = onNavigate
                         ),
-                        NavigationDrawerItem(
-                            route = Screen.TerminalScreen.route,
+                        NavDrawerItem(
+                            route = Screen.Terminal.route,
                             icon = R.drawable.ic_terminal_24,
                             label = R.string.terminal_screen_title,
                             badge = if (state.messagesCount > 0) {
-                                Badge.Button(
+                                NavDrawerBadge.Button(
                                     onClick = onClickMessagesBadge,
                                     getValue = getMessagesCount,
                                 )
@@ -192,49 +199,41 @@ class MainActivity : ComponentActivity() {
                             },
                             onClick = onNavigate
                         ),
-                        NavigationDrawerItem(
-                            route = HELP_URL,
+                        NavDrawerItem(
+                            route = Screen.Help.route,
                             icon = R.drawable.ic_help_24,
                             label = R.string.help_screen_title,
                             badge = null,
                             onClick = onLaunchUrl
                         ),
                     )
-
                     Scaffold(
                         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
                     ) { paddingValues ->
-                        NavHost(
-                            navController = navController,
-                            startDestination = Screen.ConnectionScreen.route,
+                        NavigationDrawer(
+                            selectedItem = state.selectedNavDrawerItem,
+                            items = navDrawerItems,
+                            drawerState = drawerState,
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            composable(route = Screen.ConnectionScreen.route) {
-                                NavigationDrawer(
-                                    currentRoute = it.destination.route,
-                                    items = navigationDrawerItems,
-                                    drawerState = drawerState,
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Connection.route,
+
                                 ) {
+                                composable(route = Screen.Connection.route) {
                                     ConnectionScreen(
                                         onClickNavigationIcon = onClickNavigationIcon,
                                     )
                                 }
-                            }
-                            composable(route = Screen.ControllersScreen.route) {
-                                NavigationDrawer(
-                                    currentRoute = it.destination.route,
-                                    items = navigationDrawerItems,
-                                    drawerState = drawerState,
-                                ) {
-                                    ControllersScreen()
+
+                                composable(route = Screen.Controllers.route) {
+                                    ControllersScreen(
+                                        onClickNavigationIcon = onClickNavigationIcon,
+                                    )
                                 }
-                            }
-                            composable(route = Screen.TerminalScreen.route) {
-                                NavigationDrawer(
-                                    currentRoute = it.destination.route,
-                                    items = navigationDrawerItems,
-                                    drawerState = drawerState,
-                                ) {
+
+                                composable(route = Screen.Terminal.route) {
                                     TerminalScreen(
                                         onClickNavigationIcon = onClickNavigationIcon,
                                     )

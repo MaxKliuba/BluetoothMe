@@ -58,7 +58,11 @@ fun BluetoothDeviceInfoSection(
         }
 
         Text(
-            text = "$deviceAddress${bondState?.let { " | $it" } ?: ""}${connectionTypeStr?.let { " | $it" } ?: ""}",
+            text = "$deviceAddress${
+                bondState?.let { " | $it" } ?: ""
+            }${
+                connectionTypeStr?.let { " | $it" } ?: ""
+            }",
             style = MaterialTheme.typography.bodySmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
