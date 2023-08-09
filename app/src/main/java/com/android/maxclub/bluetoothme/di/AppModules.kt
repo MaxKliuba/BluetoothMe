@@ -1,16 +1,16 @@
 package com.android.maxclub.bluetoothme.di
 
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.repositories.BluetoothRepositoryImpl
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothAdapterManagerImpl
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothClassicService
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothDeviceServiceWithBleScanner
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.bluetooth.BluetoothLeService
-import com.android.maxclub.bluetoothme.feature_bluetooth.data.sources.messages.MessagesLocalDataSource
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothAdapterManager
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothDeviceService
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.bluetooth.BluetoothService
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.messages.MessagesDataSource
-import com.android.maxclub.bluetoothme.feature_bluetooth.domain.repositories.BluetoothRepository
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.repositories.BluetoothRepositoryImpl
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothAdapterManagerImpl
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothClassicService
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothDeviceServiceWithBleScanner
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothLeService
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.messages.MessagesLocalDataSource
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothDeviceService
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothService
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessagesDataSource
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.repositories.BluetoothRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
