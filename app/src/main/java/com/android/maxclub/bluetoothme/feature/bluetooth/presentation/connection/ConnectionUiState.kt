@@ -2,11 +2,13 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connectio
 
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 
 data class ConnectionUiState(
     val bluetoothState: BluetoothState,
     val devices: List<BluetoothDevice>,
     val isScanning: Boolean,
+    val bleProfileDialogData: BleProfileDialogData?,
 ) {
     val isLoading: Boolean
         get() = isScanning ||

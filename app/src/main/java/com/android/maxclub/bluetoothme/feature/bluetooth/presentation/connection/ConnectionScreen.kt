@@ -22,9 +22,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDeviceState
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.*
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toBleProfileType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -108,6 +111,31 @@ fun ConnectionScreen(
                 )
             )
         }
+    val onReselectConnectionType: (BluetoothDevice, BluetoothLeProfile) -> Unit =
+        { device, bleProfile ->
+            val data = BleProfileDialogData(
+                device = device,
+                selectedBleProfileType = bleProfile.toBleProfileType(),
+                serviceUuid = (bleProfile as? BluetoothLeProfile.Custom)
+                    ?.serviceUuid?.toString() ?: "",
+                readCharacteristicUuid = (bleProfile as? BluetoothLeProfile.Custom)
+                    ?.readCharacteristicUuid?.toString() ?: "",
+                writeCharacteristicUuid = (bleProfile as? BluetoothLeProfile.Custom)
+                    ?.writeCharacteristicUuid?.toString() ?: "",
+            )
+            viewModel.onEvent(
+                ConnectionUiEvent.OnOpenBleProfileDialog(data)
+            )
+        }
+
+    state.bleProfileDialogData?.let { bleProfileDialogData ->
+        BleProfileDialog(
+            data = bleProfileDialogData,
+            onChangeBleProfileData = { viewModel.onEvent(ConnectionUiEvent.OnChangeBleProfileData(it)) },
+            onDismiss = { viewModel.onEvent(ConnectionUiEvent.OnDismissBleProfileDialog) },
+            onConfirm = { viewModel.onEvent(ConnectionUiEvent.OnConfirmBleProfileDialog(it)) }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -224,6 +252,7 @@ fun ConnectionScreen(
                                     onClickIcon = onClickIcon,
                                     onClickItem = onConnect,
                                     onSelectConnectionType = onSelectConnectionType,
+                                    onReselectConnectionType = onReselectConnectionType,
                                     modifier = Modifier.animateItemPlacement(),
                                 )
                             }

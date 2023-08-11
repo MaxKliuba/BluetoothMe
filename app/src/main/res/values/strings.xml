@@ -34,6 +34,13 @@
     <string name="allow_in_settings_button">Allow in Settings</string>
     <string name="connection_error_message">Failed to connect to %1$s</string>
     <string name="reconnect_button">Reconnect</string>
+    <string name="bluetooth_le_profile_title">Bluetooth LE Profile</string>
+    <string name="ble_profile_default">Default</string>
+    <string name="ble_profile_custom">Custom</string>
+    <string name="service_uuid_hint">Service UUID</string>
+    <string name="read_characteristic_uuid_hint">Read characteristic UUID</string>
+    <string name="write_characteristic_uuid_hint">Write characteristic UUID</string>
+    <string name="ble_profile_dialog_confirm_button_text">OK</string>
 
     <string name="delete_messages_button">Delete messages</string>
 </resources>

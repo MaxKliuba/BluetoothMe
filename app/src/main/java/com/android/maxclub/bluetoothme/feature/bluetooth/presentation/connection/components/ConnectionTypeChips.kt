@@ -22,7 +22,7 @@ import java.util.*
 fun ConnectionTypeChips(
     device: BluetoothDevice,
     onSelect: ((BluetoothDevice, ConnectionType) -> Unit)?,
-    onReselect: ((BluetoothDevice, ConnectionType) -> Unit)?,
+    onReselect: ((BluetoothDevice, BluetoothLeProfile) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -46,16 +46,7 @@ fun ConnectionTypeChips(
                 onClick = {
                     if (isSelected) {
                         if (connectionType is ConnectionType.Ble) {
-                            onReselect?.invoke(
-                                device,
-                                ConnectionType.Ble(
-                                    profile = BluetoothLeProfile.Custom(
-                                        serviceUuid = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb"),
-                                        readCharacteristicUuid = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"),
-                                        writeCharacteristicUuid = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb"),
-                                    )
-                                )
-                            )
+                            onReselect?.invoke(device, connectionType.profile)
                         }
                     } else {
                         onSelect?.invoke(device, connectionType)

@@ -8,7 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toDeviceIcon
 
 @Composable
@@ -17,6 +19,7 @@ fun BluetoothDeviceDisconnectedItem(
     onClickIcon: (String) -> Unit,
     onClickItem: (BluetoothDevice) -> Unit,
     onSelectConnectionType: (BluetoothDevice, ConnectionType) -> Unit,
+    onReselectConnectionType: (BluetoothDevice, BluetoothLeProfile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -51,7 +54,7 @@ fun BluetoothDeviceDisconnectedItem(
         ConnectionTypeChips(
             device = device,
             onSelect = onSelectConnectionType,
-            onReselect = onSelectConnectionType,
+            onReselect = onReselectConnectionType,
         )
 
         Spacer(modifier = Modifier.width(12.dp))

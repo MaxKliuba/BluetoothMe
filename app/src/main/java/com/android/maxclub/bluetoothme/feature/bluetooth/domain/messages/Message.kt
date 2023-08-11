@@ -18,15 +18,3 @@ data class Message(
         const val MESSAGE_TERMINATOR = '\n'
     }
 }
-
-fun ByteArray.toMessage(type: Message.Type): Message =
-    String(this).toMessage(type)
-
-fun String.toMessage(type: Message.Type): Message {
-    val value = this.substringBefore(Message.MESSAGE_TERMINATOR)
-
-    return Message(
-        type = type,
-        value = value,
-    )
-}

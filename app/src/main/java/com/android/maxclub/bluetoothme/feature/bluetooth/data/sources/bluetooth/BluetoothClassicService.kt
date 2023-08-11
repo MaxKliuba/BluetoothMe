@@ -17,9 +17,9 @@ import com.android.maxclub.bluetoothme.core.exceptions.BluetoothConnectionExcept
 import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessagesDataSource
-import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.toMessage
 import com.android.maxclub.bluetoothme.core.util.getParcelable
 import com.android.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toMessage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
