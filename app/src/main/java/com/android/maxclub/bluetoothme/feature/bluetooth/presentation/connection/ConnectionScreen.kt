@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -169,7 +171,7 @@ fun ConnectionScreen(
                     }
                     IconButton(onClick = onShowBluetoothSettings) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_bluetooth_settings_24),
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(id = R.string.bluetooth_settings_button)
                         )
                     }
