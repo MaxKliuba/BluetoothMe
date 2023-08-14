@@ -3,6 +3,7 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages
 data class Message(
     val type: Type,
     val value: String,
+    val timestamp: Long,
 ) {
     fun toByteArray(): ByteArray = toString().toByteArray()
 

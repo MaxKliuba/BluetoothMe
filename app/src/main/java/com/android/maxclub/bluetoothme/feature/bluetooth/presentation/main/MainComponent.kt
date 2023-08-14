@@ -85,7 +85,7 @@ fun MainComponent(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is MainUiAction.RequestMissingPermissions -> {
@@ -209,7 +209,7 @@ fun MainComponent(
         ),
         NavDrawerItem(
             route = Screen.Terminal.route,
-            icon = R.drawable.ic_terminal_24,
+            icon = R.drawable.ic_chat_24,
             label = R.string.terminal_screen_title,
             badge = if (state.messagesCount > 0) {
                 NavDrawerBadge.Button(
@@ -262,7 +262,6 @@ fun MainComponent(
                         onEnableAdapter = onEnableAdapter,
                         onConnect = onConnect,
                         onDisconnect = onDisconnect,
-                        onShowConnectionErrorMessage = onShowConnectionErrorMessage,
                         onClickNavigationIcon = onClickNavigationIcon,
                     )
                 }

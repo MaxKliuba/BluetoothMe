@@ -43,7 +43,6 @@ fun ConnectionScreen(
     onEnableAdapter: () -> Unit,
     onConnect: (BluetoothDevice) -> Unit,
     onDisconnect: (BluetoothDevice?) -> Unit,
-    onShowConnectionErrorMessage: (BluetoothDevice) -> Unit,
     onClickNavigationIcon: () -> Unit,
     viewModel: ConnectionViewModel = hiltViewModel(),
 ) {
@@ -56,15 +55,11 @@ fun ConnectionScreen(
         state = rememberTopAppBarState()
     )
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is ConnectionUiAction.RequestMissingPermissions -> {
                     onRequestMissingPermissions(action.permissions.toList().toTypedArray())
-                }
-
-                is ConnectionUiAction.ShowConnectionErrorMessage -> {
-                    onShowConnectionErrorMessage(action.device)
                 }
 
                 is ConnectionUiAction.OpenBluetoothSettings -> {

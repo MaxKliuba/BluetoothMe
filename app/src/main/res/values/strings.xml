@@ -3,7 +3,7 @@
 
     <string name="connection_screen_title">Connection</string>
     <string name="controllers_screen_title">My Controllers</string>
-    <string name="terminal_screen_title">Terminal</string>
+    <string name="terminal_screen_title">Chat</string>
     <string name="help_screen_title">Help</string>
 
     <string name="state_turning_off">Turning Off</string>
@@ -43,4 +43,7 @@
     <string name="ble_profile_dialog_confirm_button_text">OK</string>
 
     <string name="delete_messages_button">Delete messages</string>
+    <string name="message_hint">Message…</string>
+    <string name="send_button_text">Send</string>
+    <string name="error_text">Error</string>
 </resources>

@@ -150,9 +150,7 @@ class MainViewModel @Inject constructor(
             } catch (e: BluetoothConnectionException) {
                 e.printStackTrace()
                 _uiActionChannel.send(
-                    MainUiAction.ShowConnectionErrorMessage(
-                        e.bluetoothDevice ?: device
-                    )
+                    MainUiAction.ShowConnectionErrorMessage(e.bluetoothDevice ?: device)
                 )
             }
         }
