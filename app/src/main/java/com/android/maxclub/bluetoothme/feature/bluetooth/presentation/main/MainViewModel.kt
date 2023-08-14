@@ -56,10 +56,8 @@ class MainViewModel @Inject constructor(
 
     fun onEvent(event: MainUiEvent) {
         when (event) {
-            is MainUiEvent.OnClickNavigationIcon -> {
-                viewModelScope.launch {
-                    _uiActionChannel.send(MainUiAction.OpenNavigationDrawer)
-                }
+            is MainUiEvent.OnDestinationChanged -> {
+                _uiState.value = _uiState.value.copy(selectedNavDrawerItem = event.route)
             }
 
             is MainUiEvent.OnOpenBluetoothPermissionRationaleDialog -> {
@@ -82,19 +80,6 @@ class MainViewModel @Inject constructor(
                             outputMessagesCount = uiState.value.outputMessagesCount,
                         )
                     )
-                }
-            }
-
-            is MainUiEvent.OnNavigate -> {
-                _uiState.value = uiState.value.copy(selectedNavDrawerItem = event.route)
-                viewModelScope.launch {
-                    _uiActionChannel.send(MainUiAction.NavigateTo(event.route))
-                }
-            }
-
-            is MainUiEvent.OnLaunchUrl -> {
-                viewModelScope.launch {
-                    _uiActionChannel.send(MainUiAction.LaunchUrl(event.url))
                 }
             }
         }

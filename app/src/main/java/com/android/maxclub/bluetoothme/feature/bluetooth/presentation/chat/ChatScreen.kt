@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal
+package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import android.view.KeyEvent
 import androidx.compose.foundation.layout.Column
@@ -17,19 +17,24 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal.components.InputMessageItem
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal.components.OutputMessageItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.InputMessageItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.OutputMessageItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,34 +42,47 @@ import kotlinx.coroutines.launch
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TerminalScreen(
+fun ChatScreen(
     onClickNavigationIcon: () -> Unit,
-    viewModel: TerminalViewModel = hiltViewModel(),
+    onShowSendErrorMessage: () -> Unit,
+    bluetoothState: BluetoothState,
+    viewModel: ChatViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
     val state by viewModel.uiState
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         state = rememberTopAppBarState()
     )
 
-    val onSendMessage: (String) -> Unit = {
-        viewModel.onEvent(TerminalUiEvent.OnSendMessage(it))
+    val onMessageValueChange: (String) -> Unit = remember {
+        { viewModel.onEvent(ChatUiEvent.OnChangeMessageValue(it)) }
     }
-    val onSelectMessage: (String) -> Unit = {
-        viewModel.onEvent(TerminalUiEvent.OnChangeMessageValue(it))
+    val onFocusChanged: (FocusState) -> Unit = remember {
+        { viewModel.onEvent(ChatUiEvent.OnFocusChanged(it)) }
+    }
+    val onSendMessage: (String) -> Unit = remember {
+        { viewModel.onEvent(ChatUiEvent.OnSendMessage(it)) }
+    }
+    val onSelectMessage: (String) -> Unit = remember {
+        { viewModel.onEvent(ChatUiEvent.OnChangeMessageValue(it)) }
+    }
+    val onDeleteMessages: () -> Unit = remember {
+        { viewModel.onEvent(ChatUiEvent.OnDeleteMessages) }
     }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
-                is TerminalUiAction.ScrollToBottom -> {
+                is ChatUiAction.ScrollToBottom -> {
                     launch(Dispatchers.Main) {
                         scrollState.scrollToItem(0)
                     }
                 }
 
-                is TerminalUiAction.ShowSendErrorMessage -> {
-                    // TODO
+                is ChatUiAction.ShowSendErrorMessage -> {
+                    onShowSendErrorMessage()
                 }
             }
         }
@@ -73,7 +91,15 @@ fun TerminalScreen(
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text(text = stringResource(id = R.string.terminal_screen_title)) },
+                title = {
+                    Column {
+                        Text(text = stringResource(id = R.string.chat_screen_title))
+                        Text(
+                            text = bluetoothState.toString(context),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onClickNavigationIcon) {
                         Icon(
@@ -84,7 +110,7 @@ fun TerminalScreen(
                 },
                 actions = {
                     if (state.messages.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.onEvent(TerminalUiEvent.OnDeleteMessages) }) {
+                        IconButton(onClick = onDeleteMessages) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_delete_messages_24),
                                 contentDescription = stringResource(id = R.string.delete_messages_button)
@@ -121,7 +147,7 @@ fun TerminalScreen(
                             onSelect = onSelectMessage,
                         )
 
-                        Message.Type.Output, -> OutputMessageItem(
+                        Message.Type.Output -> OutputMessageItem(
                             message = message,
                             hasError = false,
                             onSelect = onSelectMessage,
@@ -138,7 +164,7 @@ fun TerminalScreen(
 
             TextField(
                 value = state.messageValue,
-                onValueChange = { viewModel.onEvent(TerminalUiEvent.OnChangeMessageValue(it)) },
+                onValueChange = onMessageValueChange,
                 label = if (state.isHintVisible) {
                     { Text(text = stringResource(R.string.message_hint)) }
                 } else null,
@@ -161,7 +187,7 @@ fun TerminalScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 4.dp)
-                    .onFocusChanged { viewModel.onEvent(TerminalUiEvent.OnFocusChange(it)) }
+                    .onFocusChanged(onFocusChanged = onFocusChanged)
                     .onKeyEvent {
                         if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
                             onSendMessage(state.messageValue)

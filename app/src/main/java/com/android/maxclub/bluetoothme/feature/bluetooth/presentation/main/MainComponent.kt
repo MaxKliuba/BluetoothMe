@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
@@ -26,14 +27,12 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.controllers.ControllersScreen
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.NavigationDrawer
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerBadge
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.smartNavigate
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal.TerminalScreen
-import kotlinx.coroutines.CoroutineScope
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -47,10 +46,17 @@ fun MainComponent(
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val state: MainUiState by viewModel.uiState
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        destination.route?.let {
+            viewModel.onEvent(MainUiEvent.OnDestinationChanged(it))
+        }
+    }
 
     val permissionResultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -68,7 +74,7 @@ fun MainComponent(
     }
 
     val onShowConnectionErrorMessage: (BluetoothDevice) -> Unit = { bluetoothDevice ->
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             snackbarHostState.showSnackbar(
                 message = context.getString(
                     R.string.connection_error_message,
@@ -80,6 +86,25 @@ fun MainComponent(
             ).let { result ->
                 if (result == SnackbarResult.ActionPerformed) {
                     viewModel.onEvent(MainUiEvent.OnConnect(bluetoothDevice))
+                }
+            }
+        }
+    }
+
+    val onShowSendErrorMessage: () -> Unit = {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.send_error_message),
+                actionLabel = context.getString(if (state.favoriteBluetoothDevice != null) R.string.reconnect_button else R.string.connect_button),
+                withDismissAction = true,
+                duration = SnackbarDuration.Short,
+            ).let { result ->
+                if (result == SnackbarResult.ActionPerformed) {
+                    state.favoriteBluetoothDevice?.let {
+                        viewModel.onEvent(MainUiEvent.OnConnect(it))
+                    } ?: navController.navigate(Screen.Connection.route) {
+                        launchSingleTop = true
+                    }
                 }
             }
         }
@@ -100,10 +125,6 @@ fun MainComponent(
                     onShowConnectionErrorMessage(action.device)
                 }
 
-                is MainUiAction.OpenNavigationDrawer -> {
-                    launch(Dispatchers.Main) { drawerState.open() }
-                }
-
                 is MainUiAction.ShowMessagesCount -> {
                     launch(Dispatchers.Main) {
                         snackbarHostState.showSnackbar(
@@ -115,30 +136,28 @@ fun MainComponent(
                         )
                     }
                 }
-
-                is MainUiAction.NavigateTo -> {
-                    navController.smartNavigate(action.route)
-                    launch(Dispatchers.Main) {
-                        delay(150)
-                        drawerState.close()
-                    }
-                }
-
-                is MainUiAction.LaunchUrl -> {
-                    Toast.makeText(context, action.url, Toast.LENGTH_SHORT).show()
-                }
             }
         }
     }
 
-    val onClickNavigationIcon: () -> Unit = {
-        viewModel.onEvent(MainUiEvent.OnClickNavigationIcon)
+    val onOpenNavigationDrawer: () -> Unit = remember {
+        { scope.launch { drawerState.open() } }
     }
     val onNavigate: (String) -> Unit = {
-        viewModel.onEvent(MainUiEvent.OnNavigate(it))
+        scope.launch {
+            delay(150)
+            drawerState.close()
+        }
+
+        navController.navigate(it) {
+            popUpTo(navController.graph.startDestinationId)
+            launchSingleTop = true
+        }
     }
     val onLaunchUrl: (String) -> Unit = {
-        viewModel.onEvent(MainUiEvent.OnLaunchUrl(it))
+        scope.launch {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     val onEnableAdapter: () -> Unit = {
@@ -208,9 +227,9 @@ fun MainComponent(
             onClick = onNavigate
         ),
         NavDrawerItem(
-            route = Screen.Terminal.route,
+            route = Screen.Chat.route,
             icon = R.drawable.ic_chat_24,
-            label = R.string.terminal_screen_title,
+            label = R.string.chat_screen_title,
             badge = if (state.messagesCount > 0) {
                 NavDrawerBadge.Button(
                     onClick = onClickMessagesBadge,
@@ -262,19 +281,21 @@ fun MainComponent(
                         onEnableAdapter = onEnableAdapter,
                         onConnect = onConnect,
                         onDisconnect = onDisconnect,
-                        onClickNavigationIcon = onClickNavigationIcon,
+                        onClickNavigationIcon = onOpenNavigationDrawer,
                     )
                 }
 
                 composable(route = Screen.Controllers.route) {
                     ControllersScreen(
-                        onClickNavigationIcon = onClickNavigationIcon,
+                        onClickNavigationIcon = onOpenNavigationDrawer,
                     )
                 }
 
-                composable(route = Screen.Terminal.route) {
-                    TerminalScreen(
-                        onClickNavigationIcon = onClickNavigationIcon,
+                composable(route = Screen.Chat.route) {
+                    ChatScreen(
+                        onClickNavigationIcon = onOpenNavigationDrawer,
+                        onShowSendErrorMessage = onShowSendErrorMessage,
+                        bluetoothState = state.bluetoothState,
                     )
                 }
             }

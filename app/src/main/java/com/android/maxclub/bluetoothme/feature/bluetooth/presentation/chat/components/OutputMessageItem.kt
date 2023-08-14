@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal.components
+package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal.util.format
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.util.format
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class)

@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.terminal
+package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -18,20 +18,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TerminalViewModel @Inject constructor(
+class ChatViewModel @Inject constructor(
     private val messagesUseCases: MessagesUseCases,
     private val messageValueValidator: MessageValueValidator,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
-        TerminalUiState(
+        ChatUiState(
             messages = emptyList(),
             messageValue = "",
             isHintVisible = true,
         )
     )
-    val uiState: State<TerminalUiState> = _uiState
+    val uiState: State<ChatUiState> = _uiState
 
-    private val uiActionChannel = Channel<TerminalUiAction>()
+    private val uiActionChannel = Channel<ChatUiAction>()
     val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getMessagesJob: Job? = null
@@ -40,26 +40,26 @@ class TerminalViewModel @Inject constructor(
         getMessages()
     }
 
-    fun onEvent(event: TerminalUiEvent) {
+    fun onEvent(event: ChatUiEvent) {
         when (event) {
-            is TerminalUiEvent.OnChangeMessageValue -> {
+            is ChatUiEvent.OnChangeMessageValue -> {
                 if (messageValueValidator(event.messageValue)) {
                     _uiState.value = uiState.value.copy(messageValue = event.messageValue)
                 }
             }
 
-            is TerminalUiEvent.OnFocusChange -> {
+            is ChatUiEvent.OnFocusChanged -> {
                 _uiState.value = uiState.value.copy(isHintVisible = !event.focusState.isFocused)
             }
 
-            is TerminalUiEvent.OnSendMessage -> {
+            is ChatUiEvent.OnSendMessage -> {
                 if (event.messageValue.isNotEmpty() && messageValueValidator(event.messageValue)) {
                     writeMessage(event.messageValue)
                     _uiState.value = uiState.value.copy(messageValue = "")
                 }
             }
 
-            is TerminalUiEvent.OnDeleteMessages -> {
+            is ChatUiEvent.OnDeleteMessages -> {
                 deleteMessages()
             }
         }
@@ -70,7 +70,7 @@ class TerminalViewModel @Inject constructor(
         getMessagesJob = messagesUseCases.getMessages()
             .onEach { messages ->
                 _uiState.value = uiState.value.copy(messages = messages)
-                uiActionChannel.send(TerminalUiAction.ScrollToBottom)
+                uiActionChannel.send(ChatUiAction.ScrollToBottom)
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
@@ -82,7 +82,7 @@ class TerminalViewModel @Inject constructor(
         } catch (e: WriteMessageException) {
             e.printStackTrace()
             viewModelScope.launch {
-                uiActionChannel.send(TerminalUiAction.ShowSendErrorMessage)
+                uiActionChannel.send(ChatUiAction.ShowSendErrorMessage)
             }
         }
     }
