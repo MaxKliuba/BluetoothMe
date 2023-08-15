@@ -10,7 +10,7 @@ data class MainUiState(
     val inputMessagesCount: Int,
     val outputMessagesCount: Int,
     val selectedNavDrawerItem: String,
-    val isBluetoothPermissionRationaleDialogOpen: Boolean,
+    val isBluetoothPermissionRationaleDialogVisible: Boolean,
 ) {
     val messagesCount: Int
         get() = inputMessagesCount + outputMessagesCount

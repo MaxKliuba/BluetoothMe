@@ -23,12 +23,14 @@ import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerBadge
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItemType
 
 @Composable
 fun NavigationDrawer(
+    drawerState: DrawerState,
     selectedItem: String,
     items: List<NavDrawerItem>,
-    drawerState: DrawerState,
+    onSelect: (NavDrawerItemType) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -63,7 +65,7 @@ fun NavigationDrawer(
                                         enabled = item.badge.isEnabled,
                                         modifier = Modifier.widthIn(min = 40.dp),
                                     ) {
-                                        if (item.badge.withIndicator) {
+                                        if (item.badge.withProgressIndicator) {
                                             CircularProgressIndicator(
                                                 strokeWidth = 2.dp,
                                                 modifier = Modifier.size(16.dp),
@@ -77,8 +79,8 @@ fun NavigationDrawer(
                                 null -> Unit
                             }
                         },
-                        selected = item.route == selectedItem,
-                        onClick = { item.onClick(item.route) },
+                        selected = item.type.value == selectedItem,
+                        onClick = { onSelect(item.type) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                     )
                 }

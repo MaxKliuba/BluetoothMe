@@ -5,10 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
+import com.android.maxclub.bluetoothme.core.util.sendIn
+import com.android.maxclub.bluetoothme.core.util.update
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.UuidValueValidator
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileType
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toUuidOrElse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +26,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val MAX_UUID_LENGTH = 50
-
 @HiltViewModel
 class ConnectionViewModel @Inject constructor(
     private val bluetoothUseCases: BluetoothUseCases,
+    private val uuidValueValidator: UuidValueValidator,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ConnectionUiState(
@@ -54,107 +58,42 @@ class ConnectionViewModel @Inject constructor(
 
     fun onEvent(event: ConnectionUiEvent) {
         when (event) {
-            is ConnectionUiEvent.OnStartScan -> startScan()
-            is ConnectionUiEvent.OnStopScan -> stopScan()
-            is ConnectionUiEvent.OnOpenBluetoothSettings -> {
-                viewModelScope.launch {
-                    uiActionChannel.send(ConnectionUiAction.OpenBluetoothSettings)
-                }
+            is ConnectionUiEvent.OnStartScan -> {
+                startScan()
             }
 
-            is ConnectionUiEvent.OnClickDeviceIcon -> {
-                viewModelScope.launch {
-                    uiActionChannel.send(ConnectionUiAction.ShowDeviceType(event.deviceType))
-                }
+            is ConnectionUiEvent.OnStopScan -> {
+                stopScan()
+            }
+
+            is ConnectionUiEvent.OnShowBluetoothSettings -> {
+                sendUiAction(ConnectionUiAction.LaunchBluetoothSettingsIntent)
+            }
+
+            is ConnectionUiEvent.OnShowDeviceType -> {
+                sendUiAction(ConnectionUiAction.ShowDeviceType(event.deviceType))
             }
 
             is ConnectionUiEvent.OnUpdateBluetoothDevice -> {
-                bluetoothUseCases.updateBluetoothDevice(event.device)
+                updateBluetoothDevice(event.device)
             }
 
             is ConnectionUiEvent.OnChangeBleProfileData -> {
-                val data = if (event.data.serviceUuid.length <= MAX_UUID_LENGTH
-                    && event.data.readCharacteristicUuid.length <= MAX_UUID_LENGTH
-                    && event.data.writeCharacteristicUuid.length <= MAX_UUID_LENGTH
-                ) {
-                    event.data
-                } else {
-                    _uiState.value.bleProfileDialogData
-                }
-                _uiState.value = uiState.value.copy(
-                    bleProfileDialogData = data?.copy(
-                        serviceUuidErrorMessage = null,
-                        readCharacteristicUuidErrorMessage = null,
-                        writeCharacteristicUuidErrorMessage = null,
-                    )
-                )
+                tryChangeBleProfileData(event.data)
             }
 
-            is ConnectionUiEvent.OnOpenBleProfileDialog -> {
-                _uiState.value = uiState.value.copy(
-                    bleProfileDialogData = event.data
-                )
+            is ConnectionUiEvent.OnShowBleProfileDialog -> {
+                setBleProfileDialogData(event.data)
             }
 
             is ConnectionUiEvent.OnConfirmBleProfileDialog -> {
-                val device = event.data.device
-
-                println(event.data)
-
-                var serviceUuidErrorMessage: String? = null
-                var readCharacteristicUuidErrorMessage: String? = null
-                var writeCharacteristicUuidErrorMessage: String? = null
-
-                val connectionType = when (event.data.selectedBleProfileType) {
-                    BleProfileType.DEFAULT -> {
-                        ConnectionType.Ble(BluetoothLeProfile.Default)
-                    }
-
-                    BleProfileType.CUSTOM -> {
-                        val serviceUuid = event.data.serviceUuid.toUuidOrElse {
-                            serviceUuidErrorMessage = "Invalid value"
-                        }
-                        val readCharacteristicUuid =
-                            event.data.readCharacteristicUuid.toUuidOrElse {
-                                readCharacteristicUuidErrorMessage = "Invalid value"
-                            }
-                        val writeCharacteristicUuid =
-                            event.data.writeCharacteristicUuid.toUuidOrElse {
-                                writeCharacteristicUuidErrorMessage = "Invalid value"
-                            }
-
-                        if (serviceUuid != null && readCharacteristicUuid != null && writeCharacteristicUuid != null) {
-                            ConnectionType.Ble(
-                                BluetoothLeProfile.Custom(
-                                    serviceUuid = serviceUuid,
-                                    readCharacteristicUuid = readCharacteristicUuid,
-                                    writeCharacteristicUuid = writeCharacteristicUuid,
-                                )
-                            )
-                        } else {
-                            null
-                        }
-                    }
-                }
-
-                if (connectionType != null) {
-                    bluetoothUseCases.updateBluetoothDevice(
-                        device.copy(type = device.type.copy(connectionType = connectionType))
-                    )
-                    _uiState.value = uiState.value.copy(bleProfileDialogData = null)
-                } else {
-                    _uiState.value = uiState.value.copy(
-                        bleProfileDialogData = event.data.copy(
-                            serviceUuidErrorMessage = serviceUuidErrorMessage,
-                            readCharacteristicUuidErrorMessage = readCharacteristicUuidErrorMessage,
-                            writeCharacteristicUuidErrorMessage = writeCharacteristicUuidErrorMessage,
-                        )
-                    )
+                _uiState.value.bleProfileDialogData?.let { bleProfileData ->
+                    tryUpdateBluetoothLeProfile(bleProfileData, bleProfileData.device)
                 }
             }
 
             is ConnectionUiEvent.OnDismissBleProfileDialog -> {
-                _uiState.value = uiState.value.copy(bleProfileDialogData = null)
+                setBleProfileDialogData(null)
             }
         }
     }
@@ -163,9 +102,10 @@ class ConnectionViewModel @Inject constructor(
         getStateJob?.cancel()
         getStateJob = bluetoothUseCases.getState()
             .onEach { state ->
-                _uiState.value = uiState.value.copy(bluetoothState = state)
+                _uiState.update { it.copy(bluetoothState = state) }
+
                 if (state is BluetoothState.On.Connected && state.device != null) {
-                    uiActionChannel.send(ConnectionUiAction.ScrollToConnectedDevice(state.device))
+                    sendUiAction(ConnectionUiAction.ScrollToConnectedDevice(state.device))
                 }
             }
             .catch { e ->
@@ -177,7 +117,9 @@ class ConnectionViewModel @Inject constructor(
     private fun getScanState() {
         getScanStateJob?.cancel()
         getScanStateJob = bluetoothUseCases.getScanState()
-            .onEach { _uiState.value = uiState.value.copy(isScanning = it) }
+            .onEach { isScanning ->
+                _uiState.update { it.copy(isScanning = isScanning) }
+            }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
     }
@@ -186,12 +128,13 @@ class ConnectionViewModel @Inject constructor(
         getDevicesJob?.cancel()
         getDevicesJob = bluetoothUseCases.getBluetoothDevices()
             .onEach { devices ->
-                _uiState.value = uiState.value.copy(devices = devices)
+                _uiState.update { it.copy(devices = devices) }
             }
             .catch { e ->
                 e.printStackTrace()
+
                 if (e is MissingBluetoothPermissionException) {
-                    uiActionChannel.send(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
+                    sendUiAction(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
                 }
             }
             .launchIn(viewModelScope)
@@ -208,7 +151,8 @@ class ConnectionViewModel @Inject constructor(
                 bluetoothUseCases.startScan()
             } catch (e: MissingBluetoothPermissionException) {
                 e.printStackTrace()
-                uiActionChannel.send(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
+
+                sendUiAction(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
             }
         }
     }
@@ -218,9 +162,94 @@ class ConnectionViewModel @Inject constructor(
             bluetoothUseCases.stopScan()
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
-            viewModelScope.launch {
-                uiActionChannel.send(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
+
+            sendUiAction(ConnectionUiAction.RequestMissingPermissions(*e.permissions))
+        }
+    }
+
+    private fun updateBluetoothDevice(bluetoothDevice: BluetoothDevice) {
+        bluetoothUseCases.updateBluetoothDevice(bluetoothDevice)
+    }
+
+    private fun tryChangeBleProfileData(data: BleProfileDialogData) {
+        val newData = if (uuidValueValidator(data.serviceUuid)
+            && uuidValueValidator(data.readCharacteristicUuid)
+            && uuidValueValidator(data.writeCharacteristicUuid)
+        ) {
+            data
+        } else {
+            _uiState.value.bleProfileDialogData
+        }
+        setBleProfileDialogData(
+            newData?.copy(
+                serviceUuidErrorMessage = null,
+                readCharacteristicUuidErrorMessage = null,
+                writeCharacteristicUuidErrorMessage = null,
+            )
+        )
+    }
+
+    private fun setBleProfileDialogData(data: BleProfileDialogData?) {
+        _uiState.update { it.copy(bleProfileDialogData = data) }
+    }
+
+    private fun tryUpdateBluetoothLeProfile(
+        bleProfileData: BleProfileDialogData,
+        device: BluetoothDevice
+    ) {
+        var serviceUuidErrorMessage: String? = null
+        var readCharacteristicUuidErrorMessage: String? = null
+        var writeCharacteristicUuidErrorMessage: String? = null
+
+        val connectionType = when (bleProfileData.selectedBleProfileType) {
+            BleProfileType.DEFAULT -> {
+                ConnectionType.Ble(BluetoothLeProfile.Default)
+            }
+
+            BleProfileType.CUSTOM -> {
+                val serviceUuid = bleProfileData.serviceUuid.toUuidOrElse {
+                    serviceUuidErrorMessage = "Invalid value"
+                }
+                val readCharacteristicUuid =
+                    bleProfileData.readCharacteristicUuid.toUuidOrElse {
+                        readCharacteristicUuidErrorMessage = "Invalid value"
+                    }
+                val writeCharacteristicUuid =
+                    bleProfileData.writeCharacteristicUuid.toUuidOrElse {
+                        writeCharacteristicUuidErrorMessage = "Invalid value"
+                    }
+
+                if (serviceUuid != null && readCharacteristicUuid != null && writeCharacteristicUuid != null) {
+                    ConnectionType.Ble(
+                        BluetoothLeProfile.Custom(
+                            serviceUuid = serviceUuid,
+                            readCharacteristicUuid = readCharacteristicUuid,
+                            writeCharacteristicUuid = writeCharacteristicUuid,
+                        )
+                    )
+                } else {
+                    null
+                }
             }
         }
+
+        if (connectionType != null) {
+            bluetoothUseCases.updateBluetoothDevice(
+                device.copy(type = device.type.copy(connectionType = connectionType))
+            )
+            setBleProfileDialogData(null)
+        } else {
+            setBleProfileDialogData(
+                bleProfileData.copy(
+                    serviceUuidErrorMessage = serviceUuidErrorMessage,
+                    readCharacteristicUuidErrorMessage = readCharacteristicUuidErrorMessage,
+                    writeCharacteristicUuidErrorMessage = writeCharacteristicUuidErrorMessage,
+                )
+            )
+        }
+    }
+
+    private fun sendUiAction(uiAction: ConnectionUiAction) {
+        uiActionChannel.sendIn(uiAction, viewModelScope)
     }
 }

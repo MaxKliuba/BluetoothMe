@@ -1,5 +1,6 @@
 package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection
 
+import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.animation.*
@@ -30,7 +31,6 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.*
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toBleProfileType
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,12 +43,12 @@ fun ConnectionScreen(
     onEnableAdapter: () -> Unit,
     onConnect: (BluetoothDevice) -> Unit,
     onDisconnect: (BluetoothDevice?) -> Unit,
-    onClickNavigationIcon: () -> Unit,
+    onOpenNavigationDrawer: () -> Unit,
     viewModel: ConnectionViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-
     val state: ConnectionUiState by viewModel.uiState
+
+    val context = LocalContext.current
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -62,25 +62,21 @@ fun ConnectionScreen(
                     onRequestMissingPermissions(action.permissions.toList().toTypedArray())
                 }
 
-                is ConnectionUiAction.OpenBluetoothSettings -> {
-                    val bluetoothSettingIntent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                    context.startActivity(bluetoothSettingIntent)
+                is ConnectionUiAction.LaunchBluetoothSettingsIntent -> {
+                    launchBluetoothSettingsIntent(context)
                 }
 
                 is ConnectionUiAction.ShowDeviceType -> {
-                    launch(Dispatchers.Main) {
-                        snackbarHostState.showSnackbar(
-                            message = action.deviceType,
-                            withDismissAction = true,
-                            duration = SnackbarDuration.Short,
-                        )
-                    }
+                    showDeviceTypeSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        deviceType = action.deviceType,
+                    )
                 }
 
                 is ConnectionUiAction.ScrollToConnectedDevice -> {
-                    launch(Dispatchers.Main) {
+                    launch {
                         delay(150)
-                        scrollState.scrollToItem(0)
+                        scrollState.animateScrollToItem(0)
                     }
                 }
             }
@@ -94,11 +90,10 @@ fun ConnectionScreen(
         viewModel.onEvent(ConnectionUiEvent.OnStopScan)
     }
     val onShowBluetoothSettings = {
-        viewModel.onEvent(ConnectionUiEvent.OnOpenBluetoothSettings)
+        viewModel.onEvent(ConnectionUiEvent.OnShowBluetoothSettings)
     }
-
     val onClickIcon: (String) -> Unit = {
-        viewModel.onEvent(ConnectionUiEvent.OnClickDeviceIcon(it))
+        viewModel.onEvent(ConnectionUiEvent.OnShowDeviceType(it))
     }
     val onSelectConnectionType: (BluetoothDevice, ConnectionType) -> Unit =
         { device, connectionType ->
@@ -120,17 +115,24 @@ fun ConnectionScreen(
                 writeCharacteristicUuid = (bleProfile as? BluetoothLeProfile.Custom)
                     ?.writeCharacteristicUuid?.toString() ?: "",
             )
-            viewModel.onEvent(
-                ConnectionUiEvent.OnOpenBleProfileDialog(data)
-            )
+            viewModel.onEvent(ConnectionUiEvent.OnShowBleProfileDialog(data))
         }
+    val onChangeBleProfileData: (BleProfileDialogData) -> Unit = {
+        viewModel.onEvent(ConnectionUiEvent.OnChangeBleProfileData(it))
+    }
+    val onDismissBleProfileDialog: () -> Unit = {
+        viewModel.onEvent(ConnectionUiEvent.OnDismissBleProfileDialog)
+    }
+    val onConfirmBleProfileDialog: () -> Unit = {
+        viewModel.onEvent(ConnectionUiEvent.OnConfirmBleProfileDialog)
+    }
 
     state.bleProfileDialogData?.let { bleProfileDialogData ->
         BleProfileDialog(
             data = bleProfileDialogData,
-            onChangeBleProfileData = { viewModel.onEvent(ConnectionUiEvent.OnChangeBleProfileData(it)) },
-            onDismiss = { viewModel.onEvent(ConnectionUiEvent.OnDismissBleProfileDialog) },
-            onConfirm = { viewModel.onEvent(ConnectionUiEvent.OnConfirmBleProfileDialog(it)) }
+            onChangeBleProfileData = onChangeBleProfileData,
+            onDismiss = onDismissBleProfileDialog,
+            onConfirm = onConfirmBleProfileDialog,
         )
     }
 
@@ -139,7 +141,7 @@ fun ConnectionScreen(
             LargeTopAppBar(
                 title = { Text(text = stringResource(id = R.string.connection_screen_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onClickNavigationIcon) {
+                    IconButton(onClick = onOpenNavigationDrawer) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu_24),
                             contentDescription = stringResource(id = R.string.app_name)
@@ -259,4 +261,20 @@ fun ConnectionScreen(
             }
         }
     }
+}
+
+private fun launchBluetoothSettingsIntent(context: Context) {
+    val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+    context.startActivity(intent)
+}
+
+private suspend fun showDeviceTypeSnackbar(
+    snackbarHostState: SnackbarHostState,
+    deviceType: String
+) {
+    snackbarHostState.showSnackbar(
+        message = deviceType,
+        withDismissAction = true,
+        duration = SnackbarDuration.Short,
+    )
 }

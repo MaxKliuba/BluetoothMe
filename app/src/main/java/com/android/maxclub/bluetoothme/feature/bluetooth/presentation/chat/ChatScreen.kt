@@ -28,7 +28,6 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.InputMessageItem
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageTextField
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.OutputMessageItem
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -37,13 +36,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatScreen(
     bluetoothState: BluetoothState,
-    onShowSendErrorMessage: () -> Unit,
+    onShowSendingErrorMessage: () -> Unit,
     onOpenNavigationDrawer: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-
     val state by viewModel.uiState
+
+    val context = LocalContext.current
     val scrollState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         state = rememberTopAppBarState()
@@ -69,13 +68,11 @@ fun ChatScreen(
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is ChatUiAction.ScrollToBottom -> {
-                    launch(Dispatchers.Main) {
-                        scrollState.scrollToItem(0)
-                    }
+                    launch { scrollState.scrollToItem(0) }
                 }
 
-                is ChatUiAction.ShowSendErrorMessage -> {
-                    onShowSendErrorMessage()
+                is ChatUiAction.ShowSendingErrorMessage -> {
+                    onShowSendingErrorMessage()
                 }
             }
         }

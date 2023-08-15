@@ -5,7 +5,7 @@ sealed class NavDrawerBadge(val getValue: () -> String) {
     class Button(
         val onClick: () -> Unit,
         val isEnabled: Boolean = true,
-        val withIndicator: Boolean = false,
+        val withProgressIndicator: Boolean = false,
         getValue: () -> String
     ) : NavDrawerBadge(getValue)
 }

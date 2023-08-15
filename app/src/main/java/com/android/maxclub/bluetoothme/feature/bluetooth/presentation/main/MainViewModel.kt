@@ -8,6 +8,8 @@ import com.android.maxclub.bluetoothme.core.exceptions.BluetoothConnectionExcept
 import com.android.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
 import com.android.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
 import com.android.maxclub.bluetoothme.core.util.Screen
+import com.android.maxclub.bluetoothme.core.util.sendIn
+import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
@@ -35,52 +37,83 @@ class MainViewModel @Inject constructor(
             inputMessagesCount = 0,
             outputMessagesCount = 0,
             selectedNavDrawerItem = Screen.Connection.route,
-            isBluetoothPermissionRationaleDialogOpen = false,
+            isBluetoothPermissionRationaleDialogVisible = false,
         )
     )
     val uiState: State<MainUiState> = _uiState
 
-    private val _uiActionChannel = Channel<MainUiAction>()
-    val uiAction = _uiActionChannel.receiveAsFlow()
+    private val uiActionChannel = Channel<MainUiAction>()
+    val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getStateJob: Job? = null
     private var getFavoriteDeviceJob: Job? = null
     private var connectJob: Job? = null
-    private var getMessagesJob: Job? = null
+    private var getMessagesCountJob: Job? = null
 
     init {
         getState()
         getFavoriteDevice()
-        getMessages()
+        getMessagesCount()
     }
 
     fun onEvent(event: MainUiEvent) {
         when (event) {
+            is MainUiEvent.OnOpenNavigationDrawer -> {
+                sendUiAction(MainUiAction.OpenNavigationDrawer)
+            }
+
+            is MainUiEvent.OnSelectNavDrawerItem -> {
+                sendUiAction(MainUiAction.NavigateToSelectedNavDrawerItem(event.selectedItem))
+            }
+
             is MainUiEvent.OnDestinationChanged -> {
-                _uiState.value = _uiState.value.copy(selectedNavDrawerItem = event.route)
+                setSelectedNavDrawerItem(event.route)
             }
 
-            is MainUiEvent.OnOpenBluetoothPermissionRationaleDialog -> {
-                _uiState.value = uiState.value.copy(isBluetoothPermissionRationaleDialogOpen = true)
+            is MainUiEvent.OnRequestMissingPermissions -> {
+                sendUiAction(MainUiAction.RequestMissingPermissions(*event.permissions))
             }
 
-            is MainUiEvent.OnCloseBluetoothPermissionRationaleDialog -> {
-                _uiState.value =
-                    uiState.value.copy(isBluetoothPermissionRationaleDialogOpen = false)
+            is MainUiEvent.OnShowBluetoothPermissionRationaleDialog -> {
+                setBluetoothPermissionRationaleDialogVisibility(true)
             }
 
-            is MainUiEvent.OnEnableAdapter -> enableAdapter()
-            is MainUiEvent.OnConnect -> connect(event.device)
-            is MainUiEvent.OnDisconnect -> disconnect(event.device)
-            is MainUiEvent.OnClickMessagesCountBudge -> {
-                viewModelScope.launch {
-                    _uiActionChannel.send(
-                        MainUiAction.ShowMessagesCount(
-                            inputMessagesCount = uiState.value.inputMessagesCount,
-                            outputMessagesCount = uiState.value.outputMessagesCount,
-                        )
+            is MainUiEvent.OnConfirmBluetoothPermissionRationaleDialog -> {
+                setBluetoothPermissionRationaleDialogVisibility(false)
+                sendUiAction(MainUiAction.LaunchPermissionSettingsIntent)
+            }
+
+            is MainUiEvent.OnDismissBluetoothPermissionRationaleDialog -> {
+                setBluetoothPermissionRationaleDialogVisibility(false)
+            }
+
+            is MainUiEvent.OnEnableAdapter -> {
+                enableAdapter()
+            }
+
+            is MainUiEvent.OnConnect -> {
+                connect(event.device)
+            }
+
+            is MainUiEvent.OnDisconnect -> {
+                disconnect(event.device)
+            }
+
+            is MainUiEvent.OnShowMessagesCount -> {
+                sendUiAction(
+                    MainUiAction.ShowMessagesCount(
+                        inputMessagesCount = _uiState.value.inputMessagesCount,
+                        outputMessagesCount = _uiState.value.outputMessagesCount,
                     )
-                }
+                )
+            }
+
+            is MainUiEvent.OnShowSendingErrorMessage -> {
+                sendUiAction(
+                    MainUiAction.ShowSendingErrorMessage(
+                        device = _uiState.value.favoriteBluetoothDevice
+                    )
+                )
             }
         }
     }
@@ -89,7 +122,7 @@ class MainViewModel @Inject constructor(
         getStateJob?.cancel()
         getStateJob = bluetoothUseCases.getState()
             .onEach { state ->
-                _uiState.value = uiState.value.copy(bluetoothState = state)
+                _uiState.update { it.copy(bluetoothState = state) }
             }
             .catch { e ->
                 e.printStackTrace()
@@ -101,11 +134,28 @@ class MainViewModel @Inject constructor(
         getFavoriteDeviceJob?.cancel()
         getFavoriteDeviceJob = bluetoothUseCases.getFavoriteBluetoothDevice()
             .onEach { favoriteDevice ->
-                _uiState.value = uiState.value.copy(favoriteBluetoothDevice = favoriteDevice)
+                _uiState.update { it.copy(favoriteBluetoothDevice = favoriteDevice) }
             }
             .catch { e ->
                 e.printStackTrace()
             }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getMessagesCount() {
+        getMessagesCountJob?.cancel()
+        getMessagesCountJob = messagesUseCases.getMessages()
+            .onEach { messages ->
+                _uiState.update { state ->
+                    state.copy(
+                        inputMessagesCount = messages.count { it.type == Message.Type.Input },
+                        outputMessagesCount = messages.count {
+                            it.type == Message.Type.Output || it.type == Message.Type.Error
+                        },
+                    )
+                }
+            }
+            .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
     }
 
@@ -114,13 +164,10 @@ class MainViewModel @Inject constructor(
             bluetoothUseCases.enableAdapter()
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
-            viewModelScope.launch {
-                _uiActionChannel.send(MainUiAction.RequestMissingPermissions(*e.permissions))
-            }
+
+            sendUiAction(MainUiAction.RequestMissingPermissions(*e.permissions))
         } catch (e: EnableBluetoothAdapterException) {
-            viewModelScope.launch {
-                _uiActionChannel.send(MainUiAction.LaunchIntent(e.intent))
-            }
+            sendUiAction(MainUiAction.LaunchBluetoothAdapterEnableIntent(e.intent))
         }
     }
 
@@ -131,11 +178,15 @@ class MainViewModel @Inject constructor(
                 bluetoothUseCases.connect(device)
             } catch (e: MissingBluetoothPermissionException) {
                 e.printStackTrace()
-                _uiActionChannel.send(MainUiAction.RequestMissingPermissions(*e.permissions))
+
+                sendUiAction(MainUiAction.RequestMissingPermissions(*e.permissions))
             } catch (e: BluetoothConnectionException) {
                 e.printStackTrace()
-                _uiActionChannel.send(
-                    MainUiAction.ShowConnectionErrorMessage(e.bluetoothDevice ?: device)
+
+                sendUiAction(
+                    MainUiAction.ShowConnectionErrorMessage(
+                        device = e.bluetoothDevice ?: device
+                    )
                 )
             }
         }
@@ -146,23 +197,20 @@ class MainViewModel @Inject constructor(
             bluetoothUseCases.disconnect(device)
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
-            viewModelScope.launch {
-                _uiActionChannel.send(MainUiAction.RequestMissingPermissions(*e.permissions))
-            }
+
+            sendUiAction(MainUiAction.RequestMissingPermissions(*e.permissions))
         }
     }
 
-    private fun getMessages() {
-        getMessagesJob?.cancel()
-        getMessagesJob = messagesUseCases.getMessages()
-            .onEach { messages ->
-                _uiState.value = uiState.value.copy(
-                    inputMessagesCount = messages.count { it.type == Message.Type.Input },
-                    outputMessagesCount = messages.count { it.type == Message.Type.Output || it.type == Message.Type.Error },
-                )
-                println(messages)
-            }
-            .catch { it.printStackTrace() }
-            .launchIn(viewModelScope)
+    private fun setSelectedNavDrawerItem(route: String) {
+        _uiState.update { it.copy(selectedNavDrawerItem = route) }
+    }
+
+    private fun setBluetoothPermissionRationaleDialogVisibility(isVisible: Boolean) {
+        _uiState.update { it.copy(isBluetoothPermissionRationaleDialogVisible = isVisible) }
+    }
+
+    private fun sendUiAction(uiAction: MainUiAction) {
+        uiActionChannel.sendIn(uiAction, viewModelScope)
     }
 }
