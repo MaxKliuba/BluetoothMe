@@ -4,7 +4,7 @@ import androidx.compose.ui.focus.FocusState
 
 sealed class ChatUiEvent {
     data class OnChangeMessageValue(val messageValue: String) : ChatUiEvent()
-    data class OnFocusChanged(val focusState: FocusState) : ChatUiEvent()
+    data class OnMessageTextFieldFocusChanged(val focusState: FocusState) : ChatUiEvent()
     data class OnSendMessage(val messageValue: String) : ChatUiEvent()
     object OnDeleteMessages : ChatUiEvent()
 }

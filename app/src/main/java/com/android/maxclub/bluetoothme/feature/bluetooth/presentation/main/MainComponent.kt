@@ -33,6 +33,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.compo
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerBadge
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -91,19 +92,21 @@ fun MainComponent(
         }
     }
 
-    val onShowSendErrorMessage: () -> Unit = {
-        scope.launch {
-            snackbarHostState.showSnackbar(
-                message = context.getString(R.string.send_error_message),
-                actionLabel = context.getString(if (state.favoriteBluetoothDevice != null) R.string.reconnect_button else R.string.connect_button),
-                withDismissAction = true,
-                duration = SnackbarDuration.Short,
-            ).let { result ->
-                if (result == SnackbarResult.ActionPerformed) {
-                    state.favoriteBluetoothDevice?.let {
-                        viewModel.onEvent(MainUiEvent.OnConnect(it))
-                    } ?: navController.navigate(Screen.Connection.route) {
-                        launchSingleTop = true
+    val onShowSendErrorMessage: () -> Unit = remember {
+        {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.send_error_message),
+                    actionLabel = context.getString(if (state.favoriteBluetoothDevice != null) R.string.reconnect_button else R.string.connect_button),
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short,
+                ).let { result ->
+                    if (result == SnackbarResult.ActionPerformed) {
+                        state.favoriteBluetoothDevice?.let {
+                            viewModel.onEvent(MainUiEvent.OnConnect(it))
+                        } ?: navController.navigate(Screen.Connection.route) {
+                            launchSingleTop = true
+                        }
                     }
                 }
             }
@@ -293,9 +296,9 @@ fun MainComponent(
 
                 composable(route = Screen.Chat.route) {
                     ChatScreen(
-                        onClickNavigationIcon = onOpenNavigationDrawer,
-                        onShowSendErrorMessage = onShowSendErrorMessage,
                         bluetoothState = state.bluetoothState,
+                        onShowSendErrorMessage = onShowSendErrorMessage,
+                        onOpenNavigationDrawer = onOpenNavigationDrawer,
                     )
                 }
             }

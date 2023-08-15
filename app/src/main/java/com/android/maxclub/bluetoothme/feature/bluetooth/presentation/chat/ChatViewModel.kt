@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.focus.FocusState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
@@ -43,26 +44,42 @@ class ChatViewModel @Inject constructor(
     fun onEvent(event: ChatUiEvent) {
         when (event) {
             is ChatUiEvent.OnChangeMessageValue -> {
-                if (messageValueValidator(event.messageValue)) {
-                    _uiState.value = uiState.value.copy(messageValue = event.messageValue)
-                }
+                tryChangeMessageValue(event.messageValue)
             }
 
-            is ChatUiEvent.OnFocusChanged -> {
-                _uiState.value = uiState.value.copy(isHintVisible = !event.focusState.isFocused)
+            is ChatUiEvent.OnMessageTextFieldFocusChanged -> {
+                onMessageTextFieldFocusChanged(event.focusState)
             }
 
             is ChatUiEvent.OnSendMessage -> {
-                if (event.messageValue.isNotEmpty() && messageValueValidator(event.messageValue)) {
-                    writeMessage(event.messageValue)
-                    _uiState.value = uiState.value.copy(messageValue = "")
-                }
+                trySendMessage(event.messageValue)
             }
 
             is ChatUiEvent.OnDeleteMessages -> {
                 deleteMessages()
             }
         }
+    }
+
+    private fun tryChangeMessageValue(newMessageValue: String) {
+        if (messageValueValidator(newMessageValue)) {
+            _uiState.value = uiState.value.copy(messageValue = newMessageValue)
+        }
+    }
+
+    private fun onMessageTextFieldFocusChanged(focusState: FocusState) {
+        _uiState.value = uiState.value.copy(isHintVisible = !focusState.isFocused)
+    }
+
+    private fun trySendMessage(messageValue: String) {
+        if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
+            writeMessage(messageValue)
+            _uiState.value = uiState.value.copy(messageValue = "")
+        }
+    }
+
+    private fun deleteMessages() {
+        messagesUseCases.deleteMessages()
     }
 
     private fun getMessages() {
@@ -85,9 +102,5 @@ class ChatViewModel @Inject constructor(
                 uiActionChannel.send(ChatUiAction.ShowSendErrorMessage)
             }
         }
-    }
-
-    private fun deleteMessages() {
-        messagesUseCases.deleteMessages()
     }
 }
