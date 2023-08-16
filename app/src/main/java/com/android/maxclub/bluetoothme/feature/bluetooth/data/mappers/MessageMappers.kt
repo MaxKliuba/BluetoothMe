@@ -7,10 +7,13 @@ fun ByteArray.toMessage(type: Message.Type): Message =
     String(this).toMessage(type)
 
 fun String.toMessage(type: Message.Type): Message {
-    val value = this.substringBefore(Message.MESSAGE_TERMINATOR)
+    val tag = this.substringBefore(Message.TAG_TERMINATOR, missingDelimiterValue = "")
+    val value = (if (tag.isNotEmpty()) this.substringAfter(Message.TAG_TERMINATOR) else this)
+        .substringBefore(Message.MESSAGE_TERMINATOR)
 
     return Message(
         type = type,
+        tag = tag,
         value = value,
         timestamp = Date().time,
     )

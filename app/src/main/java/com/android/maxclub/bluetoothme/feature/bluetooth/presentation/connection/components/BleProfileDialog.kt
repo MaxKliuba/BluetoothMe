@@ -112,7 +112,7 @@ fun BleProfileDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(text = stringResource(R.string.ble_profile_dialog_confirm_button_text))
+                Text(text = stringResource(R.string.ble_profile_dialog_confirm_button))
             }
         },
         modifier = modifier

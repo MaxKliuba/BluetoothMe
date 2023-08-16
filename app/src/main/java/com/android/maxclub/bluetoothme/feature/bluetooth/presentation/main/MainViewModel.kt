@@ -1,8 +1,9 @@
 package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main
 
+import android.app.Application
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
 import com.android.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
@@ -10,6 +11,7 @@ import com.android.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissio
 import com.android.maxclub.bluetoothme.core.util.Screen
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toFullString
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
@@ -18,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -28,7 +31,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val bluetoothUseCases: BluetoothUseCases,
     private val messagesUseCases: MessagesUseCases,
-) : ViewModel() {
+    application: Application,
+) : AndroidViewModel(application) {
+
     private val _uiState = mutableStateOf(
         MainUiState(
             bluetoothState = bluetoothUseCases.getState().value,
@@ -121,7 +126,15 @@ class MainViewModel @Inject constructor(
     private fun getState() {
         getStateJob?.cancel()
         getStateJob = bluetoothUseCases.getState()
+            .distinctUntilChangedBy { it::class }
             .onEach { state ->
+                if (_uiState.value.bluetoothState != state) {
+                    messagesUseCases.addMessage(
+                        messageType = Message.Type.Log,
+                        messageValue = state.toFullString(getApplication()),
+                    )
+                }
+
                 _uiState.update { it.copy(bluetoothState = state) }
             }
             .catch { e ->

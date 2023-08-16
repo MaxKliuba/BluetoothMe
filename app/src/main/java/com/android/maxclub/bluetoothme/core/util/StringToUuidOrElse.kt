@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util
+package com.android.maxclub.bluetoothme.core.util
 
 import java.util.UUID
 

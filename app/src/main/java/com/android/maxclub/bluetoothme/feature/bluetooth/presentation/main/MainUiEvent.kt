@@ -1,11 +1,11 @@
 package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main
 
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItemType
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
 
 sealed class MainUiEvent {
     object OnOpenNavigationDrawer : MainUiEvent()
-    data class OnSelectNavDrawerItem(val selectedItem: NavDrawerItemType) : MainUiEvent()
+    data class OnSelectNavDrawerItem(val selectedItem: NavDrawerItem.Type) : MainUiEvent()
     data class OnDestinationChanged(val route: String) : MainUiEvent()
     class OnRequestMissingPermissions(vararg val permissions: String) : MainUiEvent()
     object OnShowBluetoothPermissionRationaleDialog : MainUiEvent()

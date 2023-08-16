@@ -32,5 +32,7 @@ interface BluetoothRepository {
 
     fun writeMessage(message: Message)
 
+    fun addMessage(message: Message)
+
     fun deleteMessages()
 }

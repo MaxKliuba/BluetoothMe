@@ -15,7 +15,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileType
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toUuidOrElse
+import com.android.maxclub.bluetoothme.core.util.toUuidOrElse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -31,6 +31,7 @@ class ConnectionViewModel @Inject constructor(
     private val bluetoothUseCases: BluetoothUseCases,
     private val uuidValueValidator: UuidValueValidator,
 ) : ViewModel() {
+
     private val _uiState = mutableStateOf(
         ConnectionUiState(
             bluetoothState = bluetoothUseCases.getState().value,

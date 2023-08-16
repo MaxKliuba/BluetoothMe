@@ -21,16 +21,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerBadge
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItemType
 
 @Composable
 fun NavigationDrawer(
     drawerState: DrawerState,
     selectedItem: String,
     items: List<NavDrawerItem>,
-    onSelect: (NavDrawerItemType) -> Unit,
+    onSelect: (NavDrawerItem.Type) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -55,11 +53,11 @@ fun NavigationDrawer(
                         label = { Text(text = stringResource(id = item.label)) },
                         badge = {
                             when (item.badge) {
-                                is NavDrawerBadge.Text -> {
+                                is NavDrawerItem.Badge.Text -> {
                                     Text(text = item.badge.getValue())
                                 }
 
-                                is NavDrawerBadge.Button -> {
+                                is NavDrawerItem.Badge.Button -> {
                                     TextButton(
                                         onClick = item.badge.onClick,
                                         enabled = item.badge.isEnabled,

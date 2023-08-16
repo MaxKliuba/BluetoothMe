@@ -24,11 +24,12 @@ class ChatViewModel @Inject constructor(
     private val messagesUseCases: MessagesUseCases,
     private val messageValueValidator: MessageValueValidator,
 ) : ViewModel() {
+
     private val _uiState = mutableStateOf(
         ChatUiState(
             messages = emptyList(),
             messageValue = "",
-            isHintVisible = true,
+            isMessageFieldFocused = false,
         )
     )
     val uiState: State<ChatUiState> = _uiState
@@ -94,13 +95,13 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun onMessageTextFieldFocusChanged(focusState: FocusState) {
-        _uiState.update { it.copy(isHintVisible = !focusState.isFocused) }
+        _uiState.update { it.copy(isMessageFieldFocused = focusState.isFocused) }
     }
 
     private fun trySendMessage(messageValue: String) {
         if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
             writeMessage(messageValue)
-            _uiState.update { it.copy(messageValue = "") }
+            tryChangeMessageValue("")
         }
     }
 }

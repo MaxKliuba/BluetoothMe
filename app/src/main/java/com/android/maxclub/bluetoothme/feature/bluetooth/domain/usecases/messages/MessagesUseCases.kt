@@ -5,5 +5,6 @@ import javax.inject.Inject
 data class MessagesUseCases @Inject constructor(
     val getMessages: GetMessages,
     val writeMessage: WriteMessage,
+    val addMessage: AddMessage,
     val deleteMessages: DeleteMessages,
 )

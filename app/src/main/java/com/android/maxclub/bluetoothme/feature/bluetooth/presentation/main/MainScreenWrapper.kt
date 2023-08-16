@@ -31,9 +31,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.controllers.ControllersScreen
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.NavigationDrawer
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerBadge
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItemType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -153,7 +151,7 @@ fun MainScreenWrapper() {
     val onShowSendingErrorMessage: () -> Unit = remember {
         { viewModel.onEvent(MainUiEvent.OnShowSendingErrorMessage) }
     }
-    val onSelectNavDrawerItem: (NavDrawerItemType) -> Unit = remember {
+    val onSelectNavDrawerItem: (NavDrawerItem.Type) -> Unit = remember {
         { viewModel.onEvent(MainUiEvent.OnSelectNavDrawerItem(it)) }
     }
     val onEnableAdapter: () -> Unit = remember {
@@ -199,10 +197,10 @@ fun MainScreenWrapper() {
 
     val navDrawerItems = listOf(
         NavDrawerItem(
-            type = NavDrawerItemType.Route(Screen.Connection.route),
+            type = NavDrawerItem.Type.Route(Screen.Connection.route),
             icon = R.drawable.ic_bluetooth_connection_24,
             label = R.string.connection_screen_title,
-            badge = NavDrawerBadge.Button(
+            badge = NavDrawerItem.Badge.Button(
                 onClick = onClickConnectionBadge,
                 isEnabled = state.bluetoothState !is BluetoothState.On || state.favoriteBluetoothDevice != null,
                 withProgressIndicator = when (state.bluetoothState) {
@@ -217,17 +215,17 @@ fun MainScreenWrapper() {
             ),
         ),
         NavDrawerItem(
-            type = NavDrawerItemType.Route(Screen.Controllers.route),
+            type = NavDrawerItem.Type.Route(Screen.Controllers.route),
             icon = R.drawable.ic_controllers_24,
             label = R.string.controllers_screen_title,
             badge = null,
         ),
         NavDrawerItem(
-            type = NavDrawerItemType.Route(Screen.Chat.route),
+            type = NavDrawerItem.Type.Route(Screen.Chat.route),
             icon = R.drawable.ic_chat_24,
             label = R.string.chat_screen_title,
             badge = if (state.messagesCount > 0) {
-                NavDrawerBadge.Button(
+                NavDrawerItem.Badge.Button(
                     onClick = onClickMessagesBadge,
                     getValue = getMessagesCount,
                 )
@@ -236,7 +234,7 @@ fun MainScreenWrapper() {
             },
         ),
         NavDrawerItem(
-            type = NavDrawerItemType.Url(Screen.Help.route),
+            type = NavDrawerItem.Type.Url(Screen.Help.route),
             icon = R.drawable.ic_help_24,
             label = R.string.help_screen_title,
             badge = null,
@@ -325,18 +323,18 @@ private fun launchPermissionSettingsIntent(context: Context) {
 }
 
 private fun navigateToSelectedNawDrawerItem(
-    selectedItem: NavDrawerItemType,
+    selectedItem: NavDrawerItem.Type,
     onCloseNavDrawer: () -> Unit,
     onNavigate: (String) -> Unit,
     context: Context
 ) {
     when (selectedItem) {
-        is NavDrawerItemType.Route -> {
+        is NavDrawerItem.Type.Route -> {
             onCloseNavDrawer()
             onNavigate(selectedItem.value)
         }
 
-        is NavDrawerItemType.Url -> {
+        is NavDrawerItem.Type.Url -> {
             Toast.makeText(context, selectedItem.value, Toast.LENGTH_SHORT).show()
         }
     }

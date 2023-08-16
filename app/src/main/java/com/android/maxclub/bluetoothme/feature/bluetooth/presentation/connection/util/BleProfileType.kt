@@ -2,8 +2,15 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connectio
 
 import androidx.annotation.StringRes
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 
 enum class BleProfileType(@StringRes val titleResId: Int) {
-    DEFAULT(R.string.ble_profile_default),
-    CUSTOM(R.string.ble_profile_custom),
+    DEFAULT(R.string.ble_profile_default_button),
+    CUSTOM(R.string.ble_profile_custom_button),
 }
+
+fun BluetoothLeProfile.toBleProfileType(): BleProfileType =
+    when (this) {
+        is BluetoothLeProfile.Default -> BleProfileType.DEFAULT
+        is BluetoothLeProfile.Custom -> BleProfileType.CUSTOM
+    }

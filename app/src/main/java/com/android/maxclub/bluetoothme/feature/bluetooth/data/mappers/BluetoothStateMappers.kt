@@ -27,11 +27,31 @@ fun Int.toBluetoothState(device: BluetoothDevice? = null): BluetoothState =
 
 fun BluetoothState.toString(context: Context) =
     when (this) {
-        is BluetoothState.TurningOff -> context.getString(R.string.state_turning_off)
-        is BluetoothState.Off -> context.getString(R.string.state_off)
-        is BluetoothState.TurningOn -> context.getString(R.string.state_turning_on)
-        is BluetoothState.On.Connecting -> context.getString(R.string.state_connecting)
-        is BluetoothState.On.Connected -> context.getString(R.string.state_connected)
-        is BluetoothState.On.Disconnecting -> context.getString(R.string.state_disconnecting)
-        is BluetoothState.On.Disconnected -> context.getString(R.string.state_disconnected)
+        is BluetoothState.TurningOff -> context.getString(R.string.turning_off_state)
+        is BluetoothState.Off -> context.getString(R.string.turned_off_state)
+        is BluetoothState.TurningOn -> context.getString(R.string.turning_on_state)
+        is BluetoothState.On.Connecting -> context.getString(R.string.connecting_state)
+        is BluetoothState.On.Connected -> context.getString(R.string.connected_state)
+        is BluetoothState.On.Disconnecting -> context.getString(R.string.disconnecting_state)
+        is BluetoothState.On.Disconnected -> context.getString(R.string.disconnected_state)
+    }
+
+fun BluetoothState.toFullString(context: Context) =
+    when (this) {
+        is BluetoothState.TurningOff -> context.getString(R.string.turning_off_message)
+        is BluetoothState.Off -> context.getString(R.string.turned_off_message)
+        is BluetoothState.TurningOn -> context.getString(R.string.turning_on_message)
+        is BluetoothState.On.Connecting -> context.getString(
+            R.string.connecting_message, device?.name, device?.address
+        )
+
+        is BluetoothState.On.Connected -> context.getString(
+            R.string.connected_message, device?.name, device?.address
+        )
+
+        is BluetoothState.On.Disconnecting -> context.getString(
+            R.string.disconnecting_message, device?.name, device?.address
+        )
+
+        is BluetoothState.On.Disconnected -> context.getString(R.string.disconnected_message)
     }

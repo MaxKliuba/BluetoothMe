@@ -37,7 +37,7 @@ fun EnableAdapterPlaceholder(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.bluetooth_is_disabled_text),
+            text = stringResource(R.string.bluetooth_is_disabled_message),
             style = MaterialTheme.typography.titleMedium,
         )
 

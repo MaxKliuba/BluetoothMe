@@ -1,5 +1,6 @@
 package com.android.maxclub.bluetoothme.feature.bluetooth.data.repositories
 
+import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.di.BluetoothClassic
 import com.android.maxclub.bluetoothme.di.BluetoothLe
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothDevice
@@ -8,7 +9,6 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.Blueto
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothService
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.*
-import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessagesDataSource
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.repositories.BluetoothRepository
@@ -41,6 +41,7 @@ class BluetoothRepositoryImpl @Inject constructor(
             bluetoothLeService.getState(),
         )
             .merge()
+            .distinctUntilChanged()
             .onEach {
                 connectionType = if (it is BluetoothState.On.Connected) {
                     it.device?.type?.connectionType
@@ -85,6 +86,7 @@ class BluetoothRepositoryImpl @Inject constructor(
                     }
                 }
             }
+            .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
 
     override fun updateBluetoothDevice(device: BluetoothDevice) {
@@ -138,10 +140,14 @@ class BluetoothRepositoryImpl @Inject constructor(
             is ConnectionType.Classic -> bluetoothClassicService.write(message)
             is ConnectionType.Ble -> bluetoothLeService.write(message)
             else -> {
-                messagesDataSource.addMessage(message.copy(type = Message.Type.Error))
+                addMessage(message.copy(type = Message.Type.Error))
                 throw WriteMessageException(message)
             }
         }
+    }
+
+    override fun addMessage(message: Message) {
+        messagesDataSource.addMessage(message)
     }
 
     override fun deleteMessages() {

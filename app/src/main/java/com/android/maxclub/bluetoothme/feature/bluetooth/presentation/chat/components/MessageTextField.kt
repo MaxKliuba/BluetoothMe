@@ -41,7 +41,7 @@ fun MessageTextField(
                 IconButton(onClick = { onSend(value) }) {
                     Icon(
                         imageVector = Icons.Filled.Send,
-                        contentDescription = stringResource(R.string.send_button_text),
+                        contentDescription = stringResource(R.string.send_button),
                     )
                 }
             }

@@ -26,6 +26,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.InputMessageItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.LogMessageItem
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageTextField
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.OutputMessageItem
 import kotlinx.coroutines.flow.collectLatest
@@ -130,7 +131,7 @@ fun ChatScreen(
             ) {
                 items(
                     items = state.messages,
-                    key = { it.timestamp },
+//                    key = { it.timestamp },
                 ) { message ->
                     when (message.type) {
                         Message.Type.Input -> InputMessageItem(
@@ -149,13 +150,15 @@ fun ChatScreen(
                             hasError = true,
                             onSelect = onSelectMessage,
                         )
+
+                        Message.Type.Log -> LogMessageItem(message = message)
                     }
                 }
             }
 
             MessageTextField(
                 value = state.messageValue,
-                isHintVisible = state.isHintVisible,
+                isHintVisible = !state.isMessageFieldFocused && state.messageValue.isEmpty(),
                 onValueChange = onMessageValueChange,
                 onFocusChanged = onMessageTextFieldFocusChanged,
                 onSend = onSendMessage,

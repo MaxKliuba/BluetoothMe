@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.util
+package com.android.maxclub.bluetoothme.core.util
 
 import android.content.Context
 import android.text.format.DateFormat
