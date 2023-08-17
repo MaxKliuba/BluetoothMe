@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.controllers
+package com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

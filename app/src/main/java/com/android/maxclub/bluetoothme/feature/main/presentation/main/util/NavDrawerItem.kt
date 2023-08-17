@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util
+package com.android.maxclub.bluetoothme.feature.main.presentation.main.util
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

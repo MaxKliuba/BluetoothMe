@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main
+package com.android.maxclub.bluetoothme.feature.main.presentation.main
 
 import android.app.Activity
 import android.content.Context
@@ -28,10 +28,10 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.controllers.ControllersScreen
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.BluetoothPermissionRationaleDialog
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components.NavigationDrawer
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllersScreen
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main
+package com.android.maxclub.bluetoothme.feature.main.presentation.main
 
 import android.app.Application
 import androidx.compose.runtime.State

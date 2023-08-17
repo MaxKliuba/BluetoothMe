@@ -131,7 +131,6 @@ fun ChatScreen(
             ) {
                 items(
                     items = state.messages,
-//                    key = { it.timestamp },
                 ) { message ->
                     when (message.type) {
                         Message.Type.Input -> InputMessageItem(

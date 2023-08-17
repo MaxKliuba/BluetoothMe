@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components
+package com.android.maxclub.bluetoothme.feature.main.presentation.main.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon

@@ -1,8 +1,8 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main
+package com.android.maxclub.bluetoothme.feature.main.presentation.main
 
 import android.content.Intent
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 
 sealed class MainUiAction {
     class RequestMissingPermissions(vararg val permissions: String) : MainUiAction()

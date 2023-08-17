@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.components
+package com.android.maxclub.bluetoothme.feature.main.presentation.main.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 
 @Composable
 fun NavigationDrawer(

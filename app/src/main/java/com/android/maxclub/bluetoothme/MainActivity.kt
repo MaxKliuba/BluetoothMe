@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.main.MainScreenWrapper
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.MainScreenWrapper
 import com.android.maxclub.bluetoothme.ui.theme.BluetoothMeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
