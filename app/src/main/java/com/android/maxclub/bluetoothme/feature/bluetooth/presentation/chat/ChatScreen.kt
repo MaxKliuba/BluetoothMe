@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,9 +50,6 @@ fun ChatScreen(
 
     val onMessageValueChange: (String) -> Unit = remember {
         { viewModel.onEvent(ChatUiEvent.OnChangeMessageValue(it)) }
-    }
-    val onMessageTextFieldFocusChanged: (FocusState) -> Unit = remember {
-        { viewModel.onEvent(ChatUiEvent.OnMessageTextFieldFocusChanged(it)) }
     }
     val onSendMessage: (String) -> Unit = remember {
         { viewModel.onEvent(ChatUiEvent.OnSendMessage(it)) }
@@ -157,13 +153,9 @@ fun ChatScreen(
 
             MessageTextField(
                 value = state.messageValue,
-                isHintVisible = !state.isMessageFieldFocused && state.messageValue.isEmpty(),
                 onValueChange = onMessageValueChange,
-                onFocusChanged = onMessageTextFieldFocusChanged,
                 onSend = onSendMessage,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 4.dp)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

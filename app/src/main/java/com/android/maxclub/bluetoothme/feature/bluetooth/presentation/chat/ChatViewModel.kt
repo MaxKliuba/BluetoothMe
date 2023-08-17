@@ -2,7 +2,6 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.focus.FocusState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
@@ -29,7 +28,6 @@ class ChatViewModel @Inject constructor(
         ChatUiState(
             messages = emptyList(),
             messageValue = "",
-            isMessageFieldFocused = false,
         )
     )
     val uiState: State<ChatUiState> = _uiState
@@ -51,10 +49,6 @@ class ChatViewModel @Inject constructor(
 
             is ChatUiEvent.OnChangeMessageValue -> {
                 tryChangeMessageValue(event.messageValue)
-            }
-
-            is ChatUiEvent.OnMessageTextFieldFocusChanged -> {
-                onMessageTextFieldFocusChanged(event.focusState)
             }
 
             is ChatUiEvent.OnSendMessage -> {
@@ -92,10 +86,6 @@ class ChatViewModel @Inject constructor(
         if (messageValueValidator(newMessageValue)) {
             _uiState.update { it.copy(messageValue = newMessageValue) }
         }
-    }
-
-    private fun onMessageTextFieldFocusChanged(focusState: FocusState) {
-        _uiState.update { it.copy(isMessageFieldFocused = focusState.isFocused) }
     }
 
     private fun trySendMessage(messageValue: String) {

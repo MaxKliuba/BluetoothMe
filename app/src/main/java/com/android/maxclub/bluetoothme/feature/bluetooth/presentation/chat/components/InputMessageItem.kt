@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.core.util.format
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class)
@@ -43,7 +43,7 @@ fun InputMessageItem(
                     shape = backgroundShape,
                 )
                 .clip(backgroundShape)
-                .padding(start = 6.dp, top = 2.dp, end = 6.dp, bottom = 6.dp)
+                .padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 8.dp)
                 .align(Alignment.CenterStart)
                 .combinedClickable(
                     onClick = {},
@@ -53,9 +53,8 @@ fun InputMessageItem(
             Text(
                 text = message.toString().trim('\n'),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontSize = 16.sp,
                 style = MaterialTheme.typography.bodyMedium,
-                fontSize = 18.sp,
-                lineHeight = 16.sp,
             )
 
             Text(

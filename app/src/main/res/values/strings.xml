@@ -51,10 +51,11 @@
     <string name="ble_profile_dialog_confirm_button">OK</string>
 
     <string name="delete_messages_button">Delete messages</string>
-    <string name="message_hint">Message…</string>
+    <string name="message_placeholder">Message</string>
     <string name="send_button">Send</string>
     <string name="error_label">Error</string>
     <string name="send_error_message">Failed to send message</string>
     <string name="connect_button">Connect</string>
     <string name="messages_count_text">Input messages: %1$d\nOutput messages: %2$d</string>
+    <string name="clear_button">Clear</string>
 </resources>

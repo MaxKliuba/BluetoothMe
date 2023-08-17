@@ -26,8 +26,8 @@ fun LogMessageItem(
     ) {
         Text(
             text = message.toString().trim('\n'),
-            textAlign = TextAlign.Center,
             fontSize = 14.sp,
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
         )
     }
