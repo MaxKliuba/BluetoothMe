@@ -127,7 +127,7 @@ class BluetoothClassicService @Inject constructor(
                     device.copy(state = BluetoothDeviceState.Connected)
                 )
 
-                read()
+                startReading()
             } catch (iae: IllegalArgumentException) {
                 disconnect(device)
                 throw BluetoothConnectionException(device)
@@ -165,13 +165,24 @@ class BluetoothClassicService @Inject constructor(
         }
     }
 
-    private suspend fun read() =
+    private suspend fun startReading() =
         withContext(Dispatchers.IO) {
             while (socket?.isConnected == true) {
                 socket?.inputStream?.apply {
                     try {
-                        val message = bufferedReader().readLine()
-                        messagesDataSource.addMessage(message.toMessage(Message.Type.Input))
+                        val message = StringBuilder()
+
+                        while (true) {
+                            val currentChar = read()
+                            if (currentChar == -1 || currentChar.toChar() == Message.MESSAGE_TERMINATOR) {
+                                break
+                            }
+                            message.append(currentChar.toChar())
+                        }
+
+                        messagesDataSource.addMessage(
+                            message.toString().toMessage(Message.Type.Input)
+                        )
                     } catch (ioe: IOException) {
                         ioe.printStackTrace()
                     }

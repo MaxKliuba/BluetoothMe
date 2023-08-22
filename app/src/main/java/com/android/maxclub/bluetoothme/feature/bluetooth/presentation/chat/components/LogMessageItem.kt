@@ -25,7 +25,7 @@ fun LogMessageItem(
             .padding(horizontal = 16.dp, vertical = 2.dp)
     ) {
         Text(
-            text = message.toString().trim('\n'),
+            text = message.toMessageString(),
             fontSize = 14.sp,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,

@@ -134,7 +134,7 @@ class BluetoothLeService @Inject constructor(
         ) {
             super.onCharacteristicChanged(gatt, characteristic, value)
 
-            // read
+            // reading
             if (characteristic == profileManager?.readCharacteristic) {
                 synchronized(readBuffer) {
                     val data = characteristic.value
@@ -165,7 +165,7 @@ class BluetoothLeService @Inject constructor(
         ) {
             super.onCharacteristicWrite(gatt, characteristic, status)
 
-            // finish write
+            // finish writing
             if (characteristic == profileManager?.writeCharacteristic) {
                 synchronized(writeBuffer) {
                     writeBuffer.removeFirstOrNull()?.let { data ->
@@ -249,7 +249,7 @@ class BluetoothLeService @Inject constructor(
             throw WriteMessageException(message)
         }
 
-        // start write
+        // start writing
         synchronized(writeBuffer) {
             writeBuffer.addAll(
                 message.toByteArray()

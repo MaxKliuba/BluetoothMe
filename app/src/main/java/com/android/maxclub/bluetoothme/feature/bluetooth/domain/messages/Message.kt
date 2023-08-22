@@ -6,10 +6,11 @@ data class Message(
     val value: String,
     val timestamp: Long,
 ) {
+    fun toMessageString(): String = "${if (tag.isNotEmpty()) "$tag$TAG_TERMINATOR" else ""}$value"
+
     fun toByteArray(): ByteArray = toString().toByteArray()
 
-    override fun toString(): String =
-        "${if (tag.isNotEmpty()) "$tag$TAG_TERMINATOR" else ""}$value$MESSAGE_TERMINATOR"
+    override fun toString(): String = "${toMessageString()}$MESSAGE_TERMINATOR"
 
     sealed class Type {
         object Input : Type()
@@ -19,7 +20,7 @@ data class Message(
     }
 
     companion object {
-        const val TAG_TERMINATOR = '#'
+        const val TAG_TERMINATOR = '/'
         const val MESSAGE_TERMINATOR = '\n'
     }
 }

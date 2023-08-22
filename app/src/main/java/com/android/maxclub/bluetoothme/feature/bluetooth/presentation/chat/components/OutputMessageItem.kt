@@ -58,11 +58,11 @@ fun OutputMessageItem(
                     .align(Alignment.CenterEnd)
                     .combinedClickable(
                         onClick = {},
-                        onLongClick = { onSelect(message.toString()) },
+                        onLongClick = { onSelect(message.toMessageString()) },
                     )
             ) {
                 Text(
-                    text = message.toString().trim('\n'),
+                    text = message.toMessageString(),
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 16.sp,
                     style = MaterialTheme.typography.bodyMedium,

@@ -47,11 +47,11 @@ fun InputMessageItem(
                 .align(Alignment.CenterStart)
                 .combinedClickable(
                     onClick = {},
-                    onLongClick = { onSelect(message.toString()) },
+                    onLongClick = { onSelect(message.toMessageString()) },
                 )
         ) {
             Text(
-                text = message.toString().trim('\n'),
+                text = message.toMessageString(),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.bodyMedium,

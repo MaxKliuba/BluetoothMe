@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.android.maxclub.bluetoothme.R
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
@@ -40,7 +41,10 @@ fun MessageTextField(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Send,
+            keyboardType = KeyboardType.Uri,
+        ),
         keyboardActions = KeyboardActions(onSend = { onSend(value) }),
         singleLine = true,
         maxLines = 1,
