@@ -24,9 +24,7 @@ class ControllerRepositoryImpl @Inject constructor(
     override fun getControllersWithWidgetCount(): Flow<List<ControllerWithWidgetCount>> =
         controllerDao.getControllersWithWidgetCount()
             .map { list ->
-                list.map {
-                    it.toControllerWithWidgetCount()
-                }
+                list.map { it.toControllerWithWidgetCount() }
             }
             .flowOn(Dispatchers.IO)
 

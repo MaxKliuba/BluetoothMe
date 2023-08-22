@@ -15,15 +15,22 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ControllerDao {
 
+    @Transaction
     @Query(
         "SELECT controllers.*, COUNT(widgets.id) AS widgetCount " +
-                "FROM controllers LEFT JOIN widgets ON controllers.id = widgets.controllerId " +
+                "FROM controllers LEFT JOIN (SELECT * FROM widgets WHERE isDeleted = 0) AS widgets " +
+                "ON controllers.id = widgets.controllerId " +
+                "WHERE controllers.isDeleted = 0 " +
                 "GROUP BY controllers.id"
     )
     fun getControllersWithWidgetCount(): Flow<List<ControllerWithWidgetCountResult>>
 
     @Transaction
-    @Query("SELECT * FROM controllers WHERE id = :controllerId")
+    @Query(
+        "SELECT controllers.*, widgets.* " +
+                "FROM controllers LEFT JOIN (SELECT * FROM widgets WHERE isDeleted = 0) AS widgets " +
+                "WHERE controllers.id = :controllerId AND controllers.isDeleted = 0"
+    )
     fun getControllerWithWidgetsById(controllerId: Int): Flow<ControllerWithWidgetsResult>
 
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM controllers")

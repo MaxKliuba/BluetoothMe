@@ -58,4 +58,10 @@
     <string name="connect_button">Connect</string>
     <string name="messages_count_text">Input messages: %1$d\nOutput messages: %2$d</string>
     <string name="clear_button">Clear</string>
+
+    <string name="add_controller_button">Add controller</string>
+    <plurals name="widget_plural">
+        <item quantity="one">%1$d widget</item>
+        <item quantity="other">%1$d widgets</item>
+    </plurals>
 </resources>
