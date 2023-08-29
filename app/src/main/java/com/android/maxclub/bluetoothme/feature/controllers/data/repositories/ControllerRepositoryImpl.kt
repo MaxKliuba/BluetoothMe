@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 class ControllerRepositoryImpl @Inject constructor(
@@ -28,8 +29,8 @@ class ControllerRepositoryImpl @Inject constructor(
             }
             .flowOn(Dispatchers.IO)
 
-    override fun getControllerWithWidgetsById(controllerId: Int): Flow<ControllerWithWidgets> =
-        controllerDao.getControllerWithWidgetsById(controllerId)
+    override fun getControllerWithWidgetsById(controllerId: UUID): Flow<ControllerWithWidgets> =
+        controllerDao.getControllerWithWidgetsById(controllerId.toString())
             .map { it.toControllerWithWidgets() }
             .flowOn(Dispatchers.IO)
 
@@ -45,24 +46,19 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.insertControllers(controllerEntity)
         }
 
-    override suspend fun updateController(controller: Controller) =
+    override suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int) =
         withContext(Dispatchers.IO) {
-            controllerDao.updateControllers(controller.toControllerEntity())
+            controllerDao.updateControllerPositionById(controllerId.toString(), newPosition)
         }
 
-    override suspend fun updateControllerPositionById(controllerId: Int, newPosition: Int) =
+    override suspend fun deleteControllerById(controllerId: UUID) =
         withContext(Dispatchers.IO) {
-            controllerDao.updateControllerPositionById(controllerId, newPosition)
+            controllerDao.deleteControllerById(controllerId.toString())
         }
 
-    override suspend fun deleteControllerById(controllerId: Int) =
+    override suspend fun tryRestoreControllerById(controllerId: UUID) =
         withContext(Dispatchers.IO) {
-            controllerDao.deleteControllerById(controllerId)
-        }
-
-    override suspend fun tryRestoreControllerById(controllerId: Int) =
-        withContext(Dispatchers.IO) {
-            controllerDao.tryRestoreControllerById(controllerId)
+            controllerDao.tryRestoreControllerById(controllerId.toString())
         }
 
     override suspend fun deleteMarkedAsDeletedControllers() =
@@ -70,31 +66,21 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.deleteMarkedAsDeletedControllers()
         }
 
-    override suspend fun addWidget(widget: Widget) =
+    override suspend fun addWidgets(vararg widgets: Widget) =
         withContext(Dispatchers.IO) {
-            val widgetEntity = if (widget.position == -1) {
-                val nextPosition = controllerDao.getNextWidgetPosition(widget.controllerId)
-                widget.copy(position = nextPosition)
-            } else {
-                widget
-            }.toWidgetEntity()
+            val widgetEntities = widgets.map { it.toWidgetEntity() }
 
-            controllerDao.insertWidgets(widgetEntity)
+            controllerDao.insertWidgets(*widgetEntities.toTypedArray())
         }
 
-    override suspend fun updateWidget(widget: Widget) =
+    override suspend fun deleteWidgetById(widgetId: UUID) =
         withContext(Dispatchers.IO) {
-            controllerDao.updateWidgets(widget.toWidgetEntity())
+            controllerDao.deleteWidgetById(widgetId.toString())
         }
 
-    override suspend fun deleteWidgetById(widgetId: Int) =
+    override suspend fun tryRestoreWidgetById(widgetId: UUID) =
         withContext(Dispatchers.IO) {
-            controllerDao.deleteWidgetById(widgetId)
-        }
-
-    override suspend fun tryRestoreWidgetById(widgetId: Int) =
-        withContext(Dispatchers.IO) {
-            controllerDao.tryRestoreWidgetById(widgetId)
+            controllerDao.tryRestoreWidgetById(widgetId.toString())
         }
 
     override suspend fun deleteMarkedAsDeletedWidgets() =

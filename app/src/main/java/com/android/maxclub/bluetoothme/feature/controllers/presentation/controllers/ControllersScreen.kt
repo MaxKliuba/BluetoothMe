@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerWithWidgetCountItem
+import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ControllersScreen(
+fun ControllerListScreen(
     onOpenNavigationDrawer: () -> Unit,
+    onNavigateToAddEditControllerScreen: (UUID?) -> Unit,
     viewModel: ControllersViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
@@ -42,8 +44,7 @@ fun ControllersScreen(
         state = rememberTopAppBarState()
     )
 
-    val onAddNewController: () -> Unit = viewModel::addNewController
-    val onDeleteControllerById: (Int) -> Unit = viewModel::deleteControllerById
+    val onDeleteControllerById: (UUID) -> Unit = viewModel::deleteControllerById
 
     Scaffold(
         topBar = {
@@ -55,7 +56,7 @@ fun ControllersScreen(
                     IconButton(onClick = onOpenNavigationDrawer) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu_24),
-                            contentDescription = stringResource(id = R.string.app_name),
+                            contentDescription = stringResource(R.string.menu_button)
                         )
                     }
                 },
@@ -63,10 +64,10 @@ fun ControllersScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddNewController) {
+            FloatingActionButton(onClick = { onNavigateToAddEditControllerScreen(null) }) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.add_controller_button),
+                    contentDescription = stringResource(R.string.add_new_controller_button),
                 )
             }
         },
@@ -88,7 +89,7 @@ fun ControllersScreen(
                 ) { controllerWithWidgetCount ->
                     ControllerWithWidgetCountItem(
                         controllerWithWidgetCount = controllerWithWidgetCount,
-                        onClick = {},
+                        onClick = { onNavigateToAddEditControllerScreen(it) },
                         onSelect = onDeleteControllerById,
                         modifier = Modifier.animateItemPlacement(),
                     )

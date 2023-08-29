@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
@@ -27,7 +28,7 @@ class ChatViewModel @Inject constructor(
     private val _uiState = mutableStateOf(
         ChatUiState(
             messages = emptyList(),
-            messageValue = "",
+            messageValue = TextFieldValue(""),
         )
     )
     val uiState: State<ChatUiState> = _uiState
@@ -82,8 +83,8 @@ class ChatViewModel @Inject constructor(
         messagesUseCases.deleteMessages()
     }
 
-    private fun tryChangeMessageValue(newMessageValue: String) {
-        if (messageValueValidator(newMessageValue)) {
+    private fun tryChangeMessageValue(newMessageValue: TextFieldValue) {
+        if (messageValueValidator(newMessageValue.text)) {
             _uiState.update { it.copy(messageValue = newMessageValue) }
         }
     }
@@ -91,7 +92,7 @@ class ChatViewModel @Inject constructor(
     private fun trySendMessage(messageValue: String) {
         if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
             writeMessage(messageValue)
-            tryChangeMessageValue("")
+            tryChangeMessageValue(TextFieldValue(""))
         }
     }
 }

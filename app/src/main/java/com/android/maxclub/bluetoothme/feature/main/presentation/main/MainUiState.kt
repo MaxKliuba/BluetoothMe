@@ -9,7 +9,7 @@ data class MainUiState(
     val controllersCount: Int,
     val inputMessagesCount: Int,
     val outputMessagesCount: Int,
-    val selectedNavDrawerItem: String,
+    val currentDestination: String,
     val isBluetoothPermissionRationaleDialogVisible: Boolean,
 ) {
     val messagesCount: Int

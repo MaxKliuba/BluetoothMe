@@ -18,6 +18,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
@@ -48,14 +50,23 @@ fun ChatScreen(
         state = rememberTopAppBarState()
     )
 
-    val onMessageValueChange: (String) -> Unit = remember {
+    val onMessageValueChange: (TextFieldValue) -> Unit = remember {
         { viewModel.onEvent(ChatUiEvent.OnChangeMessageValue(it)) }
     }
     val onSendMessage: (String) -> Unit = remember {
         { viewModel.onEvent(ChatUiEvent.OnSendMessage(it)) }
     }
     val onSelectMessage: (String) -> Unit = remember {
-        { viewModel.onEvent(ChatUiEvent.OnChangeMessageValue(it)) }
+        {
+            viewModel.onEvent(
+                ChatUiEvent.OnChangeMessageValue(
+                    TextFieldValue(
+                        text = it,
+                        selection = TextRange(it.length)
+                    )
+                )
+            )
+        }
     }
     val onDeleteMessages: () -> Unit = remember {
         { viewModel.onEvent(ChatUiEvent.OnDeleteMessages) }
@@ -91,7 +102,7 @@ fun ChatScreen(
                     IconButton(onClick = onOpenNavigationDrawer) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu_24),
-                            contentDescription = stringResource(id = R.string.app_name)
+                            contentDescription = stringResource(R.string.menu_button)
                         )
                     }
                 },

@@ -18,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.core.util.Screen
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
@@ -28,13 +30,15 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllersScreen
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.AddEditControllerScreen
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllerListScreen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -241,6 +245,19 @@ fun MainScreenWrapper() {
         ),
     )
 
+    val onNavigateUp: () -> Unit = remember {
+        { navController.navigateUp() }
+    }
+    val onNavigateToAddEditControllerScreen: (UUID?) -> Unit = remember {
+        { controllerId ->
+            navController.navigate(
+                "${Screen.AddEditController.route}${
+                    controllerId?.let { "?${Screen.AddEditController.ARG_CONTROLLER_ID}=$controllerId" } ?: ""
+                }"
+            )
+        }
+    }
+
     val onDismissBluetoothPermissionRationaleDialog: () -> Unit = remember {
         { viewModel.onEvent(MainUiEvent.OnDismissBluetoothPermissionRationaleDialog) }
     }
@@ -260,7 +277,7 @@ fun MainScreenWrapper() {
     ) { paddingValues ->
         NavigationDrawer(
             drawerState = drawerState,
-            selectedItem = state.selectedNavDrawerItem,
+            currentDestination = state.currentDestination,
             items = navDrawerItems,
             onSelect = onSelectNavDrawerItem,
             modifier = Modifier.padding(paddingValues)
@@ -280,8 +297,23 @@ fun MainScreenWrapper() {
                 }
 
                 composable(route = Screen.Controllers.route) {
-                    ControllersScreen(
+                    ControllerListScreen(
                         onOpenNavigationDrawer = onOpenNavigationDrawer,
+                        onNavigateToAddEditControllerScreen = onNavigateToAddEditControllerScreen,
+                    )
+                }
+
+                composable(
+                    route = Screen.AddEditController.routeWithArgs,
+                    arguments = listOf(
+                        navArgument(name = Screen.AddEditController.ARG_CONTROLLER_ID) {
+                            type = NavType.StringType
+                            nullable = true
+                        }
+                    ),
+                ) {
+                    AddEditControllerScreen(
+                        onNavigateUp = onNavigateUp,
                     )
                 }
 

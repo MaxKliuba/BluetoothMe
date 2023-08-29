@@ -16,14 +16,15 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import com.android.maxclub.bluetoothme.R
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun MessageTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     onSend: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -32,8 +33,8 @@ fun MessageTextField(
         onValueChange = onValueChange,
         placeholder = { Text(text = stringResource(R.string.message_placeholder)) },
         trailingIcon = {
-            if (value.isNotEmpty()) {
-                IconButton(onClick = { onValueChange("") }) {
+            if (value.text.isNotEmpty()) {
+                IconButton(onClick = { onValueChange(TextFieldValue("")) }) {
                     Icon(
                         imageVector = Icons.Outlined.Clear,
                         contentDescription = stringResource(R.string.clear_button),
@@ -45,13 +46,13 @@ fun MessageTextField(
             imeAction = ImeAction.Send,
             keyboardType = KeyboardType.Uri,
         ),
-        keyboardActions = KeyboardActions(onSend = { onSend(value) }),
+        keyboardActions = KeyboardActions(onSend = { onSend(value.text) }),
         singleLine = true,
         maxLines = 1,
         modifier = modifier
             .onKeyEvent {
                 if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    onSend(value)
+                    onSend(value.text)
                 }
                 false
             }

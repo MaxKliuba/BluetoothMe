@@ -41,7 +41,7 @@ class MainViewModel @Inject constructor(
             controllersCount = 0,
             inputMessagesCount = 0,
             outputMessagesCount = 0,
-            selectedNavDrawerItem = Screen.Connection.route,
+            currentDestination = Screen.Connection.route,
             isBluetoothPermissionRationaleDialogVisible = false,
         )
     )
@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor(
             }
 
             is MainUiEvent.OnDestinationChanged -> {
-                setSelectedNavDrawerItem(event.route)
+                setCurrentDestination(event.route)
             }
 
             is MainUiEvent.OnRequestMissingPermissions -> {
@@ -215,8 +215,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun setSelectedNavDrawerItem(route: String) {
-        _uiState.update { it.copy(selectedNavDrawerItem = route) }
+    private fun setCurrentDestination(route: String) {
+        _uiState.update { it.copy(currentDestination = route) }
     }
 
     private fun setBluetoothPermissionRationaleDialogVisibility(isVisible: Boolean) {

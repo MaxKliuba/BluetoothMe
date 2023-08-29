@@ -5,8 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "controllers")
 data class ControllerEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey val id: String,
     val title: String,
+    val withAccelerometer: Boolean,
+    val withVoiceInput: Boolean,
+    val withRefresh: Boolean,
     val position: Int,
     val isDeleted: Boolean = false,
 )

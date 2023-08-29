@@ -8,18 +8,22 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import java.util.UUID
 
 fun ControllerEntity.toController(): Controller =
     Controller(
-        id = id,
+        id = UUID.fromString(id),
         title = title,
+        withAccelerometer = withAccelerometer,
+        withVoiceInput = withVoiceInput,
+        withRefresh = withRefresh,
         position = position,
     )
 
 fun WidgetEntity.toWidget(): Widget =
     Widget(
-        id = id,
-        controllerId = controllerId,
+        id = UUID.fromString(id),
+        controllerId = UUID.fromString(controllerId),
         title = title,
         position = position,
     )
@@ -33,20 +37,23 @@ fun ControllerWithWidgetCountResult.toControllerWithWidgetCount(): ControllerWit
 fun ControllerWithWidgetsResult.toControllerWithWidgets(): ControllerWithWidgets =
     ControllerWithWidgets(
         controller = controller.toController(),
-        widgets = widgets.map { it.toWidget() },
+        widgets = widgets.filterNot { it.isDeleted }.map { it.toWidget() },
     )
 
 fun Controller.toControllerEntity(): ControllerEntity =
     ControllerEntity(
-        id = id,
+        id = id.toString(),
         title = title,
+        withAccelerometer = withAccelerometer,
+        withVoiceInput = withVoiceInput,
+        withRefresh = withRefresh,
         position = position,
     )
 
 fun Widget.toWidgetEntity(): WidgetEntity =
     WidgetEntity(
-        id = id,
-        controllerId = controllerId,
+        id = id.toString(),
+        controllerId = controllerId.toString(),
         title = title,
         position = position,
     )

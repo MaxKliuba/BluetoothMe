@@ -16,8 +16,8 @@ import androidx.room.PrimaryKey
     ]
 )
 data class WidgetEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val controllerId: Int,
+    @PrimaryKey val id: String,
+    val controllerId: String,
     val title: String,
     val position: Int,
     val isDeleted: Boolean = false,

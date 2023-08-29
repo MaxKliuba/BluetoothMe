@@ -6,6 +6,9 @@
     <string name="chat_screen_title">Chat</string>
     <string name="help_screen_title">Help</string>
 
+    <string name="menu_button">Menu</string>
+    <string name="close_button">Close</string>
+
     <string name="turning_off_state">Disabling</string>
     <string name="turned_off_state">Disabled</string>
     <string name="turning_on_state">Enabling</string>
@@ -59,9 +62,16 @@
     <string name="messages_count_text">Input messages: %1$d\nOutput messages: %2$d</string>
     <string name="clear_button">Clear</string>
 
-    <string name="add_controller_button">Add controller</string>
+    <string name="add_new_controller_button">Add new Controller</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
         <item quantity="other">%1$d widgets</item>
     </plurals>
+
+    <string name="controller_title_placeholder">New Controller</string>
+    <string name="with_accelerometer_button">With Accelerometer</string>
+    <string name="with_voice_input_button">With Voice input</string>
+    <string name="with_refresh_button">With Refresh</string>
+    <string name="add_new_widget_button">Add new Widget</string>
+    <string name="apply_changes_button">Apply changes</string>
 </resources>

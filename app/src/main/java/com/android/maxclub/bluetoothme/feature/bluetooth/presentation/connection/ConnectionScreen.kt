@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -76,26 +77,26 @@ fun ConnectionScreen(
                 is ConnectionUiAction.ScrollToConnectedDevice -> {
                     launch {
                         delay(150)
-                        scrollState.animateScrollToItem(0)
+                        scrollState.scrollToItem(0)
                     }
                 }
             }
         }
     }
 
-    val onStartScan = {
-        viewModel.onEvent(ConnectionUiEvent.OnStartScan)
+    val onStartScan: () -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnStartScan) }
     }
-    val onStopScan = {
-        viewModel.onEvent(ConnectionUiEvent.OnStopScan)
+    val onStopScan: () -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnStopScan) }
     }
-    val onShowBluetoothSettings = {
-        viewModel.onEvent(ConnectionUiEvent.OnShowBluetoothSettings)
+    val onShowBluetoothSettings: () -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnShowBluetoothSettings) }
     }
-    val onClickIcon: (String) -> Unit = {
-        viewModel.onEvent(ConnectionUiEvent.OnShowDeviceType(it))
+    val onClickIcon: (String) -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnShowDeviceType(it)) }
     }
-    val onSelectConnectionType: (BluetoothDevice, ConnectionType) -> Unit =
+    val onSelectConnectionType: (BluetoothDevice, ConnectionType) -> Unit = remember {
         { device, connectionType ->
             viewModel.onEvent(
                 ConnectionUiEvent.OnUpdateBluetoothDevice(
@@ -103,7 +104,8 @@ fun ConnectionScreen(
                 )
             )
         }
-    val onReselectConnectionType: (BluetoothDevice, BluetoothLeProfile) -> Unit =
+    }
+    val onReselectConnectionType: (BluetoothDevice, BluetoothLeProfile) -> Unit = remember {
         { device, bleProfile ->
             val data = BleProfileDialogData(
                 device = device,
@@ -117,14 +119,15 @@ fun ConnectionScreen(
             )
             viewModel.onEvent(ConnectionUiEvent.OnShowBleProfileDialog(data))
         }
-    val onChangeBleProfileData: (BleProfileDialogData) -> Unit = {
-        viewModel.onEvent(ConnectionUiEvent.OnChangeBleProfileData(it))
     }
-    val onDismissBleProfileDialog: () -> Unit = {
-        viewModel.onEvent(ConnectionUiEvent.OnDismissBleProfileDialog)
+    val onChangeBleProfileData: (BleProfileDialogData) -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnChangeBleProfileData(it)) }
     }
-    val onConfirmBleProfileDialog: () -> Unit = {
-        viewModel.onEvent(ConnectionUiEvent.OnConfirmBleProfileDialog)
+    val onDismissBleProfileDialog: () -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnDismissBleProfileDialog) }
+    }
+    val onConfirmBleProfileDialog: () -> Unit = remember {
+        { viewModel.onEvent(ConnectionUiEvent.OnConfirmBleProfileDialog) }
     }
 
     state.bleProfileDialogData?.let { bleProfileDialogData ->
@@ -144,7 +147,7 @@ fun ConnectionScreen(
                     IconButton(onClick = onOpenNavigationDrawer) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu_24),
-                            contentDescription = stringResource(id = R.string.app_name)
+                            contentDescription = stringResource(R.string.menu_button)
                         )
                     }
                 },
@@ -186,75 +189,61 @@ fun ConnectionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            AnimatedVisibility(
-                visible = state.bluetoothState is BluetoothState.Off,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            if (state.bluetoothState is BluetoothState.Off) {
                 EnableAdapterPlaceholder(
                     onEnableAdapter = onEnableAdapter,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
 
-            AnimatedVisibility(
-                visible = state.bluetoothState is BluetoothState.On && state.devices.isEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
+            if (state.bluetoothState is BluetoothState.On && state.devices.isEmpty()) {
                 EmptyListPlaceholder(
                     onStartScan = onStartScan,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
 
-            Column(modifier = Modifier.fillMaxSize()) {
-                AnimatedVisibility(
-                    visible = state.isLoading,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
+            if (state.isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                )
+            }
+
+            if (state.bluetoothState is BluetoothState.On && state.devices.isNotEmpty()) {
+                LazyColumn(
+                    state = scrollState,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
+                    items(
+                        items = state.devices,
+                        key = { it.address },
+                    ) { device ->
+                        when (device.state) {
+                            BluetoothDeviceState.Connected -> BluetoothDeviceConnectedItem(
+                                device = device,
+                                onClickIcon = onClickIcon,
+                                onClickItem = onDisconnect,
+                                modifier = Modifier.animateItemPlacement(),
+                            )
 
-                AnimatedVisibility(
-                    visible = state.bluetoothState is BluetoothState.On && state.devices.isNotEmpty(),
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
-                ) {
-                    LazyColumn(
-                        state = scrollState,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        items(
-                            items = state.devices,
-                            key = { it.address },
-                        ) { device ->
-                            when (device.state) {
-                                BluetoothDeviceState.Connected -> BluetoothDeviceConnectedItem(
-                                    device = device,
-                                    onClickIcon = onClickIcon,
-                                    onClickItem = onDisconnect,
-                                    modifier = Modifier.animateItemPlacement(),
-                                )
+                            BluetoothDeviceState.Connecting,
+                            BluetoothDeviceState.Disconnecting -> BluetoothDeviceConnectingItem(
+                                device = device,
+                                onClickIcon = onClickIcon,
+                                onClickItem = onDisconnect,
+                                modifier = Modifier.animateItemPlacement(),
+                            )
 
-                                BluetoothDeviceState.Connecting,
-                                BluetoothDeviceState.Disconnecting -> BluetoothDeviceConnectingItem(
-                                    device = device,
-                                    onClickIcon = onClickIcon,
-                                    onClickItem = onDisconnect,
-                                    modifier = Modifier.animateItemPlacement(),
-                                )
-
-                                else -> BluetoothDeviceDisconnectedItem(
-                                    device = device,
-                                    onClickIcon = onClickIcon,
-                                    onClickItem = onConnect,
-                                    onSelectConnectionType = onSelectConnectionType,
-                                    onReselectConnectionType = onReselectConnectionType,
-                                    modifier = Modifier.animateItemPlacement(),
-                                )
-                            }
+                            else -> BluetoothDeviceDisconnectedItem(
+                                device = device,
+                                onClickIcon = onClickIcon,
+                                onClickItem = onConnect,
+                                onSelectConnectionType = onSelectConnectionType,
+                                onReselectConnectionType = onReselectConnectionType,
+                                modifier = Modifier.animateItemPlacement(),
+                            )
                         }
                     }
                 }

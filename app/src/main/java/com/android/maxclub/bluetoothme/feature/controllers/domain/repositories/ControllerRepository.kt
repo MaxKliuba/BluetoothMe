@@ -5,32 +5,29 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 interface ControllerRepository {
 
     fun getControllersWithWidgetCount(): Flow<List<ControllerWithWidgetCount>>
 
-    fun getControllerWithWidgetsById(controllerId: Int): Flow<ControllerWithWidgets>
+    fun getControllerWithWidgetsById(controllerId: UUID): Flow<ControllerWithWidgets>
 
     suspend fun addController(controller: Controller)
 
-    suspend fun updateController(controller: Controller)
+    suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
 
-    suspend fun updateControllerPositionById(controllerId: Int, newPosition: Int)
+    suspend fun deleteControllerById(controllerId: UUID)
 
-    suspend fun deleteControllerById(controllerId: Int)
-
-    suspend fun tryRestoreControllerById(controllerId: Int)
+    suspend fun tryRestoreControllerById(controllerId: UUID)
 
     suspend fun deleteMarkedAsDeletedControllers()
 
-    suspend fun addWidget(widget: Widget)
+    suspend fun addWidgets(vararg widgets: Widget)
 
-    suspend fun updateWidget(widget: Widget)
+    suspend fun deleteWidgetById(widgetId: UUID)
 
-    suspend fun deleteWidgetById(widgetId: Int)
-
-    suspend fun tryRestoreWidgetById(widgetId: Int)
+    suspend fun tryRestoreWidgetById(widgetId: UUID)
 
     suspend fun deleteMarkedAsDeletedWidgets()
 }

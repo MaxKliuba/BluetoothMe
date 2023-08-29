@@ -26,7 +26,7 @@ import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDr
 @Composable
 fun NavigationDrawer(
     drawerState: DrawerState,
-    selectedItem: String,
+    currentDestination: String,
     items: List<NavDrawerItem>,
     onSelect: (NavDrawerItem.Type) -> Unit,
     modifier: Modifier = Modifier,
@@ -34,6 +34,7 @@ fun NavigationDrawer(
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = items.any { it.type.value == currentDestination },
         drawerContent = {
             ModalDrawerSheet {
                 Text(
@@ -77,7 +78,7 @@ fun NavigationDrawer(
                                 null -> Unit
                             }
                         },
-                        selected = item.type.value == selectedItem,
+                        selected = item.type.value == currentDestination,
                         onClick = { onSelect(item.type) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                     )
