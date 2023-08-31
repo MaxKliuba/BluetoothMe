@@ -11,6 +11,7 @@ data class ControllerEntity(
     val withAccelerometer: Boolean,
     val withVoiceInput: Boolean,
     val withRefresh: Boolean,
+    val columnsCount: Int,
     val position: Int,
     val isDeleted: Boolean = false,
 )

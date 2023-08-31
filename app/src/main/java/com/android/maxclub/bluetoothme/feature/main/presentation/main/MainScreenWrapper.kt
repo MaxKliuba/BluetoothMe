@@ -257,6 +257,7 @@ fun MainScreenWrapper() {
             )
         }
     }
+    val onDeleteController: (UUID) -> Unit = viewModel::deleteController
 
     val onDismissBluetoothPermissionRationaleDialog: () -> Unit = remember {
         { viewModel.onEvent(MainUiEvent.OnDismissBluetoothPermissionRationaleDialog) }
@@ -313,6 +314,7 @@ fun MainScreenWrapper() {
                     ),
                 ) {
                     AddEditControllerScreen(
+                        onDeleteController = onDeleteController,
                         onNavigateUp = onNavigateUp,
                     )
                 }

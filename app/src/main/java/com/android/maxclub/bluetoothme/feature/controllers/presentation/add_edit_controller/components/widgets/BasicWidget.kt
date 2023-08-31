@@ -33,6 +33,7 @@ import java.util.UUID
 @Composable
 fun BasicWidget(
     widget: Widget,
+    columnsCount: Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
     onChangeReadOnly: (UUID, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
@@ -42,7 +43,7 @@ fun BasicWidget(
     content: @Composable BoxScope.() -> Unit,
 ) {
     Card(
-        onClick = { println("onClick()") },
+        onClick = {  },
         modifier = modifier.height(120.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -50,7 +51,10 @@ fun BasicWidget(
                 onClick = {
                     onChangeSize(
                         widget.id,
-                        WidgetSize.values()[(widget.size.ordinal + 1) % WidgetSize.values().size]
+                        WidgetSize.values()[
+                            (widget.size.ordinal + 1)
+                                    % minOf(WidgetSize.values().size, columnsCount)
+                        ]
                     )
                 },
                 modifier = Modifier
@@ -61,6 +65,7 @@ fun BasicWidget(
                     painter = painterResource(
                         id = when (widget.size) {
                             WidgetSize.SMALL -> R.drawable.ic_zoom_out_24
+                            WidgetSize.MIDDLE -> R.drawable.ic_zoom_out_24
                             WidgetSize.LARGE -> R.drawable.ic_zoom_in_24
                         }
                     ),
@@ -92,7 +97,7 @@ fun BasicWidget(
             if (isReadOnlyButtonVisible) {
                 FilledIconToggleButton(
                     checked = widget.readOnly,
-                    onCheckedChange = { onChangeReadOnly(widget.id, it)},
+                    onCheckedChange = { onChangeReadOnly(widget.id, it) },
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .size(36.dp)

@@ -5,10 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.ControllerEntity
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.WidgetEntity
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetCountResult
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetsResult
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -38,6 +40,9 @@ interface ControllerDao {
     @Query("UPDATE controllers SET position = :newPosition WHERE id = :controllerId")
     suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
 
+    @Update
+    suspend fun updateControllers(vararg controllers: ControllerEntity)
+
     @Query("UPDATE controllers SET isDeleted = 1 WHERE id = :controllerId")
     suspend fun deleteControllerById(controllerId: UUID)
 
@@ -47,8 +52,22 @@ interface ControllerDao {
     @Query("DELETE FROM controllers WHERE isDeleted = 1")
     suspend fun deleteMarkedAsDeletedControllers()
 
+    /* Widgets */
+
+    @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM widgets WHERE controllerId = :controllerId")
+    fun getNextWidgetPosition(controllerId: UUID): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWidgets(vararg widgets: WidgetEntity)
+
+    @Query("UPDATE widgets SET size = :newSize WHERE id = :widgetId")
+    suspend fun updateWidgetSizeById(widgetId: UUID, newSize: WidgetSize)
+
+    @Query("UPDATE widgets SET readOnly = :readOnly WHERE id = :widgetId")
+    suspend fun updateWidgetReadOnlyById(widgetId: UUID, readOnly: Boolean)
+
+    @Query("UPDATE widgets SET position = :newPosition WHERE id = :widgetId")
+    suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
 
     @Query("UPDATE widgets SET isDeleted = 1 WHERE id = :widgetId")
     suspend fun deleteWidgetById(widgetId: UUID)

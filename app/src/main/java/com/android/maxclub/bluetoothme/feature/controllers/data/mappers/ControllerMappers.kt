@@ -14,6 +14,7 @@ fun ControllerEntity.toController(): Controller =
         withAccelerometer = withAccelerometer,
         withVoiceInput = withVoiceInput,
         withRefresh = withRefresh,
+        columnsCount = columnsCount,
         position = position,
     )
 
@@ -36,5 +37,6 @@ fun Controller.toControllerEntity(): ControllerEntity =
         withAccelerometer = withAccelerometer,
         withVoiceInput = withVoiceInput,
         withRefresh = withRefresh,
+        columnsCount = columnsCount,
         position = position,
     )

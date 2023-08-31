@@ -9,6 +9,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,11 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.updateControllerPositionById(controllerId, newPosition)
         }
 
+    override suspend fun updateController(controller: Controller) =
+        withContext(Dispatchers.IO) {
+            controllerDao.updateControllers(controller.toControllerEntity())
+        }
+
     override suspend fun deleteControllerById(controllerId: UUID) =
         withContext(Dispatchers.IO) {
             controllerDao.deleteControllerById(controllerId)
@@ -66,11 +72,31 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.deleteMarkedAsDeletedControllers()
         }
 
-    override suspend fun addWidgets(vararg widgets: Widget) =
+    override suspend fun addWidget(widget: Widget) =
         withContext(Dispatchers.IO) {
-            val widgetEntities = widgets.map { it.toWidgetEntity() }
+            val widgetEntity = if (widget.position == -1) {
+                val nextPosition = controllerDao.getNextWidgetPosition(widget.controllerId)
+                widget.toWidgetEntity().copy(position = nextPosition)
+            } else {
+                widget.toWidgetEntity()
+            }
 
-            controllerDao.insertWidgets(*widgetEntities.toTypedArray())
+            controllerDao.insertWidgets(widgetEntity)
+        }
+
+    override suspend fun updateWidgetSizeById(widgetId: UUID, newSize: WidgetSize) =
+        withContext(Dispatchers.IO) {
+            controllerDao.updateWidgetSizeById(widgetId, newSize)
+        }
+
+    override suspend fun updateWidgetReadOnlyById(widgetId: UUID, readOnly: Boolean) =
+        withContext(Dispatchers.IO) {
+            controllerDao.updateWidgetReadOnlyById(widgetId, readOnly)
+        }
+
+    override suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int) =
+        withContext(Dispatchers.IO) {
+            controllerDao.updateWidgetPositionById(widgetId, newPosition)
         }
 
     override suspend fun deleteWidgetById(widgetId: UUID) =

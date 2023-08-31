@@ -7,6 +7,7 @@
     <string name="help_screen_title">Help</string>
 
     <string name="menu_button">Menu</string>
+    <string name="back_button">Back</string>
     <string name="close_button">Close</string>
 
     <string name="turning_off_state">Disabling</string>
@@ -63,6 +64,7 @@
     <string name="clear_button">Clear</string>
 
     <string name="add_new_controller_button">Add new Controller</string>
+    <string name="delete_controller_button">Delete Controller</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
         <item quantity="other">%1$d widgets</item>
@@ -78,4 +80,5 @@
     <string name="read_only_button">Read-only</string>
     <string name="edit_widget_button">Edit Widget</string>
     <string name="apply_changes_button">Apply changes</string>
+    <string name="columns_count_button">Number of columns</string>
 </resources>

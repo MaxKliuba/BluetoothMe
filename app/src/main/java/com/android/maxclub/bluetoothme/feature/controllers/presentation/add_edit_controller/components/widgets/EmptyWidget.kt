@@ -9,6 +9,7 @@ import java.util.UUID
 @Composable
 fun EmptyWidget(
     widget: Widget.Empty,
+    columnsCount: Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
     onDelete: (UUID) -> Unit,
     onEdit: () -> Unit,
@@ -16,6 +17,7 @@ fun EmptyWidget(
 ) {
     BasicWidget(
         widget = widget,
+        columnsCount = columnsCount,
         isReadOnlyButtonVisible = false,
         onChangeSize = onChangeSize,
         onChangeReadOnly = { _, _ -> },

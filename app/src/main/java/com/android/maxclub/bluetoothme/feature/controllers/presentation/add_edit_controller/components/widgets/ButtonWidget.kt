@@ -15,6 +15,7 @@ import java.util.UUID
 @Composable
 fun ButtonWidget(
     widget: Widget.Button,
+    columnsCount:  Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
     onChangeReadOnly: (UUID, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
@@ -23,6 +24,7 @@ fun ButtonWidget(
 ) {
     BasicWidget(
         widget = widget,
+        columnsCount = columnsCount,
         onChangeSize = onChangeSize,
         onChangeReadOnly = onChangeReadOnly,
         onDelete = onDelete,
@@ -31,7 +33,7 @@ fun ButtonWidget(
     ) {
         FilledIconButton(
             onClick = {},
-            modifier = Modifier.size(72.dp)
+            modifier = Modifier.size(64.dp)
         ) {
             Icon(imageVector = Icons.Default.PowerSettingsNew, contentDescription = null)
         }

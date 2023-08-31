@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.Screen
+import com.android.maxclub.bluetoothme.core.util.debounce
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
@@ -30,30 +31,26 @@ class AddEditControllerViewModel @Inject constructor(
     private val getControllerWithWidgetsUseCase: GetControllerWithWidgetsById,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val controllerId: UUID? =
+    private var controllerId: UUID? =
         savedStateHandle.get<String>(Screen.AddEditController.ARG_CONTROLLER_ID)?.let {
             UUID.fromString(it)
         }
 
-    private val _uiState = mutableStateOf(
-        if (controllerId == null) {
-            AddEditControllerUiState.Success(
-                controllerTitle = TextFieldValue(""),
-                controller = Controller(
-                    title = "",
-                    withAccelerometer = false,
-                    withVoiceInput = false,
-                    withRefresh = false,
-                ),
-                widgets = emptyList(),
-            )
-        } else {
-            AddEditControllerUiState.Loading(controllerId)
-        }
+    private val _uiState = mutableStateOf<AddEditControllerUiState>(
+        AddEditControllerUiState.Loading(controllerId ?: UUID.randomUUID())
     )
     val uiState: State<AddEditControllerUiState> = _uiState
 
     private var getControllerWithWidgetsJob: Job? = null
+
+    private val onUpdateControllerTitle: (String) -> Unit =
+        viewModelScope.debounce { title ->
+            (_uiState.value as? AddEditControllerUiState.Success)?.let {
+                viewModelScope.launch {
+                    controllerRepository.updateController(it.controller.copy(title = title))
+                }
+            }
+        }
 
     init {
         (_uiState.value as? AddEditControllerUiState.Loading)?.let {
@@ -63,107 +60,115 @@ class AddEditControllerViewModel @Inject constructor(
 
     private fun getControllerWithWidgetsById(controllerId: UUID) {
         getControllerWithWidgetsJob?.cancel()
-        getControllerWithWidgetsJob = getControllerWithWidgetsUseCase(controllerId)
-            .onStart {
-                _uiState.update { AddEditControllerUiState.Loading(controllerId) }
-            }
-            .onEach { controllerWithWidgets ->
-                val controllerTitle = controllerWithWidgets.controller.title
-
-                _uiState.update {
-                    AddEditControllerUiState.Success(
-                        controllerTitle = TextFieldValue(
-                            text = controllerTitle,
-                            selection = TextRange(controllerTitle.length)
-                        ),
-                        controller = controllerWithWidgets.controller,
-                        widgets = controllerWithWidgets.widgets,
+        getControllerWithWidgetsJob = viewModelScope.launch {
+            if (this@AddEditControllerViewModel.controllerId == null) {
+                controllerRepository.addController(
+                    Controller(
+                        id = controllerId,
+                        title = "",
                     )
-                }
-            }
-            .catch { it.printStackTrace() }
-            .launchIn(viewModelScope)
-    }
-
-    fun onTitleFocused() {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update { state.copy(isTitleFocused = true) }
-        }
-    }
-
-    fun onTitleChange(value: TextFieldValue) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(
-                    controllerTitle = value,
-                    controller = state.controller.copy(title = value.text)
                 )
+
+                this@AddEditControllerViewModel.controllerId = controllerId
+            }
+
+            getControllerWithWidgetsUseCase(controllerId)
+                .onStart {
+                    _uiState.update { AddEditControllerUiState.Loading(controllerId) }
+                }
+                .onEach { controllerWithWidgets ->
+                    val controllerTitle = controllerWithWidgets.controller.title
+
+                    _uiState.update {
+                        AddEditControllerUiState.Success(
+                            controllerTitle = if (it is AddEditControllerUiState.Success
+                                && it.controllerTitle.text == controllerTitle
+                            ) {
+                                it.controllerTitle
+                            } else {
+                                TextFieldValue(
+                                    text = controllerTitle,
+                                    selection = TextRange(controllerTitle.length)
+                                )
+                            },
+                            controller = controllerWithWidgets.controller,
+                            widgets = controllerWithWidgets.widgets,
+                        )
+                    }
+                }
+                .catch { it.printStackTrace() }
+                .launchIn(this)
+        }
+    }
+
+    fun updateControllerTitle(value: TextFieldValue) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+            if (state.controller.title != value.text) {
+                onUpdateControllerTitle(value.text)
+            }
+            _uiState.update { state.copy(controllerTitle = value) }
+        }
+    }
+
+    fun updateControllerWithAccelerometer(checked: Boolean) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let {
+            viewModelScope.launch {
+                controllerRepository.updateController(it.controller.copy(withAccelerometer = checked))
             }
         }
     }
 
-    fun onChangeWithAccelerometer(checked: Boolean) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(controller = state.controller.copy(withAccelerometer = checked))
+    fun updateControllerWithVoiceInput(checked: Boolean) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let {
+            viewModelScope.launch {
+                controllerRepository.updateController(it.controller.copy(withVoiceInput = checked))
             }
         }
     }
 
-    fun onChangeWithVoiceInput(checked: Boolean) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(controller = state.controller.copy(withVoiceInput = checked))
+    fun updateControllerWithRefresh(checked: Boolean) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let {
+            viewModelScope.launch {
+                controllerRepository.updateController(it.controller.copy(withRefresh = checked))
             }
         }
     }
 
-    fun onChangeWithRefresh(checked: Boolean) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(controller = state.controller.copy(withRefresh = checked))
+    fun updateControllerColumnCount(newColumnsCount: Int) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let {
+            viewModelScope.launch {
+                controllerRepository.updateController(it.controller.copy(columnsCount = newColumnsCount))
             }
         }
     }
 
     fun addWidget(widget: Widget) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(
-                    widgets = state.widgets
-                        .plus(widget)
-                        .sortedBy { it.position }
-                )
-            }
+        viewModelScope.launch {
+            controllerRepository.addWidget(widget)
         }
     }
 
     fun updateWidgetSize(widgetId: UUID, newSize: WidgetSize) {
-        // TODO
-    }
-
-    fun updateWidgetReadOnly(widgetId: UUID, readOnly: Boolean) {
-        // TODO
-    }
-
-    fun deleteWidget(widgetId: UUID) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            _uiState.update {
-                state.copy(
-                    widgets = state.widgets
-                        .filterNot { it.id == widgetId }
-                        .sortedBy { it.position }
-                )
-            }
+        viewModelScope.launch {
+            controllerRepository.updateWidgetSizeById(widgetId, newSize)
         }
     }
 
-    fun applyChanges() {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            viewModelScope.launch {
-                controllerRepository.addController(state.controller)
-                controllerRepository.addWidgets(*state.widgets.toTypedArray())
-            }
+    fun updateWidgetReadOnly(widgetId: UUID, readOnly: Boolean) {
+        viewModelScope.launch {
+            controllerRepository.updateWidgetReadOnlyById(widgetId, readOnly)
+        }
+    }
+
+    fun updateWidgetPosition(widgetId: UUID, newPosition: Int) {
+        viewModelScope.launch {
+            controllerRepository.updateWidgetPositionById(widgetId, newPosition)
+        }
+    }
+
+    fun deleteWidget(widgetId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.deleteWidgetById(widgetId)
         }
     }
 }

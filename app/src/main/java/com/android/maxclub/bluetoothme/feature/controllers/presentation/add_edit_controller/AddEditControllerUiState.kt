@@ -8,7 +8,6 @@ import java.util.UUID
 sealed class AddEditControllerUiState {
     data class Loading(val controllerId: UUID) : AddEditControllerUiState()
     data class Success(
-        val isTitleFocused: Boolean = false,
         val controllerTitle: TextFieldValue,
         val controller: Controller,
         val widgets: List<Widget>,

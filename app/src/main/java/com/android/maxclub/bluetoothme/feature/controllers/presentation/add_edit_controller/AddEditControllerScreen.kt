@@ -10,10 +10,12 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconToggleButton
@@ -23,13 +25,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,12 +44,15 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.TitleTextField
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.ButtonWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.EmptyWidget
+import kotlinx.coroutines.delay
+import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditControllerScreen(
     onNavigateUp: () -> Unit,
+    onDeleteController: (UUID) -> Unit,
     viewModel: AddEditControllerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
@@ -55,33 +60,29 @@ fun AddEditControllerScreen(
     val inputService = LocalTextInputService.current
     val focusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(key1 = Unit) {
+        delay(100) // TODO
+        focusRequester.requestFocus()
+        inputService?.hideSoftwareKeyboard()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    state.let { state ->
-                        if (state is AddEditControllerUiState.Success) {
-                            TitleTextField(
-                                value = state.controllerTitle,
-                                onValueChange = viewModel::onTitleChange,
-                                modifier = Modifier
-                                    .focusRequester(focusRequester)
-                                    .onGloballyPositioned {
-                                        if (!state.isTitleFocused) {
-                                            focusRequester.requestFocus()
-                                            inputService?.hideSoftwareKeyboard()
-                                            viewModel.onTitleFocused()
-                                        }
-                                    },
-                            )
-                        }
+                    (state as? AddEditControllerUiState.Success)?.let {
+                        TitleTextField(
+                            value = it.controllerTitle,
+                            onValueChange = viewModel::updateControllerTitle,
+                            modifier = Modifier.focusRequester(focusRequester),
+                        )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.close_button),
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button),
                         )
                     }
                 },
@@ -89,7 +90,7 @@ fun AddEditControllerScreen(
                     (state as? AddEditControllerUiState.Success)?.let { state ->
                         FilledIconToggleButton(
                             checked = state.controller.withAccelerometer,
-                            onCheckedChange = viewModel::onChangeWithAccelerometer,
+                            onCheckedChange = viewModel::updateControllerWithAccelerometer,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.MyLocation,
@@ -99,7 +100,7 @@ fun AddEditControllerScreen(
 
                         FilledIconToggleButton(
                             checked = state.controller.withVoiceInput,
-                            onCheckedChange = viewModel::onChangeWithVoiceInput,
+                            onCheckedChange = viewModel::updateControllerWithVoiceInput,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Mic,
@@ -109,7 +110,7 @@ fun AddEditControllerScreen(
 
                         FilledIconToggleButton(
                             checked = state.controller.withRefresh,
-                            onCheckedChange = viewModel::onChangeWithRefresh,
+                            onCheckedChange = viewModel::updateControllerWithRefresh,
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_get_refresh_state_24),
@@ -120,39 +121,83 @@ fun AddEditControllerScreen(
                 },
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.applyChanges()
-                    onNavigateUp()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = stringResource(R.string.apply_changes_button),
+        bottomBar = {
+            (state as? AddEditControllerUiState.Success)?.let {
+                BottomAppBar(
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                onDeleteController(it.controller.id)
+                                onNavigateUp()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(id = R.string.delete_controller_button)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                viewModel.updateControllerColumnCount(
+                                    (it.controller.columnsCount + 1) % 2 + 2
+                                )
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    id = when (it.controller.columnsCount) {
+                                        2 -> R.drawable.ic_two_column_24
+                                        else -> R.drawable.ic_three_column_24
+                                    }
+                                ),
+                                contentDescription = stringResource(R.string.columns_count_button)
+                            )
+                        }
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(onClick = onNavigateUp) {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = stringResource(R.string.apply_changes_button),
+                            )
+                        }
+                    }
                 )
             }
         },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             state.let { state ->
                 when (state) {
                     is AddEditControllerUiState.Success -> {
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(count = 2),
-                            contentPadding = PaddingValues(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            columns = GridCells.Fixed(count = state.controller.columnsCount),
+                            contentPadding = PaddingValues(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(
                                 items = state.widgets,
                                 key = { it.id },
-                                span = { GridItemSpan(it.size.span) },
+                                span = {
+                                    GridItemSpan(
+                                        minOf(
+                                            it.size.span,
+                                            state.controller.columnsCount
+                                        )
+                                    )
+                                },
                             ) { widget ->
                                 when (widget) {
                                     is Widget.Empty -> EmptyWidget(
                                         widget = widget,
+                                        columnsCount = state.controller.columnsCount,
                                         onChangeSize = viewModel::updateWidgetSize,
                                         onDelete = viewModel::deleteWidget,
                                         onEdit = { /*TODO*/ },
@@ -160,6 +205,7 @@ fun AddEditControllerScreen(
 
                                     is Widget.Button -> ButtonWidget(
                                         widget = widget,
+                                        columnsCount = state.controller.columnsCount,
                                         onChangeSize = viewModel::updateWidgetSize,
                                         onChangeReadOnly = viewModel::updateWidgetReadOnly,
                                         onDelete = viewModel::deleteWidget,
@@ -171,14 +217,14 @@ fun AddEditControllerScreen(
                             item {
                                 AddNewWidgetItem(
                                     onClick = {
+                                        /* TODO */
                                         viewModel.addWidget(
                                             Widget.Button(
                                                 controllerId = state.controller.id,
                                                 messageTag = "led",
-                                                title = "New",
+                                                title = "Test",
                                                 size = WidgetSize.SMALL,
                                                 readOnly = false,
-                                                position = state.widgets.size,
                                             )
                                         )
                                     }

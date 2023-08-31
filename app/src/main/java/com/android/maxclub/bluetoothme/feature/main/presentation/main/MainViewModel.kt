@@ -16,6 +16,8 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.messages.MessagesUseCases
+import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.AddEditControllerUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -25,12 +27,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val bluetoothUseCases: BluetoothUseCases,
     private val messagesUseCases: MessagesUseCases,
+    private val controllerRepository: ControllerRepository,
     application: Application,
 ) : AndroidViewModel(application) {
 
@@ -120,6 +124,12 @@ class MainViewModel @Inject constructor(
                     )
                 )
             }
+        }
+    }
+
+    fun deleteController(controllerId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.deleteControllerById(controllerId)
         }
     }
 

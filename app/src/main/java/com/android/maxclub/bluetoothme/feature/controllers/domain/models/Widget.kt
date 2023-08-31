@@ -12,30 +12,21 @@ sealed class Widget(
     val position: Int,
 ) {
 
-    abstract val value: String
+    abstract val messageValue: String
 
-    abstract fun setStateFromValue(value: String)
-
-    abstract fun copy(
-        readOnly: Boolean = this.readOnly,
-        position: Int = this.position
-    ): Widget
+    abstract fun copyWithState(stateValue: String): Widget
 
     class Empty(
         id: UUID = UUID.randomUUID(),
         controllerId: UUID,
         size: WidgetSize,
-        position: Int,
+        position: Int = -1,
     ) : Widget(id, controllerId, "", "", size, true, position) {
 
-        override val value: String
+        override val messageValue: String
             get() = ""
 
-        override fun setStateFromValue(value: String) {
-        }
-
-        override fun copy(readOnly: Boolean, position: Int): Widget =
-            Empty(id, controllerId, size, position)
+        override fun copyWithState(stateValue: String) = this
     }
 
     class Button(
@@ -45,21 +36,17 @@ sealed class Widget(
         title: String,
         size: WidgetSize,
         readOnly: Boolean,
-        position: Int,
-        state: Boolean = false,
+        position: Int = -1,
+        val state: Boolean = false,
     ) : Widget(id, controllerId, messageTag, title, size, readOnly, position) {
 
-        var state: Boolean = state
-            private set
-
-        override val value: String
+        override val messageValue: String
             get() = if (state) "1" else "0"
 
-        override fun setStateFromValue(value: String) {
-            state = value != "0"
-        }
-
-        override fun copy(readOnly: Boolean, position: Int): Widget =
-            Button(id, controllerId, messageTag, title, size, readOnly, position, state)
+        override fun copyWithState(stateValue: String): Widget =
+            Button(
+                id, controllerId, messageTag, title, size, readOnly, position,
+                state = stateValue != "0"
+            )
     }
 }
