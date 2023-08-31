@@ -71,7 +71,11 @@
     <string name="controller_title_placeholder">New Controller</string>
     <string name="with_accelerometer_button">With Accelerometer</string>
     <string name="with_voice_input_button">With Voice input</string>
-    <string name="with_refresh_button">With Refresh</string>
+    <string name="with_refresh_button">With State Refresh</string>
     <string name="add_new_widget_button">Add new Widget</string>
+    <string name="change_size_button">Change size</string>
+    <string name="delete_widget_button">Delete Widget</string>
+    <string name="read_only_button">Read-only</string>
+    <string name="edit_widget_button">Edit Widget</string>
     <string name="apply_changes_button">Apply changes</string>
 </resources>

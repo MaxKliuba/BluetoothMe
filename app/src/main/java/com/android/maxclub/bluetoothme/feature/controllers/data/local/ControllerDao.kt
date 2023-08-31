@@ -10,6 +10,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.W
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetCountResult
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetsResult
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface ControllerDao {
@@ -26,7 +27,7 @@ interface ControllerDao {
 
     @Transaction
     @Query("SELECT * FROM controllers WHERE controllers.isDeleted = 0 AND controllers.id = :controllerId")
-    fun getControllerWithWidgetsById(controllerId: String): Flow<ControllerWithWidgetsResult>
+    fun getControllerWithWidgetsById(controllerId: UUID): Flow<ControllerWithWidgetsResult>
 
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM controllers")
     fun getNextControllerPosition(): Int
@@ -35,28 +36,25 @@ interface ControllerDao {
     suspend fun insertControllers(vararg controllers: ControllerEntity)
 
     @Query("UPDATE controllers SET position = :newPosition WHERE id = :controllerId")
-    suspend fun updateControllerPositionById(controllerId: String, newPosition: Int)
+    suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
 
     @Query("UPDATE controllers SET isDeleted = 1 WHERE id = :controllerId")
-    suspend fun deleteControllerById(controllerId: String)
+    suspend fun deleteControllerById(controllerId: UUID)
 
     @Query("UPDATE controllers SET isDeleted = 0 WHERE id = :controllerId")
-    suspend fun tryRestoreControllerById(controllerId: String)
+    suspend fun tryRestoreControllerById(controllerId: UUID)
 
     @Query("DELETE FROM controllers WHERE isDeleted = 1")
     suspend fun deleteMarkedAsDeletedControllers()
-
-    @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM widgets WHERE controllerId = :controllerId")
-    fun getNextWidgetPosition(controllerId: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWidgets(vararg widgets: WidgetEntity)
 
     @Query("UPDATE widgets SET isDeleted = 1 WHERE id = :widgetId")
-    suspend fun deleteWidgetById(widgetId: String)
+    suspend fun deleteWidgetById(widgetId: UUID)
 
     @Query("UPDATE widgets SET isDeleted = 0 WHERE id = :widgetId")
-    suspend fun tryRestoreWidgetById(widgetId: String)
+    suspend fun tryRestoreWidgetById(widgetId: UUID)
 
     @Query("DELETE FROM widgets WHERE isDeleted = 1")
     suspend fun deleteMarkedAsDeletedWidgets()

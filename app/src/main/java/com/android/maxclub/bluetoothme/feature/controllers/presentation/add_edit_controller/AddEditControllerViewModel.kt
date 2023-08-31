@@ -11,6 +11,7 @@ import com.android.maxclub.bluetoothme.core.util.Screen
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllerWithWidgetsById
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -128,7 +129,31 @@ class AddEditControllerViewModel @Inject constructor(
     fun addWidget(widget: Widget) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             _uiState.update {
-                state.copy(widgets = state.widgets.plus(widget))
+                state.copy(
+                    widgets = state.widgets
+                        .plus(widget)
+                        .sortedBy { it.position }
+                )
+            }
+        }
+    }
+
+    fun updateWidgetSize(widgetId: UUID, newSize: WidgetSize) {
+        // TODO
+    }
+
+    fun updateWidgetReadOnly(widgetId: UUID, readOnly: Boolean) {
+        // TODO
+    }
+
+    fun deleteWidget(widgetId: UUID) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+            _uiState.update {
+                state.copy(
+                    widgets = state.widgets
+                        .filterNot { it.id == widgetId }
+                        .sortedBy { it.position }
+                )
             }
         }
     }
