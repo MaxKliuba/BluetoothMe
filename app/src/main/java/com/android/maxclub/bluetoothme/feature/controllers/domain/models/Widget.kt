@@ -8,7 +8,7 @@ sealed class Widget(
     val messageTag: String,
     val title: String,
     val size: WidgetSize,
-    val readOnly: Boolean,
+    val enabled: Boolean,
     val position: Int,
 ) {
 
@@ -16,12 +16,26 @@ sealed class Widget(
 
     abstract fun copyWithState(stateValue: String): Widget
 
+    fun copy(
+        id: UUID = this.id,
+        controllerId: UUID = this.controllerId,
+        messageTag: String = this.messageTag,
+        title: String = this.title,
+        size: WidgetSize = this.size,
+        enabled: Boolean = this.enabled,
+        position: Int = this.position
+    ): Widget = when (this) {
+        is Empty -> Empty(id, controllerId, size, position)
+        is Button -> Button(id, controllerId, messageTag, title, size, enabled, position, state)
+    }
+
+
     class Empty(
         id: UUID = UUID.randomUUID(),
         controllerId: UUID,
-        size: WidgetSize,
+        size: WidgetSize = WidgetSize.SMALL,
         position: Int = -1,
-    ) : Widget(id, controllerId, "", "", size, true, position) {
+    ) : Widget(id, controllerId, "", "", size, false, position) {
 
         override val messageValue: String
             get() = ""
@@ -34,18 +48,18 @@ sealed class Widget(
         controllerId: UUID,
         messageTag: String,
         title: String,
-        size: WidgetSize,
-        readOnly: Boolean,
+        size: WidgetSize = WidgetSize.SMALL,
+        enabled: Boolean = true,
         position: Int = -1,
         val state: Boolean = false,
-    ) : Widget(id, controllerId, messageTag, title, size, readOnly, position) {
+    ) : Widget(id, controllerId, messageTag, title, size, enabled, position) {
 
         override val messageValue: String
             get() = if (state) "1" else "0"
 
         override fun copyWithState(stateValue: String): Widget =
             Button(
-                id, controllerId, messageTag, title, size, readOnly, position,
+                id, controllerId, messageTag, title, size, enabled, position,
                 state = stateValue != "0"
             )
     }

@@ -25,7 +25,7 @@ import com.android.maxclub.bluetoothme.R
 
 @Composable
 fun AddNewWidgetItem(
-    onClick: () -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cornerRadius = 8.dp
@@ -44,7 +44,7 @@ fun AddNewWidgetItem(
                 shape = backgroundShape,
             )
             .clip(backgroundShape)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onAdd)
             .drawBehind {
                 drawRoundRect(
                     color = borderColor,

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,11 +51,5 @@ class ControllersViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
-    }
-
-    fun deleteControllerById(controllerId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.deleteControllerById(controllerId)
-        }
     }
 }

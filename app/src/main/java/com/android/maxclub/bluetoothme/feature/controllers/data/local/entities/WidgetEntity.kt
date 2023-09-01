@@ -25,7 +25,7 @@ data class WidgetEntity(
     val messageTag: String,
     val title: String,
     val size: WidgetSize,
-    val readOnly: Boolean,
+    val enabled: Boolean,
     val position: Int,
     val isDeleted: Boolean = false,
 )

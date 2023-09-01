@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,45 +27,32 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import java.util.UUID
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasicWidget(
     widget: Widget,
     columnsCount: Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
-    onChangeReadOnly: (UUID, Boolean) -> Unit,
+    onEnabledChange: (UUID, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier,
-    isReadOnlyButtonVisible: Boolean = true,
+    isEnabledButtonVisible: Boolean = true,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Card(
-        onClick = {  },
-        modifier = modifier.height(120.dp)
-    ) {
+    Card(modifier = modifier.height(120.dp)) {
         Box(modifier = Modifier.fillMaxSize()) {
             IconButton(
-                onClick = {
-                    onChangeSize(
-                        widget.id,
-                        WidgetSize.values()[
-                            (widget.size.ordinal + 1)
-                                    % minOf(WidgetSize.values().size, columnsCount)
-                        ]
-                    )
-                },
+                onClick = { onChangeSize(widget.id, widget.size.next(limit = columnsCount)) },
                 modifier = Modifier
                     .size(36.dp)
                     .align(Alignment.TopStart)
             ) {
                 Icon(
                     painter = painterResource(
-                        id = when (widget.size) {
-                            WidgetSize.SMALL -> R.drawable.ic_zoom_out_24
-                            WidgetSize.MIDDLE -> R.drawable.ic_zoom_out_24
-                            WidgetSize.LARGE -> R.drawable.ic_zoom_in_24
+                        id = if (widget.size.span != columnsCount) {
+                            R.drawable.ic_zoom_out_24
+                        } else {
+                            R.drawable.ic_zoom_in_24
                         }
                     ),
                     contentDescription = stringResource(R.string.change_size_button)
@@ -94,10 +80,10 @@ fun BasicWidget(
                 )
             }
 
-            if (isReadOnlyButtonVisible) {
+            if (isEnabledButtonVisible) {
                 FilledIconToggleButton(
-                    checked = widget.readOnly,
-                    onCheckedChange = { onChangeReadOnly(widget.id, it) },
+                    checked = !widget.enabled,
+                    onCheckedChange = { onEnabledChange(widget.id, !it) },
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .size(36.dp)
@@ -105,14 +91,14 @@ fun BasicWidget(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Lock,
-                        contentDescription = stringResource(R.string.read_only_button),
+                        contentDescription = stringResource(R.string.enabled_button),
                         modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
             IconButton(
-                onClick = onEdit,
+                onClick = { onEdit(widget.id) },
                 modifier = Modifier
                     .size(36.dp)
                     .align(Alignment.BottomEnd)

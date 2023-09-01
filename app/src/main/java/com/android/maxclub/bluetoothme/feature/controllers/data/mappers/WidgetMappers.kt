@@ -19,7 +19,7 @@ fun WidgetEntity.toWidget(): Widget =
             messageTag = messageTag,
             title = title,
             size = size,
-            readOnly = readOnly,
+            enabled = enabled,
             position = position,
         )
     }
@@ -35,7 +35,7 @@ fun Widget.toWidgetEntity(): WidgetEntity =
         messageTag = messageTag,
         title = title,
         size = size,
-        readOnly = readOnly,
+        enabled = enabled,
         position = position,
         isDeleted = false,
     )

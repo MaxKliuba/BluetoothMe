@@ -9,6 +9,8 @@
     <string name="menu_button">Menu</string>
     <string name="back_button">Back</string>
     <string name="close_button">Close</string>
+    <string name="done_button">Done</string>
+    <string name="undo_button">Undo</string>
 
     <string name="turning_off_state">Disabling</string>
     <string name="turned_off_state">Disabled</string>
@@ -77,8 +79,7 @@
     <string name="add_new_widget_button">Add new Widget</string>
     <string name="change_size_button">Change size</string>
     <string name="delete_widget_button">Delete Widget</string>
-    <string name="read_only_button">Read-only</string>
+    <string name="enabled_button">Enabled</string>
     <string name="edit_widget_button">Edit Widget</string>
-    <string name="apply_changes_button">Apply changes</string>
     <string name="columns_count_button">Number of columns</string>
 </resources>

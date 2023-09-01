@@ -28,7 +28,7 @@ interface ControllerDao {
     fun getControllersWithWidgetCount(): Flow<List<ControllerWithWidgetCountResult>>
 
     @Transaction
-    @Query("SELECT * FROM controllers WHERE controllers.isDeleted = 0 AND controllers.id = :controllerId")
+    @Query("SELECT * FROM controllers WHERE isDeleted = 0 AND id = :controllerId")
     fun getControllerWithWidgetsById(controllerId: UUID): Flow<ControllerWithWidgetsResult>
 
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM controllers")
@@ -54,20 +54,20 @@ interface ControllerDao {
 
     /* Widgets */
 
+    @Query("SELECT * FROM widgets WHERE isDeleted = 0 AND id = :widgetId")
+    fun getWidgetById(widgetId: UUID): Flow<WidgetEntity>
+
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM widgets WHERE controllerId = :controllerId")
     fun getNextWidgetPosition(controllerId: UUID): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWidgets(vararg widgets: WidgetEntity)
 
-    @Query("UPDATE widgets SET size = :newSize WHERE id = :widgetId")
-    suspend fun updateWidgetSizeById(widgetId: UUID, newSize: WidgetSize)
-
-    @Query("UPDATE widgets SET readOnly = :readOnly WHERE id = :widgetId")
-    suspend fun updateWidgetReadOnlyById(widgetId: UUID, readOnly: Boolean)
-
     @Query("UPDATE widgets SET position = :newPosition WHERE id = :widgetId")
     suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
+
+    @Update
+    suspend fun updateWidgets(vararg widgets: WidgetEntity)
 
     @Query("UPDATE widgets SET isDeleted = 1 WHERE id = :widgetId")
     suspend fun deleteWidgetById(widgetId: UUID)

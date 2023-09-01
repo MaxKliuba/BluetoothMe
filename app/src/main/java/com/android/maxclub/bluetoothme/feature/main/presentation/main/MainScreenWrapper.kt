@@ -31,6 +31,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.AddEditControllerScreen
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.AddEditWidgetScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllerListScreen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
@@ -141,6 +142,26 @@ fun MainScreenWrapper() {
                         inputMessagesCount = action.inputMessagesCount,
                         outputMessagesCount = action.outputMessagesCount
                     )
+                }
+
+                is MainUiAction.ShowWidgetDeletedMessage -> {
+                    showDeletedSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        context = context,
+                        message = "Widget deleted",
+                    ) {
+                        viewModel.tryRestoreWidgetById(action.widgetId)
+                    }
+                }
+
+                is MainUiAction.ShowControllerDeletedMessage -> {
+                    showDeletedSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        context = context,
+                        message = "Controller deleted",
+                    ) {
+                        viewModel.tryRestoreControllerById(action.controllerId)
+                    }
                 }
             }
         }
@@ -257,7 +278,17 @@ fun MainScreenWrapper() {
             )
         }
     }
-    val onDeleteController: (UUID) -> Unit = viewModel::deleteController
+    val onNavigateToAddEditWidget: (UUID, Boolean) -> Unit = remember {
+        { id, isNew ->
+            navController.navigate("${Screen.AddEditWidget.route}/$id/$isNew")
+        }
+    }
+    val onDeleteWidget: (UUID) -> Unit = remember {
+        { viewModel.deleteWidget(it) }
+    }
+    val onDeleteController: (UUID) -> Unit = remember {
+        { viewModel.deleteController(it) }
+    }
 
     val onDismissBluetoothPermissionRationaleDialog: () -> Unit = remember {
         { viewModel.onEvent(MainUiEvent.OnDismissBluetoothPermissionRationaleDialog) }
@@ -300,7 +331,8 @@ fun MainScreenWrapper() {
                 composable(route = Screen.Controllers.route) {
                     ControllerListScreen(
                         onOpenNavigationDrawer = onOpenNavigationDrawer,
-                        onNavigateToAddEditControllerScreen = onNavigateToAddEditControllerScreen,
+                        onNavigateToAddEditController = onNavigateToAddEditControllerScreen,
+                        onDeleteController = onDeleteController,
                     )
                 }
 
@@ -314,8 +346,27 @@ fun MainScreenWrapper() {
                     ),
                 ) {
                     AddEditControllerScreen(
-                        onDeleteController = onDeleteController,
                         onNavigateUp = onNavigateUp,
+                        onNavigateToAddEditWidget = onNavigateToAddEditWidget,
+                        onDeleteWidget = onDeleteWidget,
+                        onDeleteController = onDeleteController,
+                    )
+                }
+
+                composable(
+                    route = Screen.AddEditWidget.routeWithArgs,
+                    arguments = listOf(
+                        navArgument(name = Screen.AddEditWidget.ARG_ID) {
+                            type = NavType.StringType
+                        },
+                        navArgument(name = Screen.AddEditWidget.ARG_IS_NEW) {
+                            type = NavType.BoolType
+                        }
+                    ),
+                ) {
+                    AddEditWidgetScreen(
+                        onNavigateUp = onNavigateUp,
+                        onDeleteWidget = onDeleteWidget,
                     )
                 }
 
@@ -430,4 +481,22 @@ private suspend fun showMessagesCountSnackbar(
         withDismissAction = true,
         duration = SnackbarDuration.Short,
     )
+}
+
+private suspend fun showDeletedSnackbar(
+    snackbarHostState: SnackbarHostState,
+    context: Context,
+    message: String,
+    onUndo: () -> Unit
+) {
+    snackbarHostState.showSnackbar(
+        message = message,
+        actionLabel = context.getString(R.string.undo_button),
+        withDismissAction = true,
+        duration = SnackbarDuration.Short,
+    ).let { result ->
+        if (result == SnackbarResult.ActionPerformed) {
+            onUndo()
+        }
+    }
 }

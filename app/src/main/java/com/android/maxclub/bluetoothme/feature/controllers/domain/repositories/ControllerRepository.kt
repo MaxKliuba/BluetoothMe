@@ -4,7 +4,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
-import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -26,13 +25,13 @@ interface ControllerRepository {
 
     suspend fun deleteMarkedAsDeletedControllers()
 
+    fun getWidgetById(widgetId: UUID): Flow<Widget>
+
     suspend fun addWidget(widget: Widget)
 
-    suspend fun updateWidgetSizeById(widgetId: UUID, newSize: WidgetSize)
-
-    suspend fun updateWidgetReadOnlyById(widgetId: UUID, readOnly: Boolean)
-
     suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
+
+    suspend fun updateWidget(widget: Widget)
 
     suspend fun deleteWidgetById(widgetId: UUID)
 

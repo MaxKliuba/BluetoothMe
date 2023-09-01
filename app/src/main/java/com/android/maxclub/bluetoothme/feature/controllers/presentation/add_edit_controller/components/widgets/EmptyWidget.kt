@@ -12,15 +12,15 @@ fun EmptyWidget(
     columnsCount: Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
     onDelete: (UUID) -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicWidget(
         widget = widget,
         columnsCount = columnsCount,
-        isReadOnlyButtonVisible = false,
+        isEnabledButtonVisible = false,
         onChangeSize = onChangeSize,
-        onChangeReadOnly = { _, _ -> },
+        onEnabledChange = { _, _ -> },
         onDelete = onDelete,
         onEdit = onEdit,
         modifier = modifier,

@@ -9,27 +9,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.Screen
 import com.android.maxclub.bluetoothme.core.util.debounce
+import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
-import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerColumns
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllerWithWidgetsById
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditControllerViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val controllerRepository: ControllerRepository,
     private val getControllerWithWidgetsUseCase: GetControllerWithWidgetsById,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private var controllerId: UUID? =
         savedStateHandle.get<String>(Screen.AddEditController.ARG_CONTROLLER_ID)?.let {
@@ -40,6 +43,9 @@ class AddEditControllerViewModel @Inject constructor(
         AddEditControllerUiState.Loading(controllerId ?: UUID.randomUUID())
     )
     val uiState: State<AddEditControllerUiState> = _uiState
+
+    private val uiActionChannel = Channel<AddEditControllerUiAction>()
+    val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getControllerWithWidgetsJob: Job? = null
 
@@ -55,6 +61,11 @@ class AddEditControllerViewModel @Inject constructor(
     init {
         (_uiState.value as? AddEditControllerUiState.Loading)?.let {
             getControllerWithWidgetsById(it.controllerId)
+
+            uiActionChannel.sendIn(
+                AddEditControllerUiAction.SetFocusToTitleTextField,
+                viewModelScope
+            )
         }
     }
 
@@ -134,7 +145,7 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun updateControllerColumnCount(newColumnsCount: Int) {
+    fun updateControllerColumnCount(newColumnsCount: ControllerColumns) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
                 controllerRepository.updateController(it.controller.copy(columnsCount = newColumnsCount))
@@ -142,33 +153,29 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun addWidget(widget: Widget) {
-        viewModelScope.launch {
-            controllerRepository.addWidget(widget)
-        }
-    }
-
     fun updateWidgetSize(widgetId: UUID, newSize: WidgetSize) {
-        viewModelScope.launch {
-            controllerRepository.updateWidgetSizeById(widgetId, newSize)
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+            viewModelScope.launch {
+                state.widgets.find { it.id == widgetId }?.let {
+                    controllerRepository.updateWidget(it.copy(size = newSize))
+                }
+            }
         }
     }
 
-    fun updateWidgetReadOnly(widgetId: UUID, readOnly: Boolean) {
-        viewModelScope.launch {
-            controllerRepository.updateWidgetReadOnlyById(widgetId, readOnly)
+    fun updateWidgetEnable(widgetId: UUID, enabled: Boolean) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+            viewModelScope.launch {
+                state.widgets.find { it.id == widgetId }?.let {
+                    controllerRepository.updateWidget(it.copy(enabled = enabled))
+                }
+            }
         }
     }
 
     fun updateWidgetPosition(widgetId: UUID, newPosition: Int) {
         viewModelScope.launch {
             controllerRepository.updateWidgetPositionById(widgetId, newPosition)
-        }
-    }
-
-    fun deleteWidget(widgetId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.deleteWidgetById(widgetId)
         }
     }
 }

@@ -8,6 +8,6 @@ data class Controller(
     val withAccelerometer: Boolean = false,
     val withVoiceInput: Boolean = false,
     val withRefresh: Boolean = false,
-    val columnsCount: Int = 2,
+    val columnsCount: ControllerColumns = ControllerColumns.TWO,
     val position: Int = -1,
 )

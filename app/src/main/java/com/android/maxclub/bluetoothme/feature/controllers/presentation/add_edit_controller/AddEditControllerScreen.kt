@@ -35,9 +35,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerColumns
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.AddNewWidgetItem
@@ -45,6 +47,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.ButtonWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.EmptyWidget
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
@@ -52,6 +55,8 @@ import java.util.UUID
 @Composable
 fun AddEditControllerScreen(
     onNavigateUp: () -> Unit,
+    onNavigateToAddEditWidget: (id: UUID, isNew: Boolean) -> Unit,
+    onDeleteWidget: (UUID) -> Unit,
     onDeleteController: (UUID) -> Unit,
     viewModel: AddEditControllerViewModel = hiltViewModel(),
 ) {
@@ -60,10 +65,66 @@ fun AddEditControllerScreen(
     val inputService = LocalTextInputService.current
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(key1 = Unit) {
-        delay(100) // TODO
-        focusRequester.requestFocus()
-        inputService?.hideSoftwareKeyboard()
+    LaunchedEffect(key1 = true) {
+        viewModel.uiAction.collectLatest { action ->
+            when (action) {
+                is AddEditControllerUiAction.SetFocusToTitleTextField -> {
+                    delay(100)
+                    focusRequester.requestFocus()
+                    @Suppress("DEPRECATION") inputService?.hideSoftwareKeyboard()
+                }
+            }
+        }
+    }
+
+    val onControllerTitleChange: (TextFieldValue) -> Unit = remember {
+        { viewModel.updateControllerTitle(it) }
+    }
+    val onControllerWithAccelerometerChange: (Boolean) -> Unit = remember {
+        { viewModel.updateControllerWithAccelerometer(it) }
+    }
+    val onControllerWithVoiceInputChange: (Boolean) -> Unit = remember {
+        { viewModel.updateControllerWithVoiceInput(it) }
+    }
+    val onControllerWithRefreshChange: (Boolean) -> Unit = remember {
+        { viewModel.updateControllerWithRefresh(it) }
+    }
+    val onChangeWidgetSize: (UUID, WidgetSize) -> Unit = remember {
+        { widgetId, newSize ->
+            viewModel.updateWidgetSize(widgetId, newSize)
+        }
+    }
+    val onChangeWidgetEnable: (UUID, Boolean) -> Unit = remember {
+        { widgetId, enabled ->
+            viewModel.updateWidgetEnable(widgetId, enabled)
+        }
+    }
+    val onEditWidget: (UUID) -> Unit = remember {
+        { widgetId ->
+            onNavigateToAddEditWidget(widgetId, false)
+        }
+    }
+    val onAddWidget: () -> Unit = remember {
+        {
+            (state as? AddEditControllerUiState.Success)?.let {
+                onNavigateToAddEditWidget(it.controller.id, true)
+            }
+        }
+    }
+    val onChangeControllerColumns: () -> Unit = remember {
+        {
+            (state as? AddEditControllerUiState.Success)?.let {
+                viewModel.updateControllerColumnCount(it.controller.columnsCount.next())
+            }
+        }
+    }
+    val onDeleteControllerAndLeave: () -> Unit = remember {
+        {
+            (state as? AddEditControllerUiState.Success)?.let {
+                onDeleteController(it.controller.id)
+                onNavigateUp()
+            }
+        }
     }
 
     Scaffold(
@@ -73,7 +134,7 @@ fun AddEditControllerScreen(
                     (state as? AddEditControllerUiState.Success)?.let {
                         TitleTextField(
                             value = it.controllerTitle,
-                            onValueChange = viewModel::updateControllerTitle,
+                            onValueChange = onControllerTitleChange,
                             modifier = Modifier.focusRequester(focusRequester),
                         )
                     }
@@ -90,7 +151,7 @@ fun AddEditControllerScreen(
                     (state as? AddEditControllerUiState.Success)?.let { state ->
                         FilledIconToggleButton(
                             checked = state.controller.withAccelerometer,
-                            onCheckedChange = viewModel::updateControllerWithAccelerometer,
+                            onCheckedChange = onControllerWithAccelerometerChange,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.MyLocation,
@@ -100,7 +161,7 @@ fun AddEditControllerScreen(
 
                         FilledIconToggleButton(
                             checked = state.controller.withVoiceInput,
-                            onCheckedChange = viewModel::updateControllerWithVoiceInput,
+                            onCheckedChange = onControllerWithVoiceInputChange,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Mic,
@@ -110,7 +171,7 @@ fun AddEditControllerScreen(
 
                         FilledIconToggleButton(
                             checked = state.controller.withRefresh,
-                            onCheckedChange = viewModel::updateControllerWithRefresh,
+                            onCheckedChange = onControllerWithRefreshChange,
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_get_refresh_state_24),
@@ -125,30 +186,19 @@ fun AddEditControllerScreen(
             (state as? AddEditControllerUiState.Success)?.let {
                 BottomAppBar(
                     actions = {
-                        IconButton(
-                            onClick = {
-                                onDeleteController(it.controller.id)
-                                onNavigateUp()
-                            }
-                        ) {
+                        IconButton(onClick = onDeleteControllerAndLeave) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
                                 contentDescription = stringResource(id = R.string.delete_controller_button)
                             )
                         }
 
-                        IconButton(
-                            onClick = {
-                                viewModel.updateControllerColumnCount(
-                                    (it.controller.columnsCount + 1) % 2 + 2
-                                )
-                            }
-                        ) {
+                        IconButton(onClick = onChangeControllerColumns) {
                             Icon(
                                 painter = painterResource(
                                     id = when (it.controller.columnsCount) {
-                                        2 -> R.drawable.ic_two_column_24
-                                        else -> R.drawable.ic_three_column_24
+                                        ControllerColumns.TWO -> R.drawable.ic_two_column_24
+                                        ControllerColumns.THREE -> R.drawable.ic_three_column_24
                                     }
                                 ),
                                 contentDescription = stringResource(R.string.columns_count_button)
@@ -159,7 +209,7 @@ fun AddEditControllerScreen(
                         FloatingActionButton(onClick = onNavigateUp) {
                             Icon(
                                 imageVector = Icons.Filled.Done,
-                                contentDescription = stringResource(R.string.apply_changes_button),
+                                contentDescription = stringResource(R.string.done_button),
                             )
                         }
                     }
@@ -175,9 +225,15 @@ fun AddEditControllerScreen(
         ) {
             state.let { state ->
                 when (state) {
+                    is AddEditControllerUiState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+
                     is AddEditControllerUiState.Success -> {
+                        val columnsCount = state.controller.columnsCount.count
+
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(count = state.controller.columnsCount),
+                            columns = GridCells.Fixed(count = columnsCount),
                             contentPadding = PaddingValues(12.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -185,56 +241,32 @@ fun AddEditControllerScreen(
                             items(
                                 items = state.widgets,
                                 key = { it.id },
-                                span = {
-                                    GridItemSpan(
-                                        minOf(
-                                            it.size.span,
-                                            state.controller.columnsCount
-                                        )
-                                    )
-                                },
+                                span = { GridItemSpan(minOf(it.size.span, columnsCount)) },
                             ) { widget ->
                                 when (widget) {
                                     is Widget.Empty -> EmptyWidget(
                                         widget = widget,
-                                        columnsCount = state.controller.columnsCount,
-                                        onChangeSize = viewModel::updateWidgetSize,
-                                        onDelete = viewModel::deleteWidget,
-                                        onEdit = { /*TODO*/ },
+                                        columnsCount = columnsCount,
+                                        onChangeSize = onChangeWidgetSize,
+                                        onDelete = onDeleteWidget,
+                                        onEdit = onEditWidget,
                                     )
 
                                     is Widget.Button -> ButtonWidget(
                                         widget = widget,
-                                        columnsCount = state.controller.columnsCount,
-                                        onChangeSize = viewModel::updateWidgetSize,
-                                        onChangeReadOnly = viewModel::updateWidgetReadOnly,
-                                        onDelete = viewModel::deleteWidget,
-                                        onEdit = { /*TODO*/ },
+                                        columnsCount = columnsCount,
+                                        onChangeSize = onChangeWidgetSize,
+                                        onEnabledChange = onChangeWidgetEnable,
+                                        onDelete = onDeleteWidget,
+                                        onEdit = onEditWidget,
                                     )
                                 }
                             }
 
                             item {
-                                AddNewWidgetItem(
-                                    onClick = {
-                                        /* TODO */
-                                        viewModel.addWidget(
-                                            Widget.Button(
-                                                controllerId = state.controller.id,
-                                                messageTag = "led",
-                                                title = "Test",
-                                                size = WidgetSize.SMALL,
-                                                readOnly = false,
-                                            )
-                                        )
-                                    }
-                                )
+                                AddNewWidgetItem(onAdd = onAddWidget)
                             }
                         }
-                    }
-
-                    is AddEditControllerUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 }
             }

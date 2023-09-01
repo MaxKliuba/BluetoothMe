@@ -17,16 +17,16 @@ fun ButtonWidget(
     widget: Widget.Button,
     columnsCount:  Int,
     onChangeSize: (UUID, WidgetSize) -> Unit,
-    onChangeReadOnly: (UUID, Boolean) -> Unit,
+    onEnabledChange: (UUID, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicWidget(
         widget = widget,
         columnsCount = columnsCount,
         onChangeSize = onChangeSize,
-        onChangeReadOnly = onChangeReadOnly,
+        onEnabledChange = onEnabledChange,
         onDelete = onDelete,
         onEdit = onEdit,
         modifier = modifier,

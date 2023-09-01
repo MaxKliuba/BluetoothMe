@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -35,7 +36,8 @@ import java.util.UUID
 @Composable
 fun ControllerListScreen(
     onOpenNavigationDrawer: () -> Unit,
-    onNavigateToAddEditControllerScreen: (UUID?) -> Unit,
+    onNavigateToAddEditController: (UUID?) -> Unit,
+    onDeleteController: (UUID) -> Unit,
     viewModel: ControllersViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
@@ -44,7 +46,12 @@ fun ControllerListScreen(
         state = rememberTopAppBarState()
     )
 
-    val onDeleteControllerById: (UUID) -> Unit = viewModel::deleteControllerById
+    val onAddController: () -> Unit = remember {
+        { onNavigateToAddEditController(null) }
+    }
+    val onEditController: (UUID) -> Unit = remember {
+        { onNavigateToAddEditController(it) }
+    }
 
     Scaffold(
         topBar = {
@@ -64,7 +71,7 @@ fun ControllerListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigateToAddEditControllerScreen(null) }) {
+            FloatingActionButton(onClick = onAddController) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = stringResource(R.string.add_new_controller_button),
@@ -89,8 +96,8 @@ fun ControllerListScreen(
                 ) { controllerWithWidgetCount ->
                     ControllerWithWidgetCountItem(
                         controllerWithWidgetCount = controllerWithWidgetCount,
-                        onClick = { onNavigateToAddEditControllerScreen(it) },
-                        onSelect = onDeleteControllerById,
+                        onClick = onEditController,
+                        onSelect = onDeleteController,
                         modifier = Modifier.animateItemPlacement(),
                     )
                 }
