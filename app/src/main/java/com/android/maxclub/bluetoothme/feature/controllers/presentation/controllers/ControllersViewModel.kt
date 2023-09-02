@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +24,8 @@ class ControllersViewModel @Inject constructor(
 
     private val _uiState = mutableStateOf(
         ControllersUiState(
-            controllersWithWidgetCount = emptyList(),
+            isLoading = true,
+            controllers = emptyList(),
         )
     )
     val uiState: State<ControllersUiState> = _uiState
@@ -42,10 +44,14 @@ class ControllersViewModel @Inject constructor(
     private fun getControllersWithWidgetCount() {
         getControllersWithWidgetCountJob?.cancel()
         getControllersWithWidgetCountJob = getControllersWithWidgetCountUseCase()
-            .onEach { controllersWithWidgetCount ->
+            .onStart {
+                _uiState.update { it.copy(isLoading = true) }
+            }
+            .onEach { controllers ->
                 _uiState.update { state ->
                     state.copy(
-                        controllersWithWidgetCount = controllersWithWidgetCount.sortedBy { it.controller.position }
+                        isLoading = false,
+                        controllers = controllers,
                     )
                 }
             }

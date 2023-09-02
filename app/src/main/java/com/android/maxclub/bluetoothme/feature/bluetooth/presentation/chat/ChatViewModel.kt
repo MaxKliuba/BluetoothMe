@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,19 +43,24 @@ class ChatViewModel @Inject constructor(
         getMessages()
     }
 
-    fun onEvent(event: ChatUiEvent) {
-        when (event) {
-            is ChatUiEvent.OnDeleteMessages -> {
-                deleteMessages()
-            }
+    fun deleteMessages() {
+        messagesUseCases.deleteMessages()
+    }
 
-            is ChatUiEvent.OnChangeMessageValue -> {
-                tryChangeMessageValue(event.messageValue)
-            }
+    fun tryChangeMessageValue(newMessageValue: String) {
+        tryChangeMessageValue(TextFieldValue(newMessageValue, TextRange(newMessageValue.length)))
+    }
 
-            is ChatUiEvent.OnSendMessage -> {
-                trySendMessage(event.messageValue)
-            }
+    fun tryChangeMessageValue(newMessageValue: TextFieldValue) {
+        if (messageValueValidator(newMessageValue.text)) {
+            _uiState.update { it.copy(messageValue = newMessageValue) }
+        }
+    }
+
+    fun trySendMessage(messageValue: String) {
+        if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
+            writeMessage(messageValue)
+            tryChangeMessageValue("")
         }
     }
 
@@ -76,23 +82,6 @@ class ChatViewModel @Inject constructor(
             e.printStackTrace()
 
             uiActionChannel.sendIn(ChatUiAction.ShowSendingErrorMessage, viewModelScope)
-        }
-    }
-
-    private fun deleteMessages() {
-        messagesUseCases.deleteMessages()
-    }
-
-    private fun tryChangeMessageValue(newMessageValue: TextFieldValue) {
-        if (messageValueValidator(newMessageValue.text)) {
-            _uiState.update { it.copy(messageValue = newMessageValue) }
-        }
-    }
-
-    private fun trySendMessage(messageValue: String) {
-        if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
-            writeMessage(messageValue)
-            tryChangeMessageValue(TextFieldValue(""))
         }
     }
 }

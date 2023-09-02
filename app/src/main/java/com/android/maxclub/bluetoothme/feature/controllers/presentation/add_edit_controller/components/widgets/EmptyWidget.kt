@@ -10,7 +10,7 @@ import java.util.UUID
 fun EmptyWidget(
     widget: Widget.Empty,
     columnsCount: Int,
-    onChangeSize: (UUID, WidgetSize) -> Unit,
+    onChangeSize: (Widget, WidgetSize) -> Unit,
     onDelete: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier

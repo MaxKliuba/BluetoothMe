@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components
+package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.messages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

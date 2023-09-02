@@ -3,5 +3,6 @@ package com.android.maxclub.bluetoothme.feature.controllers.presentation.control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 
 data class ControllersUiState(
-    val controllersWithWidgetCount: List<ControllerWithWidgetCount>,
+    val isLoading: Boolean,
+    val controllers: List<ControllerWithWidgetCount>,
 )

@@ -16,8 +16,8 @@ import java.util.UUID
 fun ButtonWidget(
     widget: Widget.Button,
     columnsCount:  Int,
-    onChangeSize: (UUID, WidgetSize) -> Unit,
-    onEnabledChange: (UUID, Boolean) -> Unit,
+    onChangeSize: (Widget, WidgetSize) -> Unit,
+    onEnabledChange: (Widget, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier

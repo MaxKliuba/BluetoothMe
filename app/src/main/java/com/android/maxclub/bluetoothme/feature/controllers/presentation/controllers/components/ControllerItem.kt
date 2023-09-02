@@ -22,8 +22,8 @@ import java.util.UUID
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ControllerWithWidgetCountItem(
-    controllerWithWidgetCount: ControllerWithWidgetCount,
+fun ControllerItem(
+    controller: ControllerWithWidgetCount,
     onClick: (UUID) -> Unit,
     onSelect: (UUID) -> Unit,
     modifier: Modifier = Modifier
@@ -33,15 +33,15 @@ fun ControllerWithWidgetCountItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .combinedClickable(
-                onClick = { onClick(controllerWithWidgetCount.controller.id) },
-                onLongClick = { onSelect(controllerWithWidgetCount.controller.id) },
+                onClick = { onClick(controller.controller.id) },
+                onLongClick = { onSelect(controller.controller.id) },
             )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = controllerWithWidgetCount.controller.title,
+                text = controller.controller.title,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -52,8 +52,8 @@ fun ControllerWithWidgetCountItem(
             Text(
                 text = pluralStringResource(
                     id = R.plurals.widget_plural,
-                    count = controllerWithWidgetCount.widgetCount,
-                    controllerWithWidgetCount.widgetCount,
+                    count = controller.widgetCount,
+                    controller.widgetCount,
                 ),
                 style = MaterialTheme.typography.bodySmall,
             )

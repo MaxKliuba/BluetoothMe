@@ -29,6 +29,33 @@ sealed class Widget(
         is Button -> Button(id, controllerId, messageTag, title, size, enabled, position, state)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Widget) return false
+
+        if (id != other.id) return false
+        if (controllerId != other.controllerId) return false
+        if (messageTag != other.messageTag) return false
+        if (title != other.title) return false
+        if (size != other.size) return false
+        if (enabled != other.enabled) return false
+        if (position != other.position) return false
+        if (messageValue != other.messageValue) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + controllerId.hashCode()
+        result = 31 * result + messageTag.hashCode()
+        result = 31 * result + title.hashCode()
+        result = 31 * result + size.hashCode()
+        result = 31 * result + enabled.hashCode()
+        result = 31 * result + position
+        result = 31 * result + messageValue.hashCode()
+        return result
+    }
 
     class Empty(
         id: UUID = UUID.randomUUID(),

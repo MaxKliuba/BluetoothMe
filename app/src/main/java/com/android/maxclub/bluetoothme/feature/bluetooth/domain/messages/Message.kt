@@ -1,6 +1,9 @@
 package com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages
 
+import java.util.UUID
+
 data class Message(
+    val id: UUID = UUID.randomUUID(),
     val type: Type,
     val tag: String,
     val value: String,

@@ -31,8 +31,8 @@ import java.util.UUID
 fun BasicWidget(
     widget: Widget,
     columnsCount: Int,
-    onChangeSize: (UUID, WidgetSize) -> Unit,
-    onEnabledChange: (UUID, Boolean) -> Unit,
+    onChangeSize: (Widget, WidgetSize) -> Unit,
+    onEnabledChange: (Widget, Boolean) -> Unit,
     onDelete: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
     modifier: Modifier = Modifier,
@@ -42,7 +42,7 @@ fun BasicWidget(
     Card(modifier = modifier.height(120.dp)) {
         Box(modifier = Modifier.fillMaxSize()) {
             IconButton(
-                onClick = { onChangeSize(widget.id, widget.size.next(limit = columnsCount)) },
+                onClick = { onChangeSize(widget, widget.size.next(limit = columnsCount)) },
                 modifier = Modifier
                     .size(36.dp)
                     .align(Alignment.TopStart)
@@ -83,7 +83,7 @@ fun BasicWidget(
             if (isEnabledButtonVisible) {
                 FilledIconToggleButton(
                     checked = !widget.enabled,
-                    onCheckedChange = { onEnabledChange(widget.id, !it) },
+                    onCheckedChange = { onEnabledChange(widget, !it) },
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .size(36.dp)

@@ -12,7 +12,7 @@ import com.android.maxclub.bluetoothme.core.util.debounce
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
-import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerColumns
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllerWithWidgetsById
@@ -61,11 +61,6 @@ class AddEditControllerViewModel @Inject constructor(
     init {
         (_uiState.value as? AddEditControllerUiState.Loading)?.let {
             getControllerWithWidgetsById(it.controllerId)
-
-            uiActionChannel.sendIn(
-                AddEditControllerUiAction.SetFocusToTitleTextField,
-                viewModelScope
-            )
         }
     }
 
@@ -97,10 +92,11 @@ class AddEditControllerViewModel @Inject constructor(
                             ) {
                                 it.controllerTitle
                             } else {
-                                TextFieldValue(
-                                    text = controllerTitle,
-                                    selection = TextRange(controllerTitle.length)
+                                uiActionChannel.sendIn(
+                                    AddEditControllerUiAction.SetFocusToTitleTextField,
+                                    viewModelScope
                                 )
+                                TextFieldValue(controllerTitle, TextRange(controllerTitle.length))
                             },
                             controller = controllerWithWidgets.controller,
                             widgets = controllerWithWidgets.widgets,
@@ -145,31 +141,25 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun updateControllerColumnCount(newColumnsCount: ControllerColumns) {
+    fun updateControllerColumnCount() {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
-                controllerRepository.updateController(it.controller.copy(columnsCount = newColumnsCount))
+                controllerRepository.updateController(
+                    it.controller.copy(columnsCount = it.controller.columnsCount.next())
+                )
             }
         }
     }
 
-    fun updateWidgetSize(widgetId: UUID, newSize: WidgetSize) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            viewModelScope.launch {
-                state.widgets.find { it.id == widgetId }?.let {
-                    controllerRepository.updateWidget(it.copy(size = newSize))
-                }
-            }
+    fun updateWidgetSize(widget: Widget, newSize: WidgetSize) {
+        viewModelScope.launch {
+            controllerRepository.updateWidget(widget.copy(size = newSize))
         }
     }
 
-    fun updateWidgetEnable(widgetId: UUID, enabled: Boolean) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            viewModelScope.launch {
-                state.widgets.find { it.id == widgetId }?.let {
-                    controllerRepository.updateWidget(it.copy(enabled = enabled))
-                }
-            }
+    fun updateWidgetEnable(widget: Widget, enabled: Boolean) {
+        viewModelScope.launch {
+            controllerRepository.updateWidget(widget.copy(enabled = enabled))
         }
     }
 

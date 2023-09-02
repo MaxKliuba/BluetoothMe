@@ -5,9 +5,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 inline fun <T> MutableState<T>.update(block: (T) -> T) {
+    this.value = block(this.value)
+}
+
+inline fun <T> MutableStateFlow<T>.update(block: (T) -> T) {
     this.value = block(this.value)
 }
 
