@@ -8,7 +8,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.Screen
-import com.android.maxclub.bluetoothme.core.util.debounce
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
@@ -19,6 +18,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetCo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -48,15 +48,8 @@ class AddEditControllerViewModel @Inject constructor(
     val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getControllerWithWidgetsJob: Job? = null
-
-    private val onUpdateControllerTitle: (String) -> Unit =
-        viewModelScope.debounce { title ->
-            (_uiState.value as? AddEditControllerUiState.Success)?.let {
-                viewModelScope.launch {
-                    controllerRepository.updateController(it.controller.copy(title = title))
-                }
-            }
-        }
+    private var updateControllerTitleJob: Job? = null
+    private var swapWidgetsJob: Job? = null
 
     init {
         (_uiState.value as? AddEditControllerUiState.Loading)?.let {
@@ -111,7 +104,11 @@ class AddEditControllerViewModel @Inject constructor(
     fun updateControllerTitle(value: TextFieldValue) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             if (state.controller.title != value.text) {
-                onUpdateControllerTitle(value.text)
+                updateControllerTitleJob?.cancel()
+                updateControllerTitleJob = viewModelScope.launch {
+                    delay(300)
+                    controllerRepository.updateController(state.controller.copy(title = value.text))
+                }
             }
             _uiState.update { state.copy(controllerTitle = value) }
         }
@@ -163,9 +160,27 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun updateWidgetPosition(widgetId: UUID, newPosition: Int) {
-        viewModelScope.launch {
-            controllerRepository.updateWidgetPositionById(widgetId, newPosition)
+    fun updateWidgetsPosition(fromPosition: Int, toPosition: Int) {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+            val currentId = state.widgets[fromPosition].id
+            val otherId = state.widgets[toPosition].id
+
+            _uiState.update {
+                state.copy(widgets = state.widgets.toMutableList()
+                    .apply { add(fromPosition, removeAt(toPosition)) }
+                )
+            }
+
+            swapWidgetsJob?.cancel()
+            swapWidgetsJob = viewModelScope.launch {
+                delay(1000)
+                controllerRepository.swapControllersByIds(
+                    currentId,
+                    otherId,
+                    fromPosition,
+                    toPosition
+                )
+            }
         }
     }
 }

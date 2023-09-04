@@ -15,7 +15,12 @@ interface ControllerRepository {
 
     suspend fun addController(controller: Controller)
 
-    suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
+    suspend fun swapControllersByIds(
+        currentId: UUID,
+        otherId: UUID,
+        fromPosition: Int,
+        toPosition: Int
+    )
 
     suspend fun updateController(controller: Controller)
 
@@ -29,7 +34,7 @@ interface ControllerRepository {
 
     suspend fun addWidget(widget: Widget)
 
-    suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
+    suspend fun swapWidgetsByIds(currentId: UUID, otherId: UUID, fromPosition: Int, toPosition: Int)
 
     suspend fun updateWidget(widget: Widget)
 

@@ -9,11 +9,13 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.C
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllersWithWidgetCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,11 +28,13 @@ class ControllersViewModel @Inject constructor(
         ControllersUiState(
             isLoading = true,
             controllers = emptyList(),
+            selectedControllerId = null,
         )
     )
     val uiState: State<ControllersUiState> = _uiState
 
     private var getControllersWithWidgetCountJob: Job? = null
+    private var swapControllersJob: Job? = null
 
     init {
         getControllersWithWidgetCount()
@@ -57,5 +61,30 @@ class ControllersViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
+    }
+
+    fun updateControllersPosition(fromPosition: Int, toPosition: Int) {
+        val currentId = _uiState.value.controllers[fromPosition].controller.id
+        val otherId = _uiState.value.controllers[toPosition].controller.id
+
+        _uiState.update {
+            it.copy(controllers = it.controllers.toMutableList()
+                .apply { add(fromPosition, removeAt(toPosition)) }
+            )
+        }
+
+        swapControllersJob?.cancel()
+        swapControllersJob = viewModelScope.launch {
+            delay(1000)
+            controllerRepository.swapControllersByIds(currentId, otherId, fromPosition, toPosition)
+        }
+    }
+
+    fun setSelectedController(controllerId: UUID?) {
+        _uiState.update { it.copy(selectedControllerId = controllerId) }
+    }
+
+    fun shareController(controllerId: UUID) {
+        // TODO
     }
 }

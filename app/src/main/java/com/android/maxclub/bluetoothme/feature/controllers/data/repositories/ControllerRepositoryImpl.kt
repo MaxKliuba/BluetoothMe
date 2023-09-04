@@ -10,7 +10,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
-import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -48,10 +47,14 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.insertControllers(controllerEntity)
         }
 
-    override suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int) =
-        withContext(Dispatchers.IO) {
-            controllerDao.updateControllerPositionById(controllerId, newPosition)
-        }
+    override suspend fun swapControllersByIds(
+        currentId: UUID,
+        otherId: UUID,
+        fromPosition: Int,
+        toPosition: Int
+    ) = withContext(Dispatchers.IO) {
+        controllerDao.swapControllersByIds(currentId, otherId, fromPosition, toPosition)
+    }
 
     override suspend fun updateController(controller: Controller) =
         withContext(Dispatchers.IO) {
@@ -90,10 +93,14 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.insertWidgets(widgetEntity)
         }
 
-    override suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int) =
-        withContext(Dispatchers.IO) {
-            controllerDao.updateWidgetPositionById(widgetId, newPosition)
-        }
+    override suspend fun swapWidgetsByIds(
+        currentId: UUID,
+        otherId: UUID,
+        fromPosition: Int,
+        toPosition: Int
+    ) = withContext(Dispatchers.IO) {
+        controllerDao.swapWidgetsByIds(currentId, otherId, fromPosition, toPosition)
+    }
 
     override suspend fun updateWidget(widget: Widget) =
         withContext(Dispatchers.IO) {

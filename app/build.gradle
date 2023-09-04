@@ -68,6 +68,7 @@ dependencies {
 
     // Compose
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "org.burnoutcrew.composereorderable:reorderable:0.9.6"
 
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.44'

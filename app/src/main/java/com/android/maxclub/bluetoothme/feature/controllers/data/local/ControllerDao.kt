@@ -10,7 +10,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.C
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.WidgetEntity
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetCountResult
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetsResult
-import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -40,6 +39,17 @@ interface ControllerDao {
     @Query("UPDATE controllers SET position = :newPosition WHERE id = :controllerId")
     suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
 
+    @Transaction
+    suspend fun swapControllersByIds(
+        currentId: UUID,
+        otherId: UUID,
+        fromPosition: Int,
+        toPosition: Int
+    ) {
+        updateControllerPositionById(currentId, toPosition)
+        updateControllerPositionById(otherId, fromPosition)
+    }
+
     @Update
     suspend fun updateControllers(vararg controllers: ControllerEntity)
 
@@ -65,6 +75,17 @@ interface ControllerDao {
 
     @Query("UPDATE widgets SET position = :newPosition WHERE id = :widgetId")
     suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
+
+    @Transaction
+    suspend fun swapWidgetsByIds(
+        currentId: UUID,
+        otherId: UUID,
+        fromPosition: Int,
+        toPosition: Int
+    ) {
+        updateWidgetPositionById(currentId, toPosition)
+        updateWidgetPositionById(otherId, fromPosition)
+    }
 
     @Update
     suspend fun updateWidgets(vararg widgets: WidgetEntity)

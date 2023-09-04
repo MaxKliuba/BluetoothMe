@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
@@ -28,13 +26,20 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 import java.util.UUID
 
 @Composable
-fun ControllerItem(
+fun ControllerDraggingItem(
     controller: ControllerWithWidgetCount,
+    isSelected: Boolean,
     onClick: (UUID) -> Unit,
-    onShare: (UUID) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardColors = if (isSelected) {
+        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+    } else {
+        CardDefaults.cardColors()
+    }
+
     Card(
+        colors = cardColors,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
@@ -44,7 +49,7 @@ fun ControllerItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp)
+                .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -66,14 +71,7 @@ fun ControllerItem(
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(onClick = { onShare(controller.controller.id) }) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = stringResource(R.string.share_controller_button)
-                )
-            }
+            Icon(imageVector = Icons.Default.DragIndicator, contentDescription = null)
         }
     }
 }
