@@ -36,22 +36,14 @@ fun ControllersBottomBar(
                 )
             }
 
-            IconButton(
-                onClick = {
-                    onEditController()
-                    onUnselectController()
-                }
-            ) {
+            IconButton(onClick = onEditController) {
                 Icon(
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = stringResource(R.string.edit_controller_button)
                 )
             }
 
-            IconButton(onClick = {
-                onShareController()
-                onUnselectController()
-            }) {
+            IconButton(onClick = onShareController) {
                 Icon(
                     imageVector = Icons.Default.Share,
                     contentDescription = stringResource(R.string.share_controller_button)

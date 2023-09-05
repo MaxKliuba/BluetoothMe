@@ -28,6 +28,7 @@ class ControllersViewModel @Inject constructor(
             isLoading = true,
             controllers = emptyList(),
             selectedControllerId = null,
+            isFabOpen = false,
         )
     )
     val uiState: State<ControllersUiState> = _uiState
@@ -60,6 +61,14 @@ class ControllersViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
+    }
+
+    fun setFabState(isOpen: Boolean) {
+        _uiState.update { it.copy(isFabOpen = isOpen) }
+    }
+
+    fun switchFabState() {
+        setFabState(!_uiState.value.isFabOpen)
     }
 
     fun shareController(controllerId: UUID) {
