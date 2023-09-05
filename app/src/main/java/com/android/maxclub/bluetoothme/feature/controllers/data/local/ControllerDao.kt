@@ -36,20 +36,6 @@ interface ControllerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertControllers(vararg controllers: ControllerEntity)
 
-    @Query("UPDATE controllers SET position = :newPosition WHERE id = :controllerId")
-    suspend fun updateControllerPositionById(controllerId: UUID, newPosition: Int)
-
-    @Transaction
-    suspend fun swapControllersByIds(
-        currentId: UUID,
-        otherId: UUID,
-        fromPosition: Int,
-        toPosition: Int
-    ) {
-        updateControllerPositionById(currentId, toPosition)
-        updateControllerPositionById(otherId, fromPosition)
-    }
-
     @Update
     suspend fun updateControllers(vararg controllers: ControllerEntity)
 
@@ -72,20 +58,6 @@ interface ControllerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWidgets(vararg widgets: WidgetEntity)
-
-    @Query("UPDATE widgets SET position = :newPosition WHERE id = :widgetId")
-    suspend fun updateWidgetPositionById(widgetId: UUID, newPosition: Int)
-
-    @Transaction
-    suspend fun swapWidgetsByIds(
-        currentId: UUID,
-        otherId: UUID,
-        fromPosition: Int,
-        toPosition: Int
-    ) {
-        updateWidgetPositionById(currentId, toPosition)
-        updateWidgetPositionById(otherId, fromPosition)
-    }
 
     @Update
     suspend fun updateWidgets(vararg widgets: WidgetEntity)

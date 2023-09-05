@@ -47,18 +47,11 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.insertControllers(controllerEntity)
         }
 
-    override suspend fun swapControllersByIds(
-        currentId: UUID,
-        otherId: UUID,
-        fromPosition: Int,
-        toPosition: Int
-    ) = withContext(Dispatchers.IO) {
-        controllerDao.swapControllersByIds(currentId, otherId, fromPosition, toPosition)
-    }
-
-    override suspend fun updateController(controller: Controller) =
+    override suspend fun updateControllers(vararg controller: Controller) =
         withContext(Dispatchers.IO) {
-            controllerDao.updateControllers(controller.toControllerEntity())
+            controllerDao.updateControllers(
+                *controller.map { it.toControllerEntity() }.toTypedArray()
+            )
         }
 
     override suspend fun deleteControllerById(controllerId: UUID) =
@@ -93,18 +86,11 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.insertWidgets(widgetEntity)
         }
 
-    override suspend fun swapWidgetsByIds(
-        currentId: UUID,
-        otherId: UUID,
-        fromPosition: Int,
-        toPosition: Int
-    ) = withContext(Dispatchers.IO) {
-        controllerDao.swapWidgetsByIds(currentId, otherId, fromPosition, toPosition)
-    }
-
-    override suspend fun updateWidget(widget: Widget) =
+    override suspend fun updateWidgets(vararg widget: Widget) =
         withContext(Dispatchers.IO) {
-            controllerDao.updateWidgets(widget.toWidgetEntity())
+            controllerDao.updateWidgets(
+                *widget.map { it.toWidgetEntity() }.toTypedArray()
+            )
         }
 
     override suspend fun deleteWidgetById(widgetId: UUID) =

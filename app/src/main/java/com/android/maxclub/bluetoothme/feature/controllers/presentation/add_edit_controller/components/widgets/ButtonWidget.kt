@@ -15,11 +15,11 @@ import java.util.UUID
 @Composable
 fun ButtonWidget(
     widget: Widget.Button,
-    columnsCount:  Int,
+    columnsCount: Int,
     onChangeSize: (Widget, WidgetSize) -> Unit,
     onEnabledChange: (Widget, Boolean) -> Unit,
-    onDelete: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
+    onDelete: (UUID) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicWidget(
@@ -32,7 +32,7 @@ fun ButtonWidget(
         modifier = modifier,
     ) {
         FilledIconButton(
-            onClick = {},
+            onClick = { },
             modifier = Modifier.size(64.dp)
         ) {
             Icon(imageVector = Icons.Default.PowerSettingsNew, contentDescription = null)

@@ -99,7 +99,8 @@ fun ControllerListScreen(
                     onShareController = { },
                     onSelectController = viewModel::setSelectedController,
                     onUnselectController = { viewModel.setSelectedController(null) },
-                    onReorderController = viewModel::updateControllersPosition,
+                    onReorderController = viewModel::swapControllers,
+                    onApplyChangedControllerPositions = viewModel::applyChangedControllerPositions,
                     modifier = Modifier.fillMaxSize()
                 )
             }

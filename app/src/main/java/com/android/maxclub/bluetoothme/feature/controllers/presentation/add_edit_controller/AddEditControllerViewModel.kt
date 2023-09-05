@@ -79,21 +79,34 @@ class AddEditControllerViewModel @Inject constructor(
                     val controllerTitle = controllerWithWidgets.controller.title
 
                     _uiState.update {
-                        AddEditControllerUiState.Success(
-                            controllerTitle = if (it is AddEditControllerUiState.Success
-                                && it.controllerTitle.text == controllerTitle
-                            ) {
-                                it.controllerTitle
-                            } else {
-                                uiActionChannel.sendIn(
-                                    AddEditControllerUiAction.SetFocusToTitleTextField,
-                                    viewModelScope
-                                )
-                                TextFieldValue(controllerTitle, TextRange(controllerTitle.length))
-                            },
-                            controller = controllerWithWidgets.controller,
-                            widgets = controllerWithWidgets.widgets,
-                        )
+                        if (it is AddEditControllerUiState.Success) {
+                            it.copy(
+                                controllerTitle = if (it.controllerTitle.text == controllerTitle) {
+                                    it.controllerTitle
+                                } else {
+                                    TextFieldValue(
+                                        controllerTitle,
+                                        TextRange(controllerTitle.length)
+                                    )
+                                },
+                                controller = controllerWithWidgets.controller,
+                                widgets = controllerWithWidgets.widgets,
+                            )
+                        } else {
+                            uiActionChannel.sendIn(
+                                AddEditControllerUiAction.SetFocusToTitleTextField,
+                                viewModelScope
+                            )
+
+                            AddEditControllerUiState.Success(
+                                controllerTitle = TextFieldValue(
+                                    controllerTitle,
+                                    TextRange(controllerTitle.length)
+                                ),
+                                controller = controllerWithWidgets.controller,
+                                widgets = controllerWithWidgets.widgets,
+                            )
+                        }
                     }
                 }
                 .catch { it.printStackTrace() }
@@ -107,7 +120,7 @@ class AddEditControllerViewModel @Inject constructor(
                 updateControllerTitleJob?.cancel()
                 updateControllerTitleJob = viewModelScope.launch {
                     delay(300)
-                    controllerRepository.updateController(state.controller.copy(title = value.text))
+                    controllerRepository.updateControllers(state.controller.copy(title = value.text))
                 }
             }
             _uiState.update { state.copy(controllerTitle = value) }
@@ -117,7 +130,7 @@ class AddEditControllerViewModel @Inject constructor(
     fun updateControllerWithAccelerometer(checked: Boolean) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
-                controllerRepository.updateController(it.controller.copy(withAccelerometer = checked))
+                controllerRepository.updateControllers(it.controller.copy(withAccelerometer = checked))
             }
         }
     }
@@ -125,7 +138,7 @@ class AddEditControllerViewModel @Inject constructor(
     fun updateControllerWithVoiceInput(checked: Boolean) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
-                controllerRepository.updateController(it.controller.copy(withVoiceInput = checked))
+                controllerRepository.updateControllers(it.controller.copy(withVoiceInput = checked))
             }
         }
     }
@@ -133,7 +146,7 @@ class AddEditControllerViewModel @Inject constructor(
     fun updateControllerWithRefresh(checked: Boolean) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
-                controllerRepository.updateController(it.controller.copy(withRefresh = checked))
+                controllerRepository.updateControllers(it.controller.copy(withRefresh = checked))
             }
         }
     }
@@ -141,7 +154,7 @@ class AddEditControllerViewModel @Inject constructor(
     fun updateControllerColumnCount() {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
             viewModelScope.launch {
-                controllerRepository.updateController(
+                controllerRepository.updateControllers(
                     it.controller.copy(columnsCount = it.controller.columnsCount.next())
                 )
             }
@@ -150,36 +163,41 @@ class AddEditControllerViewModel @Inject constructor(
 
     fun updateWidgetSize(widget: Widget, newSize: WidgetSize) {
         viewModelScope.launch {
-            controllerRepository.updateWidget(widget.copy(size = newSize))
+            controllerRepository.updateWidgets(widget.copy(size = newSize))
         }
     }
 
     fun updateWidgetEnable(widget: Widget, enabled: Boolean) {
         viewModelScope.launch {
-            controllerRepository.updateWidget(widget.copy(enabled = enabled))
+            controllerRepository.updateWidgets(widget.copy(enabled = enabled))
         }
     }
 
-    fun updateWidgetsPosition(fromPosition: Int, toPosition: Int) {
+    fun swapWidgets(fromPosition: Int, toPosition: Int) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            val currentId = state.widgets[fromPosition].id
-            val otherId = state.widgets[toPosition].id
+            try {
+                val newCurrentItem = state.widgets[fromPosition].copy(position = toPosition)
+                val newOtherItem = state.widgets[toPosition].copy(position = fromPosition)
 
-            _uiState.update {
-                state.copy(widgets = state.widgets.toMutableList()
-                    .apply { add(fromPosition, removeAt(toPosition)) }
-                )
+                _uiState.update {
+                    state.copy(
+                        widgets = state.widgets.toMutableList().apply {
+                            set(fromPosition, newCurrentItem)
+                            set(toPosition, newOtherItem)
+                        }.sortedWith(getControllerWithWidgetsUseCase.comparator)
+                    )
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                e.printStackTrace()
             }
+        }
+    }
 
+    fun applyChangedWidgetPositions() {
+        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             swapWidgetsJob?.cancel()
             swapWidgetsJob = viewModelScope.launch {
-                delay(1000)
-                controllerRepository.swapControllersByIds(
-                    currentId,
-                    otherId,
-                    fromPosition,
-                    toPosition
-                )
+                controllerRepository.updateWidgets(*state.widgets.toTypedArray())
             }
         }
     }

@@ -11,8 +11,8 @@ fun EmptyWidget(
     widget: Widget.Empty,
     columnsCount: Int,
     onChangeSize: (Widget, WidgetSize) -> Unit,
-    onDelete: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
+    onDelete: (UUID) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicWidget(
@@ -21,8 +21,8 @@ fun EmptyWidget(
         isEnabledButtonVisible = false,
         onChangeSize = onChangeSize,
         onEnabledChange = { _, _ -> },
-        onDelete = onDelete,
         onEdit = onEdit,
+        onDelete = onDelete,
         modifier = modifier,
     ) {
         // Empty

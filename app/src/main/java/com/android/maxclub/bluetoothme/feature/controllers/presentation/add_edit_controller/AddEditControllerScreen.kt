@@ -107,10 +107,13 @@ fun AddEditControllerScreen(
                             onAddWidget = {
                                 controller?.let { onNavigateToAddEditWidget(it.id, true) }
                             },
-                            onEditWidget = { onNavigateToAddEditWidget(it, false) },
                             onChangeWidgetSize = viewModel::updateWidgetSize,
                             onChangeWidgetEnable = viewModel::updateWidgetEnable,
-                            onDeleteWidget = onDeleteWidget
+                            onReorderWidget = viewModel::swapWidgets,
+                            onApplyChangedWidgetPositions = viewModel::applyChangedWidgetPositions,
+                            onEditWidget = { onNavigateToAddEditWidget(it, false) },
+                            onDeleteWidget = onDeleteWidget,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }

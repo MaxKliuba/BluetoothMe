@@ -25,6 +25,7 @@ fun ControllerList(
     onSelectController: (UUID) -> Unit,
     onUnselectController: () -> Unit,
     onReorderController: (Int, Int) -> Unit,
+    onApplyChangedControllerPositions: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -45,6 +46,9 @@ fun ControllerList(
             items = controllers,
             key = { it.controller.id },
         ) { controller ->
+            val isSelected = controller.controller.id == selectedControllerId
+            val isDragging = selectedControllerId != null
+
             ReorderableItem(
                 state = state,
                 key = controller.controller.id
@@ -53,11 +57,10 @@ fun ControllerList(
                     if (isDraggingFlag) {
                         onSelectController(controller.controller.id)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    } else {
+                        onApplyChangedControllerPositions()
                     }
                 }
-
-                val isSelected = controller.controller.id == selectedControllerId
-                val isDragging = selectedControllerId != null
 
                 if (isDragging) {
                     ControllerDraggingItem(
