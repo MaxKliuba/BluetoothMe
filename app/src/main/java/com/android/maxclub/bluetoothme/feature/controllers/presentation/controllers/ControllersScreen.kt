@@ -18,9 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.AddControllerFab
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersBottomBar
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.AddControllerFab
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
 import java.util.UUID
 
@@ -75,7 +75,8 @@ fun ControllerListScreen(
                     onClickOptions = viewModel::switchFabState,
                     onAddEdit = { onNavigateToAddEditController(null) },
                     onAddFromFile = { /*TODO*/ },
-                    onAddFromQrCode = { /*TODO*/ })
+                    onAddFromQrCode = { /*TODO*/ }
+                )
             }
         },
         modifier = Modifier
@@ -94,7 +95,7 @@ fun ControllerListScreen(
                     controllers = state.controllers,
                     selectedControllerId = state.selectedControllerId,
                     onOpenController = onNavigateToAddEditController,
-                    onShareController = { },
+                    onShareController = viewModel::shareController,
                     onSelectController = viewModel::setSelectedController,
                     onUnselectController = { viewModel.setSelectedController(null) },
                     onReorderController = viewModel::swapControllers,

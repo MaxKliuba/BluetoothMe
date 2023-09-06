@@ -31,7 +31,7 @@ fun BleProfileDialog(
     data: BleProfileDialogData,
     onChangeBleProfileData: (BleProfileDialogData) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (BleProfileDialogData) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -111,7 +111,7 @@ fun BleProfileDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = { onConfirm(data) }) {
                 Text(text = stringResource(R.string.ble_profile_dialog_confirm_button))
             }
         },

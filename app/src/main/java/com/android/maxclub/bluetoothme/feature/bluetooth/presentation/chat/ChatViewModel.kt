@@ -47,22 +47,27 @@ class ChatViewModel @Inject constructor(
         messagesUseCases.deleteMessages()
     }
 
-    fun tryChangeMessageValue(newMessageValue: String) {
+    fun tryChangeMessageValue(newMessageValue: String): Boolean =
         tryChangeMessageValue(TextFieldValue(newMessageValue, TextRange(newMessageValue.length)))
-    }
 
-    fun tryChangeMessageValue(newMessageValue: TextFieldValue) {
+    fun tryChangeMessageValue(newMessageValue: TextFieldValue): Boolean =
         if (messageValueValidator(newMessageValue.text)) {
             _uiState.update { it.copy(messageValue = newMessageValue) }
-        }
-    }
 
-    fun trySendMessage(messageValue: String) {
+            true
+        } else {
+            false
+        }
+
+    fun trySendMessage(messageValue: String): Boolean =
         if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
             writeMessage(messageValue)
             tryChangeMessageValue("")
+
+            true
+        } else {
+            false
         }
-    }
 
     private fun getMessages() {
         getMessagesJob?.cancel()

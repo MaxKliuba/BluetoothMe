@@ -25,11 +25,10 @@ fun ConnectionTypeChips(
     onReselect: ((BluetoothDevice, BluetoothLeProfile) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-    ) {
+    Row(modifier = modifier) {
         device.type.availableConnectionTypes.forEach { connectionType ->
             val isSelected = connectionType::class == device.type.connectionType::class
+
             FilterChip(
                 enabled = onSelect != null,
                 selected = isSelected,
