@@ -58,54 +58,6 @@ class ConnectionViewModel @Inject constructor(
         startScan()
     }
 
-    private fun getState() {
-        getStateJob?.cancel()
-        getStateJob = bluetoothUseCases.getState()
-            .onEach { state ->
-                _uiState.update { it.copy(bluetoothState = state) }
-
-                if (state is BluetoothState.On.Connected && state.device != null) {
-                    uiActionChannel.sendIn(
-                        ConnectionUiAction.ScrollToConnectedDevice(state.device),
-                        viewModelScope
-                    )
-                }
-            }
-            .catch { e ->
-                e.printStackTrace()
-            }
-            .launchIn(viewModelScope)
-    }
-
-    private fun getScanState() {
-        getScanStateJob?.cancel()
-        getScanStateJob = bluetoothUseCases.getScanState()
-            .onEach { isScanning ->
-                _uiState.update { it.copy(isScanning = isScanning) }
-            }
-            .catch { it.printStackTrace() }
-            .launchIn(viewModelScope)
-    }
-
-    private fun getDevices() {
-        getDevicesJob?.cancel()
-        getDevicesJob = bluetoothUseCases.getBluetoothDevices()
-            .onEach { devices ->
-                _uiState.update { it.copy(devices = devices) }
-            }
-            .catch { e ->
-                e.printStackTrace()
-
-                if (e is MissingBluetoothPermissionException) {
-                    uiActionChannel.sendIn(
-                        ConnectionUiAction.RequestMissingPermissions(*e.permissions),
-                        viewModelScope
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
-    }
-
     fun startScan() {
         if (getDevicesJob?.isActive != true) {
             getDevices()
@@ -197,6 +149,54 @@ class ConnectionViewModel @Inject constructor(
 
     fun dismissBleProfileDialog() {
         _uiState.update { it.copy(bleProfileDialogData = null) }
+    }
+
+    private fun getState() {
+        getStateJob?.cancel()
+        getStateJob = bluetoothUseCases.getState()
+            .onEach { state ->
+                _uiState.update { it.copy(bluetoothState = state) }
+
+                if (state is BluetoothState.On.Connected && state.device != null) {
+                    uiActionChannel.sendIn(
+                        ConnectionUiAction.ScrollToConnectedDevice(state.device),
+                        viewModelScope
+                    )
+                }
+            }
+            .catch { e ->
+                e.printStackTrace()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getScanState() {
+        getScanStateJob?.cancel()
+        getScanStateJob = bluetoothUseCases.getScanState()
+            .onEach { isScanning ->
+                _uiState.update { it.copy(isScanning = isScanning) }
+            }
+            .catch { it.printStackTrace() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getDevices() {
+        getDevicesJob?.cancel()
+        getDevicesJob = bluetoothUseCases.getBluetoothDevices()
+            .onEach { devices ->
+                _uiState.update { it.copy(devices = devices) }
+            }
+            .catch { e ->
+                e.printStackTrace()
+
+                if (e is MissingBluetoothPermissionException) {
+                    uiActionChannel.sendIn(
+                        ConnectionUiAction.RequestMissingPermissions(*e.permissions),
+                        viewModelScope
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun tryUpdateBluetoothLeProfile(bleProfileData: BleProfileDialogData): Boolean {

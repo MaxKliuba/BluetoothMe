@@ -57,63 +57,6 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    private fun getControllerWithWidgetsById(controllerId: UUID) {
-        getControllerWithWidgetsJob?.cancel()
-        getControllerWithWidgetsJob = viewModelScope.launch {
-            if (this@AddEditControllerViewModel.controllerId == null) {
-                controllerRepository.addController(
-                    Controller(
-                        id = controllerId,
-                        title = "",
-                    )
-                )
-
-                this@AddEditControllerViewModel.controllerId = controllerId
-            }
-
-            getControllerWithWidgetsUseCase(controllerId)
-                .onStart {
-                    _uiState.update { AddEditControllerUiState.Loading(controllerId) }
-                }
-                .onEach { controllerWithWidgets ->
-                    val controllerTitle = controllerWithWidgets.controller.title
-
-                    _uiState.update {
-                        if (it is AddEditControllerUiState.Success) {
-                            it.copy(
-                                controllerTitle = if (it.controllerTitle.text == controllerTitle) {
-                                    it.controllerTitle
-                                } else {
-                                    TextFieldValue(
-                                        controllerTitle,
-                                        TextRange(controllerTitle.length)
-                                    )
-                                },
-                                controller = controllerWithWidgets.controller,
-                                widgets = controllerWithWidgets.widgets,
-                            )
-                        } else {
-                            uiActionChannel.sendIn(
-                                AddEditControllerUiAction.SetFocusToTitleTextField,
-                                viewModelScope
-                            )
-
-                            AddEditControllerUiState.Success(
-                                controllerTitle = TextFieldValue(
-                                    controllerTitle,
-                                    TextRange(controllerTitle.length)
-                                ),
-                                controller = controllerWithWidgets.controller,
-                                widgets = controllerWithWidgets.widgets,
-                            )
-                        }
-                    }
-                }
-                .catch { it.printStackTrace() }
-                .launchIn(this)
-        }
-    }
-
     fun updateControllerTitle(value: TextFieldValue) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             if (state.controller.title != value.text) {
@@ -199,6 +142,63 @@ class AddEditControllerViewModel @Inject constructor(
             swapWidgetsJob = viewModelScope.launch {
                 controllerRepository.updateWidgets(*state.widgets.toTypedArray())
             }
+        }
+    }
+
+    private fun getControllerWithWidgetsById(controllerId: UUID) {
+        getControllerWithWidgetsJob?.cancel()
+        getControllerWithWidgetsJob = viewModelScope.launch {
+            if (this@AddEditControllerViewModel.controllerId == null) {
+                controllerRepository.addController(
+                    Controller(
+                        id = controllerId,
+                        title = "",
+                    )
+                )
+
+                this@AddEditControllerViewModel.controllerId = controllerId
+            }
+
+            getControllerWithWidgetsUseCase(controllerId)
+                .onStart {
+                    _uiState.update { AddEditControllerUiState.Loading(controllerId) }
+                }
+                .onEach { controllerWithWidgets ->
+                    val controllerTitle = controllerWithWidgets.controller.title
+
+                    _uiState.update {
+                        if (it is AddEditControllerUiState.Success) {
+                            it.copy(
+                                controllerTitle = if (it.controllerTitle.text == controllerTitle) {
+                                    it.controllerTitle
+                                } else {
+                                    TextFieldValue(
+                                        controllerTitle,
+                                        TextRange(controllerTitle.length)
+                                    )
+                                },
+                                controller = controllerWithWidgets.controller,
+                                widgets = controllerWithWidgets.widgets,
+                            )
+                        } else {
+                            uiActionChannel.sendIn(
+                                AddEditControllerUiAction.SetFocusToTitleTextField,
+                                viewModelScope
+                            )
+
+                            AddEditControllerUiState.Success(
+                                controllerTitle = TextFieldValue(
+                                    controllerTitle,
+                                    TextRange(controllerTitle.length)
+                                ),
+                                controller = controllerWithWidgets.controller,
+                                widgets = controllerWithWidgets.widgets,
+                            )
+                        }
+                    }
+                }
+                .catch { it.printStackTrace() }
+                .launchIn(this)
         }
     }
 }

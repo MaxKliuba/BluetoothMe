@@ -19,7 +19,7 @@ data class NavDrawerItem(
         class Button(
             val onClick: () -> Unit,
             val isEnabled: Boolean = true,
-            val withProgressIndicator: Boolean = false,
+            val isProgressIndicatorVisible: Boolean = false,
             getValue: () -> String
         ) : Badge(getValue)
     }

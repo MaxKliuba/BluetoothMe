@@ -45,24 +45,6 @@ class ControllersViewModel @Inject constructor(
         }
     }
 
-    private fun getControllersWithWidgetCount() {
-        getControllersWithWidgetCountJob?.cancel()
-        getControllersWithWidgetCountJob = getControllersWithWidgetCountUseCase()
-            .onStart {
-                _uiState.update { it.copy(isLoading = true) }
-            }
-            .onEach { controllers ->
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        controllers = controllers,
-                    )
-                }
-            }
-            .catch { it.printStackTrace() }
-            .launchIn(viewModelScope)
-    }
-
     fun setFabState(isOpen: Boolean) {
         _uiState.update { it.copy(isFabOpen = isOpen) }
     }
@@ -108,5 +90,23 @@ class ControllersViewModel @Inject constructor(
                 *_uiState.value.controllers.map { it.controller }.toTypedArray()
             )
         }
+    }
+
+    private fun getControllersWithWidgetCount() {
+        getControllersWithWidgetCountJob?.cancel()
+        getControllersWithWidgetCountJob = getControllersWithWidgetCountUseCase()
+            .onStart {
+                _uiState.update { it.copy(isLoading = true) }
+            }
+            .onEach { controllers ->
+                _uiState.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        controllers = controllers,
+                    )
+                }
+            }
+            .catch { it.printStackTrace() }
+            .launchIn(viewModelScope)
     }
 }

@@ -64,7 +64,7 @@ fun NavigationDrawer(
                                         enabled = item.badge.isEnabled,
                                         modifier = Modifier.widthIn(min = 40.dp),
                                     ) {
-                                        if (item.badge.withProgressIndicator) {
+                                        if (item.badge.isProgressIndicatorVisible) {
                                             CircularProgressIndicator(
                                                 strokeWidth = 2.dp,
                                                 modifier = Modifier.size(16.dp),

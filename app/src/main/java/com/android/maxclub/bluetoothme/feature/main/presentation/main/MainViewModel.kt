@@ -17,7 +17,6 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.messages.MessagesUseCases
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.AddEditControllerUiAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -65,74 +64,128 @@ class MainViewModel @Inject constructor(
         getMessagesCount()
     }
 
-    fun onEvent(event: MainUiEvent) {
-        when (event) {
-            is MainUiEvent.OnOpenNavigationDrawer -> {
-                uiActionChannel.sendIn(MainUiAction.OpenNavigationDrawer, viewModelScope)
-            }
+    fun setCurrentDestination(route: String) {
+        _uiState.update { it.copy(currentDestination = route) }
+    }
 
-            is MainUiEvent.OnSelectNavDrawerItem -> {
+    fun requestMissingPermissions(vararg permissions: String) {
+        uiActionChannel.sendIn(
+            MainUiAction.RequestMissingPermissions(*permissions),
+            viewModelScope
+        )
+    }
+
+    fun showBluetoothPermissionRationaleDialog() {
+        _uiState.update { it.copy(isBluetoothPermissionRationaleDialogVisible = true) }
+    }
+
+    fun dismissBluetoothPermissionRationaleDialog() {
+        _uiState.update { it.copy(isBluetoothPermissionRationaleDialogVisible = false) }
+    }
+
+    fun confirmBluetoothPermissionRationaleDialog() {
+        uiActionChannel.sendIn(MainUiAction.LaunchPermissionSettingsIntent, viewModelScope)
+        dismissBluetoothPermissionRationaleDialog()
+    }
+
+    fun enableBluetoothAdapter() {
+        try {
+            bluetoothUseCases.enableAdapter()
+        } catch (e: MissingBluetoothPermissionException) {
+            e.printStackTrace()
+
+            uiActionChannel.sendIn(
+                MainUiAction.RequestMissingPermissions(*e.permissions),
+                viewModelScope
+            )
+        } catch (e: EnableBluetoothAdapterException) {
+            uiActionChannel.sendIn(
+                MainUiAction.LaunchBluetoothAdapterEnableIntent(e.intent),
+                viewModelScope
+            )
+        }
+    }
+
+    fun connectBluetoothDevice(device: BluetoothDevice) {
+        connectJob?.cancel()
+        connectJob = viewModelScope.launch {
+            try {
+                bluetoothUseCases.connect(device)
+            } catch (e: MissingBluetoothPermissionException) {
+                e.printStackTrace()
+
                 uiActionChannel.sendIn(
-                    MainUiAction.NavigateToSelectedNavDrawerItem(event.selectedItem),
+                    MainUiAction.RequestMissingPermissions(*e.permissions),
                     viewModelScope
                 )
-            }
+            } catch (e: BluetoothConnectionException) {
+                e.printStackTrace()
 
-            is MainUiEvent.OnDestinationChanged -> {
-                setCurrentDestination(event.route)
-            }
-
-            is MainUiEvent.OnRequestMissingPermissions -> {
                 uiActionChannel.sendIn(
-                    MainUiAction.RequestMissingPermissions(*event.permissions),
-                    viewModelScope
-                )
-            }
-
-            is MainUiEvent.OnShowBluetoothPermissionRationaleDialog -> {
-                setBluetoothPermissionRationaleDialogVisibility(true)
-            }
-
-            is MainUiEvent.OnConfirmBluetoothPermissionRationaleDialog -> {
-                setBluetoothPermissionRationaleDialogVisibility(false)
-                uiActionChannel.sendIn(MainUiAction.LaunchPermissionSettingsIntent, viewModelScope)
-            }
-
-            is MainUiEvent.OnDismissBluetoothPermissionRationaleDialog -> {
-                setBluetoothPermissionRationaleDialogVisibility(false)
-            }
-
-            is MainUiEvent.OnEnableAdapter -> {
-                enableAdapter()
-            }
-
-            is MainUiEvent.OnConnect -> {
-                connect(event.device)
-            }
-
-            is MainUiEvent.OnDisconnect -> {
-                disconnect(event.device)
-            }
-
-            is MainUiEvent.OnShowMessagesCount -> {
-                uiActionChannel.sendIn(
-                    MainUiAction.ShowMessagesCount(
-                        inputMessagesCount = _uiState.value.inputMessagesCount,
-                        outputMessagesCount = _uiState.value.outputMessagesCount,
-                    ),
-                    viewModelScope
-                )
-            }
-
-            is MainUiEvent.OnShowSendingErrorMessage -> {
-                uiActionChannel.sendIn(
-                    MainUiAction.ShowSendingErrorMessage(_uiState.value.favoriteBluetoothDevice),
+                    MainUiAction.ShowConnectionErrorMessage(e.bluetoothDevice ?: device),
                     viewModelScope
                 )
             }
         }
     }
 
+    fun disconnectBluetoothDevice(device: BluetoothDevice?) {
+        try {
+            bluetoothUseCases.disconnect(device)
+        } catch (e: MissingBluetoothPermissionException) {
+            e.printStackTrace()
+
+            uiActionChannel.sendIn(
+                MainUiAction.RequestMissingPermissions(*e.permissions),
+                viewModelScope
+            )
+        }
+    }
+
+    fun showMessagesCount() {
+        uiActionChannel.sendIn(
+            MainUiAction.ShowMessagesCountMessage(
+                inputMessagesCount = _uiState.value.inputMessagesCount,
+                outputMessagesCount = _uiState.value.outputMessagesCount,
+            ),
+            viewModelScope
+        )
+    }
+
+    fun showSendingErrorMessage() {
+        uiActionChannel.sendIn(
+            MainUiAction.ShowSendingErrorMessage(_uiState.value.favoriteBluetoothDevice),
+            viewModelScope
+        )
+    }
+
+    fun deleteWidget(widgetId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.deleteWidgetById(widgetId)
+
+            uiActionChannel.send(MainUiAction.ShowWidgetDeletedMessage(widgetId))
+        }
+    }
+
+    fun tryRestoreWidgetById(widgetId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.tryRestoreWidgetById(widgetId)
+        }
+    }
+
+    fun deleteController(controllerId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.deleteControllerById(controllerId)
+
+            uiActionChannel.send(MainUiAction.ShowControllerDeletedMessage(controllerId))
+        }
+    }
+
+    fun tryRestoreControllerById(controllerId: UUID) {
+        viewModelScope.launch {
+            controllerRepository.tryRestoreControllerById(controllerId)
+        }
+    }
 
     private fun getState() {
         getStateJob?.cancel()
@@ -181,95 +234,5 @@ class MainViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
-    }
-
-    private fun enableAdapter() {
-        try {
-            bluetoothUseCases.enableAdapter()
-        } catch (e: MissingBluetoothPermissionException) {
-            e.printStackTrace()
-
-            uiActionChannel.sendIn(
-                MainUiAction.RequestMissingPermissions(*e.permissions),
-                viewModelScope
-            )
-        } catch (e: EnableBluetoothAdapterException) {
-            uiActionChannel.sendIn(
-                MainUiAction.LaunchBluetoothAdapterEnableIntent(e.intent),
-                viewModelScope
-            )
-        }
-    }
-
-    private fun connect(device: BluetoothDevice) {
-        connectJob?.cancel()
-        connectJob = viewModelScope.launch {
-            try {
-                bluetoothUseCases.connect(device)
-            } catch (e: MissingBluetoothPermissionException) {
-                e.printStackTrace()
-
-                uiActionChannel.sendIn(
-                    MainUiAction.RequestMissingPermissions(*e.permissions),
-                    viewModelScope
-                )
-            } catch (e: BluetoothConnectionException) {
-                e.printStackTrace()
-
-                uiActionChannel.sendIn(
-                    MainUiAction.ShowConnectionErrorMessage(e.bluetoothDevice ?: device),
-                    viewModelScope
-                )
-            }
-        }
-    }
-
-    private fun disconnect(device: BluetoothDevice?) {
-        try {
-            bluetoothUseCases.disconnect(device)
-        } catch (e: MissingBluetoothPermissionException) {
-            e.printStackTrace()
-
-            uiActionChannel.sendIn(
-                MainUiAction.RequestMissingPermissions(*e.permissions),
-                viewModelScope
-            )
-        }
-    }
-
-    private fun setCurrentDestination(route: String) {
-        _uiState.update { it.copy(currentDestination = route) }
-    }
-
-    private fun setBluetoothPermissionRationaleDialogVisibility(isVisible: Boolean) {
-        _uiState.update { it.copy(isBluetoothPermissionRationaleDialogVisible = isVisible) }
-    }
-
-    fun deleteWidget(widgetId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.deleteWidgetById(widgetId)
-
-            uiActionChannel.send(MainUiAction.ShowWidgetDeletedMessage(widgetId))
-        }
-    }
-
-    fun tryRestoreWidgetById(widgetId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.tryRestoreWidgetById(widgetId)
-        }
-    }
-
-    fun deleteController(controllerId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.deleteControllerById(controllerId)
-
-            uiActionChannel.send(MainUiAction.ShowControllerDeletedMessage(controllerId))
-        }
-    }
-
-    fun tryRestoreControllerById(controllerId: UUID) {
-        viewModelScope.launch {
-            controllerRepository.tryRestoreControllerById(controllerId)
-        }
     }
 }
