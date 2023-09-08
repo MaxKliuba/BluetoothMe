@@ -7,7 +7,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.maxclub.bluetoothme.core.util.Screen
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
@@ -15,6 +15,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllerWithWidgetsById
+import com.android.maxclub.bluetoothme.feature.controllers.domain.validators.ControllerTitleValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,14 +33,13 @@ class AddEditControllerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val controllerRepository: ControllerRepository,
     private val getControllerWithWidgetsUseCase: GetControllerWithWidgetsById,
+    private val controllerTitleValidator: ControllerTitleValidator,
 ) : ViewModel() {
-    private var controllerId: UUID? =
-        savedStateHandle.get<String>(Screen.AddEditController.ARG_CONTROLLER_ID)?.let {
-            UUID.fromString(it)
-        }
+    private val initControllerId: Int = savedStateHandle[Screen.AddEditController.ARG_CONTROLLER_ID]
+        ?: Screen.AddEditController.DEFAULT_CONTROLLER_ID
 
     private val _uiState = mutableStateOf<AddEditControllerUiState>(
-        AddEditControllerUiState.Loading(controllerId ?: UUID.randomUUID())
+        AddEditControllerUiState.Loading(initControllerId)
     )
     val uiState: State<AddEditControllerUiState> = _uiState
 
@@ -57,18 +56,22 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun updateControllerTitle(value: TextFieldValue) {
-        (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-            if (state.controller.title != value.text) {
-                updateControllerTitleJob?.cancel()
-                updateControllerTitleJob = viewModelScope.launch {
-                    delay(300)
-                    controllerRepository.updateControllers(state.controller.copy(title = value.text))
+    fun tryUpdateControllerTitle(value: TextFieldValue): Boolean =
+        if (controllerTitleValidator(value.text)) {
+            (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
+                if (state.controller.title != value.text) {
+                    updateControllerTitleJob?.cancel()
+                    updateControllerTitleJob = viewModelScope.launch {
+                        delay(300)
+                        controllerRepository.updateControllers(state.controller.copy(title = value.text))
+                    }
                 }
+                _uiState.update { state.copy(controllerTitle = value) }
             }
-            _uiState.update { state.copy(controllerTitle = value) }
+            true
+        } else {
+            false
         }
-    }
 
     fun updateControllerWithAccelerometer(checked: Boolean) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let {
@@ -145,23 +148,19 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    private fun getControllerWithWidgetsById(controllerId: UUID) {
+    private fun getControllerWithWidgetsById(controllerId: Int) {
         getControllerWithWidgetsJob?.cancel()
         getControllerWithWidgetsJob = viewModelScope.launch {
-            if (this@AddEditControllerViewModel.controllerId == null) {
-                controllerRepository.addController(
-                    Controller(
-                        id = controllerId,
-                        title = "",
-                    )
-                )
+            val newControllerId =
+                if (controllerId == Screen.AddEditController.DEFAULT_CONTROLLER_ID) {
+                    controllerRepository.addController(Controller(title = ""))
+                } else {
+                    controllerId
+                }
 
-                this@AddEditControllerViewModel.controllerId = controllerId
-            }
-
-            getControllerWithWidgetsUseCase(controllerId)
+            getControllerWithWidgetsUseCase(newControllerId)
                 .onStart {
-                    _uiState.update { AddEditControllerUiState.Loading(controllerId) }
+                    _uiState.update { AddEditControllerUiState.Loading(newControllerId) }
                 }
                 .onEach { controllerWithWidgets ->
                     val controllerTitle = controllerWithWidgets.controller.title

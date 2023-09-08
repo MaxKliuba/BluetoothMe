@@ -5,7 +5,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
-import java.util.UUID
 
 @Entity(
     tableName = "widgets",
@@ -19,8 +18,8 @@ import java.util.UUID
     ]
 )
 data class WidgetEntity(
-    @PrimaryKey val id: UUID,
-    val controllerId: UUID,
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    val controllerId: Int,
     val type: WidgetType,
     val messageTag: String,
     val title: String,

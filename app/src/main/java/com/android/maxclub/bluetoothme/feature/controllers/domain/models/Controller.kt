@@ -1,9 +1,7 @@
 package com.android.maxclub.bluetoothme.feature.controllers.domain.models
 
-import java.util.UUID
-
 data class Controller(
-    val id: UUID = UUID.randomUUID(),
+    val id: Int = 0,
     val title: String,
     val withAccelerometer: Boolean = false,
     val withVoiceInput: Boolean = false,

@@ -24,14 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
 import kotlinx.coroutines.flow.collectLatest
-import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditWidgetScreen(
     onNavigateUp: () -> Unit,
-    onDeleteWidget: (UUID) -> Unit,
+    onDeleteWidget: (Int) -> Unit,
     viewModel: AddEditWidgetViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState

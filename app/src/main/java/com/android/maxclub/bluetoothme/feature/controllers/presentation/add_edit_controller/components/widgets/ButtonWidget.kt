@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
-import java.util.UUID
 
 @Composable
 fun ButtonWidget(
@@ -18,8 +17,8 @@ fun ButtonWidget(
     columnsCount: Int,
     onChangeSize: (Widget, WidgetSize) -> Unit,
     onEnabledChange: (Widget, Boolean) -> Unit,
-    onEdit: (UUID) -> Unit,
-    onDelete: (UUID) -> Unit,
+    onEdit: (Int) -> Unit,
+    onDelete: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BasicWidget(

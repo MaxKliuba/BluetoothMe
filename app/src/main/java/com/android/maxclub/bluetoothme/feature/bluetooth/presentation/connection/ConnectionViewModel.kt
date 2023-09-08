@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
-import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.UuidValueValidator
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.validators.UuidValueValidator
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState

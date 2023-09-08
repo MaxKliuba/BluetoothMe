@@ -1,10 +1,8 @@
 package com.android.maxclub.bluetoothme.feature.controllers.domain.models
 
-import java.util.UUID
-
 sealed class Widget(
-    val id: UUID,
-    val controllerId: UUID,
+    val id: Int,
+    val controllerId: Int,
     val messageTag: String,
     val title: String,
     val size: WidgetSize,
@@ -17,8 +15,8 @@ sealed class Widget(
     abstract fun copyWithState(stateValue: String): Widget
 
     fun copy(
-        id: UUID = this.id,
-        controllerId: UUID = this.controllerId,
+        id: Int = this.id,
+        controllerId: Int = this.controllerId,
         messageTag: String = this.messageTag,
         title: String = this.title,
         size: WidgetSize = this.size,
@@ -58,8 +56,8 @@ sealed class Widget(
     }
 
     class Empty(
-        id: UUID = UUID.randomUUID(),
-        controllerId: UUID,
+        id: Int = 0,
+        controllerId: Int,
         size: WidgetSize = WidgetSize.SMALL,
         position: Int = -1,
     ) : Widget(id, controllerId, "", "", size, false, position) {
@@ -71,8 +69,8 @@ sealed class Widget(
     }
 
     class Button(
-        id: UUID = UUID.randomUUID(),
-        controllerId: UUID,
+        id: Int = 0,
+        controllerId: Int,
         messageTag: String,
         title: String,
         size: WidgetSize = WidgetSize.SMALL,

@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,11 +52,11 @@ class ControllersViewModel @Inject constructor(
         setFabState(!_uiState.value.isFabOpen)
     }
 
-    fun shareController(controllerId: UUID) {
+    fun shareController(controllerId: Int) {
         // TODO
     }
 
-    fun setSelectedController(controllerId: UUID?) {
+    fun setSelectedController(controllerId: Int?) {
         _uiState.update { it.copy(selectedControllerId = controllerId) }
     }
 

@@ -11,7 +11,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.W
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetCountResult
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetsResult
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 @Dao
 interface ControllerDao {
@@ -28,46 +27,92 @@ interface ControllerDao {
 
     @Transaction
     @Query("SELECT * FROM controllers WHERE isDeleted = 0 AND id = :controllerId")
-    fun getControllerWithWidgetsById(controllerId: UUID): Flow<ControllerWithWidgetsResult>
+    fun getControllerWithWidgetsById(controllerId: Int): Flow<ControllerWithWidgetsResult>
 
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM controllers")
-    fun getNextControllerPosition(): Int
+    suspend fun getNextControllerPosition(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertControllers(vararg controllers: ControllerEntity)
+    suspend fun insertController(controller: ControllerEntity): Long
+
+    @Transaction
+    suspend fun insertControllerWithNextPosition(controller: ControllerEntity): Long {
+        val newController = if (controller.position == -1) {
+            val nextPosition = getNextControllerPosition()
+            controller.copy(position = nextPosition)
+        } else {
+            controller
+        }
+
+        return insertController(newController)
+    }
 
     @Update
     suspend fun updateControllers(vararg controllers: ControllerEntity)
 
     @Query("UPDATE controllers SET isDeleted = 1 WHERE id = :controllerId")
-    suspend fun deleteControllerById(controllerId: UUID)
+    suspend fun deleteControllerById(controllerId: Int)
 
     @Query("UPDATE controllers SET isDeleted = 0 WHERE id = :controllerId")
-    suspend fun tryRestoreControllerById(controllerId: UUID)
+    suspend fun tryRestoreControllerById(controllerId: Int)
 
     @Query("DELETE FROM controllers WHERE isDeleted = 1")
     suspend fun deleteMarkedAsDeletedControllers()
 
-    /* Widgets */
-
     @Query("SELECT * FROM widgets WHERE isDeleted = 0 AND id = :widgetId")
-    fun getWidgetById(widgetId: UUID): Flow<WidgetEntity>
+    fun getWidgetById(widgetId: Int): Flow<WidgetEntity>
 
     @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM widgets WHERE controllerId = :controllerId")
-    fun getNextWidgetPosition(controllerId: UUID): Int
+    suspend fun getNextWidgetPosition(controllerId: Int): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWidgets(vararg widgets: WidgetEntity)
+    suspend fun insertWidget(widget: WidgetEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWidgets(widgets: List<WidgetEntity>)
+
+    @Transaction
+    suspend fun insertWidgetWithNextPosition(widget: WidgetEntity): Long {
+        val newWidget = getWidgetWithNextPosition(widget)
+
+        return insertWidget(newWidget)
+    }
+
+    @Transaction
+    suspend fun insertWidgetsWithNextPositions(widgets: List<WidgetEntity>) {
+        val newWidgets = widgets.map { getWidgetWithNextPosition(it) }
+
+        insertWidgets(newWidgets)
+    }
 
     @Update
     suspend fun updateWidgets(vararg widgets: WidgetEntity)
 
     @Query("UPDATE widgets SET isDeleted = 1 WHERE id = :widgetId")
-    suspend fun deleteWidgetById(widgetId: UUID)
+    suspend fun deleteWidgetById(widgetId: Int)
 
     @Query("UPDATE widgets SET isDeleted = 0 WHERE id = :widgetId")
-    suspend fun tryRestoreWidgetById(widgetId: UUID)
+    suspend fun tryRestoreWidgetById(widgetId: Int)
 
     @Query("DELETE FROM widgets WHERE isDeleted = 1")
     suspend fun deleteMarkedAsDeletedWidgets()
+
+    @Transaction
+    suspend fun insertControllerWithWidgets(
+        controller: ControllerEntity,
+        widgets: List<WidgetEntity>
+    ) {
+        val controllerId = insertControllerWithNextPosition(controller).toInt()
+        val widgetsWithControllerId = widgets.map { it.copy(controllerId = controllerId) }
+
+        insertWidgetsWithNextPositions(widgetsWithControllerId)
+    }
+
+    private suspend fun getWidgetWithNextPosition(widget: WidgetEntity): WidgetEntity =
+        if (widget.position == -1) {
+            val nextPosition = getNextWidgetPosition(widget.controllerId)
+            widget.copy(position = nextPosition)
+        } else {
+            widget
+        }
 }

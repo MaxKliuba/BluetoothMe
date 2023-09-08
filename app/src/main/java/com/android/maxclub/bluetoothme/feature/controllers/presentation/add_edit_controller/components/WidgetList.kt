@@ -24,7 +24,6 @@ import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyGridState
 import org.burnoutcrew.reorderable.reorderable
-import java.util.UUID
 
 @Composable
 fun WidgetList(
@@ -35,8 +34,8 @@ fun WidgetList(
     onChangeWidgetEnable: (Widget, Boolean) -> Unit,
     onReorderWidget: (Int, Int) -> Unit,
     onApplyChangedWidgetPositions: () -> Unit,
-    onEditWidget: (UUID) -> Unit,
-    onDeleteWidget: (UUID) -> Unit,
+    onEditWidget: (Int) -> Unit,
+    onDeleteWidget: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current

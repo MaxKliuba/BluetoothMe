@@ -21,16 +21,15 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.WidgetList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditControllerScreen(
     onNavigateUp: () -> Unit,
-    onNavigateToAddEditWidget: (id: UUID, isNew: Boolean) -> Unit,
-    onDeleteWidget: (UUID) -> Unit,
-    onDeleteController: (UUID) -> Unit,
+    onNavigateToAddEditWidget: (id: Int, isNew: Boolean) -> Unit,
+    onDeleteWidget: (Int) -> Unit,
+    onDeleteController: (Int) -> Unit,
     viewModel: AddEditControllerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
@@ -62,7 +61,7 @@ fun AddEditControllerScreen(
             (state as? AddEditControllerUiState.Success)?.let { state ->
                 AddEditControllerTopBar(
                     title = state.controllerTitle,
-                    onTitleChange = viewModel::updateControllerTitle,
+                    onTitleChange = viewModel::tryUpdateControllerTitle,
                     focusRequester = focusRequester,
                     withAccelerometer = state.controller.withAccelerometer,
                     onWithAccelerometerChange = viewModel::updateControllerWithAccelerometer,

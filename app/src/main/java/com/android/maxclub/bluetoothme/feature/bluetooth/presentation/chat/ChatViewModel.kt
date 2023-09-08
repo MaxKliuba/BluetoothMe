@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.WriteMessageException
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
-import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessageValueValidator
+import com.android.maxclub.bluetoothme.feature.bluetooth.domain.validators.MessageValueValidator
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.usecases.messages.MessagesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -53,7 +53,6 @@ class ChatViewModel @Inject constructor(
     fun tryChangeMessageValue(newMessageValue: TextFieldValue): Boolean =
         if (messageValueValidator(newMessageValue.text)) {
             _uiState.update { it.copy(messageValue = newMessageValue) }
-
             true
         } else {
             false
@@ -63,7 +62,6 @@ class ChatViewModel @Inject constructor(
         if (messageValue.isNotEmpty() && messageValueValidator(messageValue)) {
             writeMessage(messageValue)
             tryChangeMessageValue("")
-
             true
         } else {
             false

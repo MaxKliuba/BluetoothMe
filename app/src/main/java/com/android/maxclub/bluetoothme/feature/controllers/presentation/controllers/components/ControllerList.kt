@@ -14,15 +14,14 @@ import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
-import java.util.UUID
 
 @Composable
 fun ControllerList(
     controllers: List<ControllerWithWidgetCount>,
-    selectedControllerId: UUID?,
-    onOpenController: (UUID) -> Unit,
-    onShareController: (UUID) -> Unit,
-    onSelectController: (UUID) -> Unit,
+    selectedControllerId: Int?,
+    onOpenController: (Int) -> Unit,
+    onShareController: (Int) -> Unit,
+    onSelectController: (Int) -> Unit,
     onUnselectController: () -> Unit,
     onReorderController: (Int, Int) -> Unit,
     onApplyChangedControllerPositions: () -> Unit,

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
 import com.android.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
 import com.android.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
-import com.android.maxclub.bluetoothme.core.util.Screen
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toFullString
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -159,7 +158,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun deleteWidget(widgetId: UUID) {
+    fun deleteWidget(widgetId: Int) {
         viewModelScope.launch {
             controllerRepository.deleteWidgetById(widgetId)
 
@@ -167,13 +166,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun tryRestoreWidgetById(widgetId: UUID) {
+    fun tryRestoreWidgetById(widgetId: Int) {
         viewModelScope.launch {
             controllerRepository.tryRestoreWidgetById(widgetId)
         }
     }
 
-    fun deleteController(controllerId: UUID) {
+    fun deleteController(controllerId: Int) {
         viewModelScope.launch {
             controllerRepository.deleteControllerById(controllerId)
 
@@ -181,7 +180,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun tryRestoreControllerById(controllerId: UUID) {
+    fun tryRestoreControllerById(controllerId: Int) {
         viewModelScope.launch {
             controllerRepository.tryRestoreControllerById(controllerId)
         }

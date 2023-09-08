@@ -2,7 +2,6 @@ package com.android.maxclub.bluetoothme.feature.main.presentation.main
 
 import android.content.Intent
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
-import java.util.UUID
 
 sealed class MainUiAction {
     class RequestMissingPermissions(vararg val permissions: String) : MainUiAction()
@@ -15,6 +14,6 @@ sealed class MainUiAction {
     ) : MainUiAction()
 
     data class ShowSendingErrorMessage(val device: BluetoothDevice?) : MainUiAction()
-    data class ShowWidgetDeletedMessage(val widgetId: UUID) : MainUiAction()
-    data class ShowControllerDeletedMessage(val controllerId: UUID) : MainUiAction()
+    data class ShowWidgetDeletedMessage(val widgetId: Int) : MainUiAction()
+    data class ShowControllerDeletedMessage(val controllerId: Int) : MainUiAction()
 }

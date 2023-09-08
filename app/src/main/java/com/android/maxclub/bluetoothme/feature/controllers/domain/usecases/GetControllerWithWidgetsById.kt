@@ -3,7 +3,6 @@ package com.android.maxclub.bluetoothme.feature.controllers.domain.usecases
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import kotlinx.coroutines.flow.map
-import java.util.UUID
 import javax.inject.Inject
 
 class GetControllerWithWidgetsById @Inject constructor(
@@ -13,7 +12,7 @@ class GetControllerWithWidgetsById @Inject constructor(
         item0.position.compareTo(item1.position)
     }
 
-    operator fun invoke(controllerId: UUID) =
+    operator fun invoke(controllerId: Int) =
         repository.getControllerWithWidgetsById(controllerId)
             .map { controllerWithWidgets ->
                 controllerWithWidgets.copy(

@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.core.util.Screen
 
 @Composable
 fun getNavDrawerItems(

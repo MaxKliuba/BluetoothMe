@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages
+package com.android.maxclub.bluetoothme.feature.bluetooth.domain.validators
 
 import javax.inject.Inject
 

@@ -26,7 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.core.util.Screen
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
@@ -268,8 +268,8 @@ fun MainScreenWrapper() {
                     route = Screen.AddEditController.routeWithArgs,
                     arguments = listOf(
                         navArgument(name = Screen.AddEditController.ARG_CONTROLLER_ID) {
-                            type = NavType.StringType
-                            nullable = true
+                            type = NavType.IntType
+                            defaultValue = Screen.AddEditController.DEFAULT_CONTROLLER_ID
                         }
                     ),
                 ) {
@@ -287,7 +287,7 @@ fun MainScreenWrapper() {
                     route = Screen.AddEditWidget.routeWithArgs,
                     arguments = listOf(
                         navArgument(name = Screen.AddEditWidget.ARG_ID) {
-                            type = NavType.StringType
+                            type = NavType.IntType
                         },
                         navArgument(name = Screen.AddEditWidget.ARG_IS_NEW) {
                             type = NavType.BoolType

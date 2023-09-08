@@ -22,15 +22,14 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.controll
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersBottomBar
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
-import java.util.UUID
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControllerListScreen(
     onOpenNavigationDrawer: () -> Unit,
-    onNavigateToAddEditController: (UUID?) -> Unit,
-    onDeleteController: (UUID) -> Unit,
+    onNavigateToAddEditController: (Int?) -> Unit,
+    onDeleteController: (Int) -> Unit,
     viewModel: ControllersViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState

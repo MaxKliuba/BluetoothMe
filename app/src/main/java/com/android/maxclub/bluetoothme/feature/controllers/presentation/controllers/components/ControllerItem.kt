@@ -25,13 +25,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
-import java.util.UUID
 
 @Composable
 fun ControllerItem(
     controller: ControllerWithWidgetCount,
-    onClick: (UUID) -> Unit,
-    onShare: (UUID) -> Unit,
+    onClick: (Int) -> Unit,
+    onShare: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
