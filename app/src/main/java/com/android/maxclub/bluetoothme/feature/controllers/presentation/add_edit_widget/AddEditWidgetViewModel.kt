@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetIcon
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,12 @@ class AddEditWidgetViewModel @Inject constructor(
         getWidgetsJob?.cancel()
         getWidgetsJob = viewModelScope.launch {
             val widgetId = if (isNew) {
-                val widget = Widget.Empty(controllerId = id)
+                val widget = Widget.Button(
+                    controllerId = id,
+                    messageTag = "led",
+                    title = "Led",
+                    icon = WidgetIcon.HIGHLIGHT,
+                )
                 controllerRepository.addWidget(widget)
             } else {
                 id
