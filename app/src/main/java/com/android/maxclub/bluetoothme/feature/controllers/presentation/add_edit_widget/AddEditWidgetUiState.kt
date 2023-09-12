@@ -6,6 +6,6 @@ sealed class AddEditWidgetUiState {
     object Loading : AddEditWidgetUiState()
     data class Success(
         // TODO
-        val widget: Widget,
+        val widget: Widget<*>,
     ) : AddEditWidgetUiState()
 }

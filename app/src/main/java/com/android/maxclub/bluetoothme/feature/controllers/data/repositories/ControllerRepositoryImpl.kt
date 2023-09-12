@@ -63,19 +63,19 @@ class ControllerRepositoryImpl @Inject constructor(
             controllerDao.deleteMarkedAsDeletedControllers()
         }
 
-    override fun getWidgetById(widgetId: Int): Flow<Widget> =
+    override fun getWidgetById(widgetId: Int): Flow<Widget<*>> =
         controllerDao.getWidgetById(widgetId)
             .map { it.toWidget() }
             .flowOn(Dispatchers.IO)
 
-    override suspend fun addWidget(widget: Widget): Int =
+    override suspend fun addWidget(widget: Widget<*>): Int =
         withContext(Dispatchers.IO) {
             val widgetEntity = widget.toWidgetEntity()
 
             controllerDao.insertWidgetWithNextPosition(widgetEntity).toInt()
         }
 
-    override suspend fun updateWidgets(vararg widget: Widget) =
+    override suspend fun updateWidgets(vararg widget: Widget<*>) =
         withContext(Dispatchers.IO) {
             controllerDao.updateWidgets(
                 *widget.map { it.toWidgetEntity() }.toTypedArray()

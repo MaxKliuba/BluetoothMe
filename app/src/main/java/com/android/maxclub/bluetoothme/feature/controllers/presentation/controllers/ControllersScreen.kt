@@ -28,6 +28,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.controll
 @Composable
 fun ControllerListScreen(
     onOpenNavigationDrawer: () -> Unit,
+    onNavigateToController: (Int) -> Unit,
     onNavigateToAddEditController: (Int?) -> Unit,
     onDeleteController: (Int) -> Unit,
     viewModel: ControllersViewModel = hiltViewModel(),
@@ -93,7 +94,7 @@ fun ControllerListScreen(
                 ControllerList(
                     controllers = state.controllers,
                     selectedControllerId = state.selectedControllerId,
-                    onOpenController = onNavigateToAddEditController,
+                    onOpenController = onNavigateToController,
                     onShareController = viewModel::shareController,
                     onSelectController = viewModel::setSelectedController,
                     onUnselectController = { viewModel.setSelectedController(null) },

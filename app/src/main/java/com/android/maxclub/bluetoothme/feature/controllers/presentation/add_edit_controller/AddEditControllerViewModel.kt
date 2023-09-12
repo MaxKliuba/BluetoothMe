@@ -107,13 +107,13 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun updateWidgetSize(widget: Widget, newSize: WidgetSize) {
+    fun updateWidgetSize(widget: Widget<*>, newSize: WidgetSize) {
         viewModelScope.launch {
             controllerRepository.updateWidgets(widget.copy(size = newSize))
         }
     }
 
-    fun updateWidgetEnable(widget: Widget, enabled: Boolean) {
+    fun updateWidgetEnable(widget: Widget<*>, enabled: Boolean) {
         viewModelScope.launch {
             controllerRepository.updateWidgets(widget.copy(enabled = enabled))
         }

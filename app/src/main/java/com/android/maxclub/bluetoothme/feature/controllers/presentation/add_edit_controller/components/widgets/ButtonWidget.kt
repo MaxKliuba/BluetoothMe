@@ -13,8 +13,8 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.AsI
 fun ButtonWidget(
     widget: Widget.Button,
     columnsCount: Int,
-    onChangeSize: (Widget, WidgetSize) -> Unit,
-    onEnabledChange: (Widget, Boolean) -> Unit,
+    onChangeSize: (Widget<*>, WidgetSize) -> Unit,
+    onEnabledChange: (Widget<*>, Boolean) -> Unit,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
     modifier: Modifier = Modifier

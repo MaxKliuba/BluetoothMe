@@ -34,6 +34,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatS
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.AddEditControllerScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.AddEditWidgetScreen
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.ControllerScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllerListScreen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
@@ -253,6 +254,9 @@ fun MainScreenWrapper() {
                 composable(route = Screen.Controllers.route) {
                     ControllerListScreen(
                         onOpenNavigationDrawer = onOpenNavigationDrawer,
+                        onNavigateToController = { controllerId ->
+                            navController.navigate("${Screen.Controller.route}/$controllerId")
+                        },
                         onNavigateToAddEditController = { controllerId ->
                             navController.navigate(
                                 "${Screen.AddEditController.route}?${
@@ -297,6 +301,21 @@ fun MainScreenWrapper() {
                     AddEditWidgetScreen(
                         onNavigateUp = navController::navigateUp,
                         onDeleteWidget = viewModel::deleteWidget,
+                    )
+                }
+
+                composable(
+                    route = Screen.Controller.routeWithArgs,
+                    arguments = listOf(
+                        navArgument(name = Screen.Controller.ARG_CONTROLLER_ID) {
+                            type = NavType.IntType
+                        }
+                    ),
+                ) {
+                    ControllerScreen(
+                        bluetoothState = state.bluetoothState,
+                        onNavigateUp = navController::navigateUp,
+                        onShowSendingErrorMessage = viewModel::showSendingErrorMessage,
                     )
                 }
 

@@ -22,11 +22,11 @@ interface ControllerRepository {
 
     suspend fun deleteMarkedAsDeletedControllers()
 
-    fun getWidgetById(widgetId: Int): Flow<Widget>
+    fun getWidgetById(widgetId: Int): Flow<Widget<*>>
 
-    suspend fun addWidget(widget: Widget): Int
+    suspend fun addWidget(widget: Widget<*>): Int
 
-    suspend fun updateWidgets(vararg widget: Widget)
+    suspend fun updateWidgets(vararg widget: Widget<*>)
 
     suspend fun deleteWidgetById(widgetId: Int)
 

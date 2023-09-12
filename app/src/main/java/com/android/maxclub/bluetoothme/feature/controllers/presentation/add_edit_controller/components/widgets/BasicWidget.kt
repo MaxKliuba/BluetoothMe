@@ -28,10 +28,10 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetS
 
 @Composable
 fun BasicWidget(
-    widget: Widget,
+    widget: Widget<*>,
     columnsCount: Int,
-    onChangeSize: (Widget, WidgetSize) -> Unit,
-    onEnabledChange: (Widget, Boolean) -> Unit,
+    onChangeSize: (Widget<*>, WidgetSize) -> Unit,
+    onEnabledChange: (Widget<*>, Boolean) -> Unit,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
     modifier: Modifier = Modifier,

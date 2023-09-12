@@ -9,6 +9,6 @@ sealed class AddEditControllerUiState {
     data class Success(
         val controllerTitle: TextFieldValue,
         val controller: Controller,
-        val widgets: List<Widget>,
+        val widgets: List<Widget<*>>,
     ) : AddEditControllerUiState()
 }

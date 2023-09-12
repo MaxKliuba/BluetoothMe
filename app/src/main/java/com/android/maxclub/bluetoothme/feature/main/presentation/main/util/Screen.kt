@@ -22,7 +22,14 @@ sealed class Screen(val route: String) {
             get() = "$route/{$ARG_ID}/{$ARG_IS_NEW}"
     }
 
-    object Controller : Screen("controller")
+    object Controller : Screen("controller") {
+        const val ARG_CONTROLLER_ID = "controllerId"
+        const val DEFAULT_CONTROLLER_ID = -1
+
+        val routeWithArgs: String
+            get() = "$route/{$ARG_CONTROLLER_ID}"
+    }
+
     object Chat : Screen("terminal")
     object Help : Screen("help")
 }

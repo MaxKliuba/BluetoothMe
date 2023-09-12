@@ -28,10 +28,10 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun WidgetList(
     columnsCount: Int,
-    widgets: List<Widget>,
+    widgets: List<Widget<*>>,
     onAddWidget: () -> Unit,
-    onChangeWidgetSize: (Widget, WidgetSize) -> Unit,
-    onChangeWidgetEnable: (Widget, Boolean) -> Unit,
+    onChangeWidgetSize: (Widget<*>, WidgetSize) -> Unit,
+    onChangeWidgetEnable: (Widget<*>, Boolean) -> Unit,
     onReorderWidget: (Int, Int) -> Unit,
     onApplyChangedWidgetPositions: () -> Unit,
     onEditWidget: (Int) -> Unit,
@@ -92,6 +92,8 @@ fun WidgetList(
                         onEdit = onEditWidget,
                         onDelete = onDeleteWidget,
                     )
+
+                    else -> Unit // TODO
                 }
             }
         }

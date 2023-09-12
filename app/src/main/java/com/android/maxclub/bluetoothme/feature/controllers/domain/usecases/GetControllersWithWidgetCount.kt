@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.controllers.domain.usecases
 
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ class GetControllersWithWidgetCount @Inject constructor(
         item0.controller.position.compareTo(item1.controller.position)
     }
 
-    operator fun invoke() =
+    operator fun invoke(): Flow<List<ControllerWithWidgetCount>> =
         repository.getControllersWithWidgetCount()
             .map { list ->
                 list.sortedWith(comparator)

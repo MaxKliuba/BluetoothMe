@@ -9,7 +9,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetS
 fun EmptyWidget(
     widget: Widget.Empty,
     columnsCount: Int,
-    onChangeSize: (Widget, WidgetSize) -> Unit,
+    onChangeSize: (Widget<*>, WidgetSize) -> Unit,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
     modifier: Modifier = Modifier
