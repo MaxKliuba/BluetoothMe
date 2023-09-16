@@ -4,8 +4,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -17,10 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.AddControllerFab
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersBottomBar
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,24 +53,21 @@ fun ControllerListScreen(
         viewModel.setSelectedController(null)
     }
 
+    val onUnselectController = { viewModel.setSelectedController(null) }
+
     Scaffold(
         topBar = {
             ControllersTopBar(
                 scrollBehavior = scrollBehavior,
                 onOpenNavigationDrawer = onOpenNavigationDrawer,
+                isControllerSelected = hasSelection,
+                onDeleteController = {
+                    state.selectedControllerId?.let { onDeleteController(it) }
+                    onUnselectController()
+                },
+                onEditController = { onNavigateToAddEditController(state.selectedControllerId) },
+                onShareController = { state.selectedControllerId?.let { viewModel.shareController(it) } },
             )
-        },
-        bottomBar = {
-            if (hasSelection) {
-                ControllersBottomBar(
-                    onDeleteController = { state.selectedControllerId?.let { onDeleteController(it) } },
-                    onEditController = { onNavigateToAddEditController(state.selectedControllerId) },
-                    onShareController = {
-                        state.selectedControllerId?.let { viewModel.shareController(it) }
-                    },
-                    onUnselectController = { viewModel.setSelectedController(null) }
-                )
-            }
         },
         floatingActionButton = {
             if (!hasSelection) {
@@ -76,6 +78,13 @@ fun ControllerListScreen(
                     onAddFromFile = { /*TODO*/ },
                     onAddFromQrCode = { /*TODO*/ }
                 )
+            } else {
+                FloatingActionButton(onClick = onUnselectController) {
+                    Icon(
+                        imageVector = Icons.Filled.Done,
+                        contentDescription = stringResource(R.string.done_button),
+                    )
+                }
             }
         },
         modifier = Modifier
