@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.android.maxclub.bluetoothme.R
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun MessageTextField(

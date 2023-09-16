@@ -37,11 +37,6 @@ class ControllersViewModel @Inject constructor(
 
     init {
         getControllersWithWidgetCount()
-
-        viewModelScope.launch {
-            controllerRepository.deleteMarkedAsDeletedControllers()
-            controllerRepository.deleteMarkedAsDeletedWidgets()
-        }
     }
 
     fun setFabState(isOpen: Boolean) {

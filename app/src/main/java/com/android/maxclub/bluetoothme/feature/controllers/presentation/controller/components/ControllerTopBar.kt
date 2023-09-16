@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.android.maxclub.bluetoothme.R
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControllerTopBar(
@@ -48,8 +47,8 @@ fun ControllerTopBar(
             }
         },
         actions = {
-            onClickWithAccelerometer?.let { onClick ->
-                IconButton(onClick = onClick) {
+            onClickWithAccelerometer?.let {
+                IconButton(onClick = onClickWithAccelerometer) {
                     Icon(
                         imageVector = Icons.Filled.MyLocation,
                         contentDescription = stringResource(R.string.with_accelerometer_button),
@@ -57,8 +56,8 @@ fun ControllerTopBar(
                 }
             }
 
-            onClickWithVoiceInput?.let { onClick ->
-                IconButton(onClick = onClick) {
+            onClickWithVoiceInput?.let {
+                IconButton(onClick = onClickWithVoiceInput) {
                     Icon(
                         imageVector = Icons.Filled.Mic,
                         contentDescription = stringResource(R.string.with_voice_input_button),
@@ -66,8 +65,8 @@ fun ControllerTopBar(
                 }
             }
 
-            onClickWithRefresh?.let { onClick ->
-                IconButton(onClick = onClick) {
+            onClickWithRefresh?.let {
+                IconButton(onClick = onClickWithRefresh) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_get_refresh_state_24),
                         contentDescription = stringResource(R.string.with_refresh_button),

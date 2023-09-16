@@ -1,5 +1,7 @@
 package com.android.maxclub.bluetoothme.feature.controllers.domain.models
 
+import kotlin.reflect.KClass
+
 sealed class Widget<T>(
     val id: Int,
     val controllerId: Int,
@@ -14,6 +16,17 @@ sealed class Widget<T>(
     abstract fun convertStateToMessageValue(state: T): String
 
     abstract fun copyWithState(stateValue: String): Widget<T>
+
+    inline fun <reified T : Widget<*>> asType(type: KClass<T>): T =
+        when (type) {
+            Button::class ->
+                Button(id, controllerId, messageTag, title, icon, size, enabled, position) as T
+
+            Switch::class ->
+                Switch(id, controllerId, messageTag, title, icon, size, enabled, position) as T
+
+            else -> Empty(id, controllerId, icon, size, position) as T
+        }
 
     fun copy(
         id: Int = this.id,

@@ -8,6 +8,8 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -26,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.android.maxclub.bluetoothme.R
-import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
@@ -39,15 +40,15 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.controll
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.getNavDrawerItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreenWrapper() {
+fun MainScreenContainer() {
     val viewModel = hiltViewModel<MainViewModel>()
     val state: MainUiState by viewModel.uiState
     val isBluetoothAdapterEnabled by remember {
@@ -239,7 +240,11 @@ fun MainScreenWrapper() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = Screen.Connection.route
+                startDestination = Screen.Connection.route,
+                enterTransition = { fadeIn() },
+                exitTransition = { fadeOut() },
+                popEnterTransition = { fadeIn() },
+                popExitTransition = { fadeOut() },
             ) {
                 composable(route = Screen.Connection.route) {
                     ConnectionScreen(

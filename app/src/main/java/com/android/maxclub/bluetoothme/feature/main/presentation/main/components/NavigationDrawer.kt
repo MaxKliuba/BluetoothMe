@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawer(
     drawerState: DrawerState,

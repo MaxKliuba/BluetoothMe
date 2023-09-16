@@ -19,7 +19,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.controll
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.components.WidgetList
 import kotlinx.coroutines.flow.collectLatest
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControllerScreen(

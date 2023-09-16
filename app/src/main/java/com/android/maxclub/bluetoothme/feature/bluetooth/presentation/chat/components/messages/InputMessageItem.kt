@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.android.maxclub.bluetoothme.core.util.format
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun InputMessageItem(

@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.controllers.presentation.util
+package com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor

@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
 import kotlinx.coroutines.flow.collectLatest
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditWidgetScreen(

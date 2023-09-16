@@ -49,7 +49,7 @@ class AddEditWidgetViewModel @Inject constructor(
         getWidgetsJob?.cancel()
         getWidgetsJob = viewModelScope.launch {
             val widgetId = if (isNew) {
-                val widget = Widget.Switch(
+                val widget = Widget.Button(
                     controllerId = id,
                     messageTag = "led",
                     title = "Led",

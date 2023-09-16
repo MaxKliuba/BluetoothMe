@@ -22,7 +22,6 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditControllerScreen(
@@ -44,7 +43,7 @@ fun AddEditControllerScreen(
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is AddEditControllerUiAction.SetFocusToTitleTextField -> {
-                    delay(100)
+                    delay(200)
                     try {
                         focusRequester.requestFocus()
                         @Suppress("DEPRECATION") inputService?.hideSoftwareKeyboard()

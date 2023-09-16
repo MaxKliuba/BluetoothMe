@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.components.widgets.ButtonWidget
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.components.widgets.EmptyWidget
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.components.widgets.SwitchWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
 
 @Composable
 fun WidgetList(
@@ -34,16 +34,21 @@ fun WidgetList(
             span = { GridItemSpan(minOf(it.size.span, columnsCount)) },
         ) { widget ->
             when (widget) {
-                is Widget.Empty -> EmptyWidget(widget = widget)
+                is Widget.Empty -> EmptyWidget(
+                    widget = widget,
+                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
+                )
 
                 is Widget.Button -> ButtonWidget(
                     widget = widget,
                     onAction = onAction,
+                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
                 )
 
                 is Widget.Switch -> SwitchWidget(
                     widget = widget,
                     onAction = onAction,
+                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
                 )
             }
         }

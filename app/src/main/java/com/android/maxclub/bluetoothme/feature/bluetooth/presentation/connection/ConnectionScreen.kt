@@ -3,13 +3,22 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connectio
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -25,12 +34,17 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
-import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.*
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.BleProfileDialog
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.BluetoothDeviceConnectedItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.BluetoothDeviceConnectingItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.BluetoothDeviceDisconnectedItem
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.ConnectionTopBar
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EmptyListPlaceholder
+import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EnableAdapterPlaceholder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionScreen(
@@ -126,14 +140,6 @@ fun ConnectionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter)
-                )
-            }
-
             when {
                 !isAdapterEnabled -> {
                     EnableAdapterPlaceholder(
@@ -186,6 +192,14 @@ fun ConnectionScreen(
                         }
                     }
                 }
+            }
+
+            if (isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                )
             }
         }
     }

@@ -24,7 +24,6 @@ import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileType
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BleProfileDialog(

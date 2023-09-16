@@ -18,8 +18,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.ButtonWidget
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.widgets.EmptyWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyGridState
@@ -76,24 +77,44 @@ fun WidgetList(
                 }
 
                 when (widget) {
-                    is Widget.Empty -> EmptyWidget(
-                        widget = widget,
-                        columnsCount = columnsCount,
-                        onChangeSize = onChangeWidgetSize,
-                        onEdit = onEditWidget,
-                        onDelete = onDeleteWidget,
-                    )
+                    is Widget.Empty -> EmptyWidget(widget = widget) {
+                        AddEditControllerWidgetOverlay(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                            onChangeSize = onChangeWidgetSize,
+                            onEnabledChange = null,
+                            onEdit = onEditWidget,
+                            onDelete = onDeleteWidget,
+                        )
+                    }
 
                     is Widget.Button -> ButtonWidget(
                         widget = widget,
-                        columnsCount = columnsCount,
-                        onChangeSize = onChangeWidgetSize,
-                        onEnabledChange = onChangeWidgetEnable,
-                        onEdit = onEditWidget,
-                        onDelete = onDeleteWidget,
-                    )
+                        onAction = { _, _ -> }
+                    ) {
+                        AddEditControllerWidgetOverlay(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                            onChangeSize = onChangeWidgetSize,
+                            onEnabledChange = onChangeWidgetEnable,
+                            onEdit = onEditWidget,
+                            onDelete = onDeleteWidget,
+                        )
+                    }
 
-                    else -> Unit // TODO
+                    is Widget.Switch -> SwitchWidget(
+                        widget = widget,
+                        onAction = { _, _ -> }
+                    ) {
+                        AddEditControllerWidgetOverlay(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                            onChangeSize = onChangeWidgetSize,
+                            onEnabledChange = onChangeWidgetEnable,
+                            onEdit = onEditWidget,
+                            onDelete = onDeleteWidget,
+                        )
+                    }
                 }
             }
         }

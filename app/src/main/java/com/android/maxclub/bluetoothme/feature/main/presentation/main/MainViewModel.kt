@@ -61,6 +61,8 @@ class MainViewModel @Inject constructor(
         getState()
         getFavoriteDevice()
         getMessagesCount()
+
+        deleteMarkedAsDeletedControllersAndWidgets()
     }
 
     fun setCurrentDestination(route: String) {
@@ -233,5 +235,12 @@ class MainViewModel @Inject constructor(
             }
             .catch { it.printStackTrace() }
             .launchIn(viewModelScope)
+    }
+
+    private fun deleteMarkedAsDeletedControllersAndWidgets() {
+        viewModelScope.launch {
+            controllerRepository.deleteMarkedAsDeletedControllers()
+            controllerRepository.deleteMarkedAsDeletedWidgets()
+        }
     }
 }

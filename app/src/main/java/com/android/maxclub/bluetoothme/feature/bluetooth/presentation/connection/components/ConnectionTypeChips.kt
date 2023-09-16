@@ -16,7 +16,6 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
 import java.util.*
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionTypeChips(
