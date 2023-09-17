@@ -29,7 +29,7 @@ fun WidgetPreviewGrid(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = widgetHorizontalPadding, vertical = 12.dp)
+            .padding(horizontal = widgetHorizontalPadding)
     ) {
         val widgetModifier = Modifier.fillMaxWidth(widgetFraction)
 

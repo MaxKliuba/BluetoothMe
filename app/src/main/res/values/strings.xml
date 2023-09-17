@@ -90,6 +90,9 @@
     <string name="columns_count_button">Number of columns</string>
     <string name="widget_deleted_message">Widget deleted</string>
 
+    <string name="widget_title_label">Widget Title</string>
+    <string name="message_tag_label">Message Tag</string>
+
     <string name="widget_icons__no_icon">None</string>
     <string name="widget_icons__arrow_up" translatable="false">Arrow up</string>
     <string name="widget_icons__arrow_down" translatable="false">Arrow down</string>

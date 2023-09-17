@@ -31,7 +31,7 @@ fun ButtonWidget(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(72.dp)
+                .size(76.dp)
                 .background(MaterialTheme.colorScheme.primary, CircleShape)
                 .pointerInput(Unit) {
                     if (widget.enabled) {

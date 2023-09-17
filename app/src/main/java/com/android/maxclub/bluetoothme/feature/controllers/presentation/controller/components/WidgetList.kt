@@ -36,7 +36,7 @@ fun WidgetList(
             when (widget) {
                 is Widget.Empty -> EmptyWidget(
                     widget = widget,
-                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
+                    overlay = { /* Empty */ },
                 )
 
                 is Widget.Button -> ButtonWidget(

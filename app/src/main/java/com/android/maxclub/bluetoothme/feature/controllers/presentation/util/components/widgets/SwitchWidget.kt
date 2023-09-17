@@ -20,7 +20,7 @@ fun SwitchWidget(
         modifier = modifier,
         overlay = overlay,
     ) {
-        val scaleValue = 1.6f
+        val scaleValue = 1.7f
 
         Switch(
             checked = widget.state,

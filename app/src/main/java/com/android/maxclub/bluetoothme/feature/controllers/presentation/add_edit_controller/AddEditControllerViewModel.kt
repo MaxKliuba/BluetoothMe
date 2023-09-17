@@ -7,6 +7,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.maxclub.bluetoothme.core.util.debounce
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
@@ -19,7 +20,6 @@ import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Scree
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -47,8 +47,14 @@ class AddEditControllerViewModel @Inject constructor(
     val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getControllerWithWidgetsJob: Job? = null
-    private var updateControllerTitleJob: Job? = null
     private var swapWidgetsJob: Job? = null
+
+    private val onUpdateControllerTitleWithDebounce: (Controller, String) -> Unit =
+        viewModelScope.debounce { controller, newTitle ->
+            if (controller.title != newTitle) {
+                controllerRepository.updateControllers(controller.copy(title = newTitle))
+            }
+        }
 
     init {
         (_uiState.value as? AddEditControllerUiState.Loading)?.let {
@@ -59,13 +65,7 @@ class AddEditControllerViewModel @Inject constructor(
     fun tryUpdateControllerTitle(value: TextFieldValue): Boolean =
         if (controllerTitleValidator(value.text)) {
             (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
-                if (state.controller.title != value.text) {
-                    updateControllerTitleJob?.cancel()
-                    updateControllerTitleJob = viewModelScope.launch {
-                        delay(300)
-                        controllerRepository.updateControllers(state.controller.copy(title = value.text))
-                    }
-                }
+                onUpdateControllerTitleWithDebounce(state.controller, value.text)
                 _uiState.update { state.copy(controllerTitle = value) }
             }
             true

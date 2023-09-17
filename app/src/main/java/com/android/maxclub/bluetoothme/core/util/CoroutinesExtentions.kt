@@ -20,18 +20,18 @@ fun <T> Channel<T>.sendIn(element: T, scope: CoroutineScope) {
     scope.launch { this@sendIn.send(element) }
 }
 
-fun <T> CoroutineScope.debounce(
+fun <T, V> CoroutineScope.debounce(
     timeoutMillis: Long = 300L,
-    block: suspend (T) -> Unit
-): (T) -> Unit {
+    block: suspend (T, V) -> Unit
+): (T, V) -> Unit {
     var job: Job? = null
 
-    return { param: T ->
+    return { param1: T, param2: V ->
         job?.cancel() // Cancel the previous debounce job
 
         job = launch {
             delay(timeoutMillis)
-            block(param)
+            block(param1, param2)
         }
     }
 }

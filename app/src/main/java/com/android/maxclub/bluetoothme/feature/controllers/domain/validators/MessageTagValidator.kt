@@ -2,7 +2,7 @@ package com.android.maxclub.bluetoothme.feature.controllers.domain.validators
 
 import javax.inject.Inject
 
-class ControllerTitleValidator @Inject constructor() {
+class MessageTagValidator @Inject constructor() {
     operator fun invoke(value: String): Boolean {
         if (value.length > MAX_VALUE_LENGTH) return false
 
@@ -10,6 +10,6 @@ class ControllerTitleValidator @Inject constructor() {
     }
 
     companion object {
-        private const val MAX_VALUE_LENGTH = 50
+        private const val MAX_VALUE_LENGTH = 20
     }
 }
