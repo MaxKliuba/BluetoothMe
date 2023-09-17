@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.debounce
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetIcon
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.toWidgetClass
@@ -104,6 +105,12 @@ class AddEditWidgetViewModel @Inject constructor(
         } else {
             false
         }
+
+    fun updateWidgetIcon(widget: Widget<*>, newWidgetIcon: WidgetIcon) {
+        viewModelScope.launch {
+            controllerRepository.updateWidgets(widget.copy(icon = newWidgetIcon))
+        }
+    }
 
     private fun getWidget() {
         getWidgetsJob?.cancel()

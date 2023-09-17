@@ -86,7 +86,7 @@ sealed class Widget<T>(
         icon: WidgetIcon = WidgetIcon.NO_ICON,
         size: WidgetSize = WidgetSize.SMALL,
         position: Int = -1,
-    ) : Widget<Unit>(id, controllerId, "", "", icon, size, false, position, Unit) {
+    ) : Widget<Unit>(id, controllerId, "", "", icon, size, true, position, Unit) {
 
         override fun convertStateToMessageValue(state: Unit): String = ""
 

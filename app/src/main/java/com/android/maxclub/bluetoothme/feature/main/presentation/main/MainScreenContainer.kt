@@ -173,7 +173,7 @@ fun MainScreenContainer() {
     }
     val onCloseNavigationDrawer: () -> Unit = {
         scope.launch {
-            delay(200)
+            delay(150)
             drawerState.close()
         }
     }

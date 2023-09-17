@@ -8,9 +8,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -21,6 +21,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.WidgetList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,10 +33,8 @@ fun AddEditControllerScreen(
     viewModel: AddEditControllerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
-    val controller by remember {
-        derivedStateOf { (state as? AddEditControllerUiState.Success)?.controller }
-    }
 
+    val scope = rememberCoroutineScope()
     val inputService = LocalTextInputService.current
     val focusRequester = remember { FocusRequester() }
 
@@ -78,8 +77,11 @@ fun AddEditControllerScreen(
                     columnsCount = state.controller.columnsCount,
                     onColumnCountChange = viewModel::updateControllerColumnCount,
                     onDeleteController = {
-                        controller?.let { onDeleteController(it.id) }
-                        onNavigateUp()
+                        scope.launch {
+                            onDeleteController(state.controller.id)
+                            delay(150)
+                            onNavigateUp()
+                        }
                     },
                     onNavigateUp = onNavigateUp
                 )
@@ -103,9 +105,11 @@ fun AddEditControllerScreen(
                             columnsCount = state.controller.columnsCount.count,
                             widgets = state.widgets,
                             onAddWidget = {
-                                controller?.let {
-                                    onNavigateToAddEditWidget(it.id, true, it.columnsCount.count)
-                                }
+                                onNavigateToAddEditWidget(
+                                    state.controller.id,
+                                    true,
+                                    state.controller.columnsCount.count
+                                )
                             },
                             onChangeWidgetSize = viewModel::updateWidgetSize,
                             onChangeWidgetEnable = viewModel::updateWidgetEnable,
