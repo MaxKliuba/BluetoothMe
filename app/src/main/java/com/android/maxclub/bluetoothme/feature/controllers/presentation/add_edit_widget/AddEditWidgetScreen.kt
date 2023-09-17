@@ -1,7 +1,9 @@
 package com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetPreviewGrid
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,7 +94,17 @@ fun AddEditWidgetScreen(
                     }
 
                     is AddEditWidgetUiState.Success -> {
-                        Text(text = state.widget.toString())
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            WidgetPreviewGrid(
+                                columnsCount = state.columnsCount,
+                                widget = state.widget,
+                                onChangeWidgetSize = viewModel::updateWidgetSize,
+                                onChangeWidgetEnable = viewModel::updateWidgetEnable,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Text(text = state.widget.toString())
+                        }
                     }
                 }
             }

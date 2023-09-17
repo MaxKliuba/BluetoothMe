@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddEditControllerScreen(
     onNavigateUp: () -> Unit,
-    onNavigateToAddEditWidget: (id: Int, isNew: Boolean) -> Unit,
+    onNavigateToAddEditWidget: (id: Int, isNew: Boolean, columnsCount: Int) -> Unit,
     onDeleteWidget: (Int) -> Unit,
     onDeleteController: (Int) -> Unit,
     viewModel: AddEditControllerViewModel = hiltViewModel(),
@@ -103,13 +103,17 @@ fun AddEditControllerScreen(
                             columnsCount = state.controller.columnsCount.count,
                             widgets = state.widgets,
                             onAddWidget = {
-                                controller?.let { onNavigateToAddEditWidget(it.id, true) }
+                                controller?.let {
+                                    onNavigateToAddEditWidget(it.id, true, it.columnsCount.count)
+                                }
                             },
                             onChangeWidgetSize = viewModel::updateWidgetSize,
                             onChangeWidgetEnable = viewModel::updateWidgetEnable,
                             onReorderWidget = viewModel::swapWidgets,
                             onApplyChangedWidgetPositions = viewModel::applyChangedWidgetPositions,
-                            onEditWidget = { onNavigateToAddEditWidget(it, false) },
+                            onEditWidget = { widgetId, columnsCount ->
+                                onNavigateToAddEditWidget(widgetId, false, columnsCount)
+                            },
                             onDeleteWidget = onDeleteWidget,
                             modifier = Modifier.fillMaxSize()
                         )

@@ -7,7 +7,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
@@ -16,6 +15,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetS
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllerWithWidgetsById
 import com.android.maxclub.bluetoothme.feature.controllers.domain.validators.ControllerTitleValidator
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel

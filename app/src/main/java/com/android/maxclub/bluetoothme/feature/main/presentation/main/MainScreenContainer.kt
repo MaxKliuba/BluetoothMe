@@ -8,8 +8,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -175,7 +173,7 @@ fun MainScreenContainer() {
     }
     val onCloseNavigationDrawer: () -> Unit = {
         scope.launch {
-            delay(150)
+            delay(200)
             drawerState.close()
         }
     }
@@ -241,10 +239,6 @@ fun MainScreenContainer() {
             NavHost(
                 navController = navController,
                 startDestination = Screen.Connection.route,
-                enterTransition = { fadeIn() },
-                exitTransition = { fadeOut() },
-                popEnterTransition = { fadeIn() },
-                popExitTransition = { fadeOut() },
             ) {
                 composable(route = Screen.Connection.route) {
                     ConnectionScreen(
@@ -284,8 +278,8 @@ fun MainScreenContainer() {
                 ) {
                     AddEditControllerScreen(
                         onNavigateUp = navController::navigateUp,
-                        onNavigateToAddEditWidget = { id, isNew ->
-                            navController.navigate("${Screen.AddEditWidget.route}/$id/$isNew")
+                        onNavigateToAddEditWidget = { id, isNew, columnsCount ->
+                            navController.navigate("${Screen.AddEditWidget.route}/$id/$isNew/$columnsCount")
                         },
                         onDeleteWidget = viewModel::deleteWidget,
                         onDeleteController = viewModel::deleteController,
@@ -300,7 +294,10 @@ fun MainScreenContainer() {
                         },
                         navArgument(name = Screen.AddEditWidget.ARG_IS_NEW) {
                             type = NavType.BoolType
-                        }
+                        },
+                        navArgument(name = Screen.AddEditWidget.ARG_COLUMNS_COUNT) {
+                            type = NavType.IntType
+                        },
                     ),
                 ) {
                     AddEditWidgetScreen(

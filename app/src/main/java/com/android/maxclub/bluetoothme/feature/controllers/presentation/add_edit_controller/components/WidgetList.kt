@@ -35,7 +35,7 @@ fun WidgetList(
     onChangeWidgetEnable: (Widget<*>, Boolean) -> Unit,
     onReorderWidget: (Int, Int) -> Unit,
     onApplyChangedWidgetPositions: () -> Unit,
-    onEditWidget: (Int) -> Unit,
+    onEditWidget: (Int, Int) -> Unit,
     onDeleteWidget: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {

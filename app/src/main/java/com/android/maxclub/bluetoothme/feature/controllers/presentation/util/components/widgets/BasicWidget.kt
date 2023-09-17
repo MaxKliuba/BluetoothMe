@@ -25,8 +25,6 @@ fun BasicWidget(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            overlay()
-
             Text(
                 text = widgetTitle,
                 style = MaterialTheme.typography.titleMedium,
@@ -45,6 +43,8 @@ fun BasicWidget(
             ) {
                 content()
             }
+
+            overlay()
         }
     }
 }

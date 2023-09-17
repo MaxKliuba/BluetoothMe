@@ -51,9 +51,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    hilt {
-        enableAggregatingTask = true
-    }
 }
 
 dependencies {
@@ -75,7 +72,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Compose
-    implementation("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
     // Hilt

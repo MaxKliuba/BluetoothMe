@@ -7,5 +7,6 @@ sealed class AddEditWidgetUiState {
     data class Success(
         // TODO
         val widget: Widget<*>,
+        val columnsCount: Int,
     ) : AddEditWidgetUiState()
 }

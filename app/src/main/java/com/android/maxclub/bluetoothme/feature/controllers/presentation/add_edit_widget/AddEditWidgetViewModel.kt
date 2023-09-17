@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetIcon
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,8 @@ class AddEditWidgetViewModel @Inject constructor(
         ?: Screen.AddEditWidget.DEFAULT_ID
     private val isNew: Boolean = savedStateHandle[Screen.AddEditWidget.ARG_IS_NEW]
         ?: Screen.AddEditWidget.DEFAULT_IS_NEW
+    private val columnsCount: Int = savedStateHandle[Screen.AddEditWidget.ARG_COLUMNS_COUNT]
+        ?: Screen.AddEditWidget.DEFAULT_COLUMNS_COUNT
 
     private val _uiState = mutableStateOf<AddEditWidgetUiState>(AddEditWidgetUiState.Loading)
     val uiState: State<AddEditWidgetUiState> = _uiState
@@ -42,6 +45,18 @@ class AddEditWidgetViewModel @Inject constructor(
     init {
         (_uiState.value as? AddEditWidgetUiState.Loading)?.let {
             getWidget()
+        }
+    }
+
+    fun updateWidgetSize(widget: Widget<*>, newSize: WidgetSize) {
+        viewModelScope.launch {
+            controllerRepository.updateWidgets(widget.copy(size = newSize))
+        }
+    }
+
+    fun updateWidgetEnable(widget: Widget<*>, enabled: Boolean) {
+        viewModelScope.launch {
+            controllerRepository.updateWidgets(widget.copy(enabled = enabled))
         }
     }
 
@@ -65,7 +80,12 @@ class AddEditWidgetViewModel @Inject constructor(
                     _uiState.update { AddEditWidgetUiState.Loading }
                 }
                 .onEach { widget ->
-                    _uiState.update { AddEditWidgetUiState.Success(widget = widget) }
+                    _uiState.update {
+                        AddEditWidgetUiState.Success(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                        )
+                    }
                 }
                 .catch { it.printStackTrace() }
                 .launchIn(this)

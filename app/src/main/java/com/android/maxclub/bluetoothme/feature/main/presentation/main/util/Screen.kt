@@ -18,8 +18,11 @@ sealed class Screen(val route: String) {
         const val ARG_IS_NEW = "isNew"
         const val DEFAULT_IS_NEW = true
 
+        const val ARG_COLUMNS_COUNT = "columnsCount"
+        const val DEFAULT_COLUMNS_COUNT = 2
+
         val routeWithArgs: String
-            get() = "$route/{$ARG_ID}/{$ARG_IS_NEW}"
+            get() = "$route/{$ARG_ID}/{$ARG_IS_NEW}/{$ARG_COLUMNS_COUNT}"
     }
 
     object Controller : Screen("controller") {
