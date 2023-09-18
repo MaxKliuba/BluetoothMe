@@ -25,10 +25,7 @@ fun SwitchWidget(
         Switch(
             checked = widget.state,
             onCheckedChange = {
-                onAction(
-                    widget.messageTag,
-                    widget.convertStateToMessageValue(it)
-                )
+                onAction(widget.messageTag, widget.convertStateToMessageValue(it))
             },
             enabled = widget.enabled,
             thumbContent = { widget.icon.AsIcon(modifier = Modifier.scale(1f / scaleValue)) },

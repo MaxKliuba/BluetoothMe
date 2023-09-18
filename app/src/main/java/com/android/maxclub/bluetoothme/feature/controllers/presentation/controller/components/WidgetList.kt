@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
 
 @Composable
@@ -34,22 +35,29 @@ fun WidgetList(
             span = { GridItemSpan(minOf(it.size.span, columnsCount)) },
         ) { widget ->
             when (widget) {
-                is Widget.Empty -> EmptyWidget(
-                    widget = widget,
-                    overlay = { /* Empty */ },
-                )
+                is Widget.Empty -> EmptyWidget(widget = widget) { /* Empty */ }
 
                 is Widget.Button -> ButtonWidget(
                     widget = widget,
                     onAction = onAction,
-                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
-                )
+                ) {
+                    ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
+                }
 
                 is Widget.Switch -> SwitchWidget(
                     widget = widget,
                     onAction = onAction,
-                    overlay = { ControllerWidgetOverlay(isWidgetEnabled = widget.enabled) },
-                )
+                ) {
+                    ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
+                }
+
+                is Widget.Slider -> SliderWidget(
+                    widget = widget,
+                    isIncDecButtonsVisible = true,
+                    onAction = onAction,
+                ) {
+                    ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
+                }
             }
         }
     }

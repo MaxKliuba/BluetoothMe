@@ -20,6 +20,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -104,6 +105,21 @@ fun WidgetList(
 
                     is Widget.Switch -> SwitchWidget(
                         widget = widget,
+                        onAction = { _, _ -> }
+                    ) {
+                        AddEditControllerWidgetOverlay(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                            onChangeSize = onChangeWidgetSize,
+                            onEnabledChange = onChangeWidgetEnable,
+                            onEdit = onEditWidget,
+                            onDelete = onDeleteWidget,
+                        )
+                    }
+
+                    is Widget.Slider -> SliderWidget(
+                        widget = widget,
+                        isIncDecButtonsVisible = false,
                         onAction = { _, _ -> }
                     ) {
                         AddEditControllerWidgetOverlay(

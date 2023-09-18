@@ -92,6 +92,8 @@
 
     <string name="widget_title_label">Widget Title</string>
     <string name="message_tag_label">Message Tag</string>
+    <string name="dec_value_button">Minus</string>
+    <string name="inc_value_button">Plus</string>
 
     <string name="widget_icons__no_icon">None</string>
     <string name="widget_icons__arrow_up" translatable="false">Arrow up</string>

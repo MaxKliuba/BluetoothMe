@@ -31,4 +31,7 @@ data class WidgetEntity(
     val enabled: Boolean,
     val position: Int,
     val isDeleted: Boolean = false,
+    val minValue: Int? = null,
+    val maxValue: Int? = null,
+    val step: Int? = null,
 )

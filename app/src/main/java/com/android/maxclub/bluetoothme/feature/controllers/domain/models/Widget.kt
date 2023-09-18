@@ -25,6 +25,9 @@ sealed class Widget<T>(
             Switch::class ->
                 Switch(id, controllerId, messageTag, title, icon, size, enabled, position) as T
 
+            Slider::class ->
+                Slider(id, controllerId, messageTag, title, icon, size, enabled, position) as T
+
             else -> Empty(id, controllerId, icon, size, position) as T
         }
 
@@ -44,6 +47,10 @@ sealed class Widget<T>(
         )
 
         is Switch -> Switch(
+            id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
+        )
+
+        is Slider -> Slider(
             id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
         )
     }
@@ -90,7 +97,7 @@ sealed class Widget<T>(
 
         override fun convertStateToMessageValue(state: Unit): String = ""
 
-        override fun copyWithState(stateValue: String): Widget<Unit> = this
+        override fun copyWithState(stateValue: String): Empty = this
     }
 
     class Button(
@@ -108,7 +115,7 @@ sealed class Widget<T>(
         override fun convertStateToMessageValue(state: Boolean): String =
             if (state) "1" else "0"
 
-        override fun copyWithState(stateValue: String): Widget<Boolean> =
+        override fun copyWithState(stateValue: String): Button =
             Button(
                 id, controllerId, messageTag, title, icon, size, enabled, position,
                 state = stateValue.isNotEmpty() && stateValue != "0"
@@ -130,10 +137,53 @@ sealed class Widget<T>(
         override fun convertStateToMessageValue(state: Boolean): String =
             if (state) "1" else "0"
 
-        override fun copyWithState(stateValue: String): Widget<Boolean> =
+        override fun copyWithState(stateValue: String): Switch =
             Switch(
                 id, controllerId, messageTag, title, icon, size, enabled, position,
                 state = stateValue.isNotEmpty() && stateValue != "0"
             )
+    }
+
+    class Slider(
+        id: Int = 0,
+        controllerId: Int,
+        messageTag: String,
+        title: String,
+        icon: WidgetIcon = WidgetIcon.NO_ICON,
+        size: WidgetSize = WidgetSize.SMALL,
+        enabled: Boolean = true,
+        position: Int = -1,
+        state: Int = DEFAULT_MIN_VALUE,
+        val minValue: Int = DEFAULT_MIN_VALUE,
+        val maxValue: Int = DEFAULT_MAX_VALUE,
+        val step: Int = DEFAULT_STEPS,
+    ) : Widget<Int>(id, controllerId, messageTag, title, icon, size, enabled, position, state) {
+
+        override fun convertStateToMessageValue(state: Int): String =
+            state.toString()
+
+        override fun copyWithState(stateValue: String): Slider =
+            Slider(
+                id, controllerId, messageTag, title, icon, size, enabled, position,
+                state = stateValue.toIntOrNull() ?: DEFAULT_MIN_VALUE
+            )
+
+        fun incValue(): Int {
+            val newValue = state.plus(step)
+
+            return if (newValue in minValue..maxValue) newValue else state
+        }
+
+        fun decValue(): Int {
+            val newValue = state.minus(step)
+
+            return if (newValue in minValue..maxValue) newValue else state
+        }
+
+        companion object {
+            const val DEFAULT_MIN_VALUE = 0
+            const val DEFAULT_MAX_VALUE = 255
+            const val DEFAULT_STEPS = 5
+        }
     }
 }
