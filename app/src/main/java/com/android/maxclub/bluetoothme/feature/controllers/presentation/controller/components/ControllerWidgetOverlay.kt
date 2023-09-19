@@ -20,7 +20,7 @@ fun BoxScope.ControllerWidgetOverlay(isWidgetEnabled: Boolean) {
             imageVector = Icons.Filled.Lock,
             contentDescription = stringResource(R.string.enabled_button),
             modifier = Modifier
-                .align(Alignment.BottomStart)
+                .align(Alignment.TopStart)
                 .size(32.dp)
                 .padding(6.dp)
         )

@@ -14,7 +14,7 @@ fun WidgetIcon.AsIcon(
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
 ) {
-    if (drawableResId != 0) {
+    if (isValid) {
         Icon(
             painter = painterResource(id = drawableResId),
             contentDescription = stringResource(id = titleResId),

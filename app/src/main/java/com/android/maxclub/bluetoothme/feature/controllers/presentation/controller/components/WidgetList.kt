@@ -14,6 +14,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.com
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.TextWidget
 
 @Composable
 fun WidgetList(
@@ -39,6 +40,7 @@ fun WidgetList(
 
                 is Widget.Button -> ButtonWidget(
                     widget = widget,
+                    withTitlePadding = !widget.enabled,
                     onAction = onAction,
                 ) {
                     ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
@@ -46,6 +48,7 @@ fun WidgetList(
 
                 is Widget.Switch -> SwitchWidget(
                     widget = widget,
+                    withTitlePadding = !widget.enabled,
                     onAction = onAction,
                 ) {
                     ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
@@ -53,7 +56,16 @@ fun WidgetList(
 
                 is Widget.Slider -> SliderWidget(
                     widget = widget,
+                    withTitlePadding = !widget.enabled,
                     isIncDecButtonsVisible = true,
+                    onAction = onAction,
+                ) {
+                    ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)
+                }
+
+                is Widget.Text -> TextWidget(
+                    widget = widget,
+                    withTitlePadding = !widget.enabled,
                     onAction = onAction,
                 ) {
                     ControllerWidgetOverlay(isWidgetEnabled = widget.enabled)

@@ -21,10 +21,12 @@ fun ButtonWidget(
     widget: Widget.Button,
     onAction: (String, String) -> Unit,
     modifier: Modifier = Modifier,
+    withTitlePadding: Boolean = false,
     overlay: @Composable BoxScope.() -> Unit,
 ) {
     BasicWidget(
         widgetTitle = widget.title,
+        withTitlePadding = withTitlePadding,
         modifier = modifier,
         overlay = overlay,
     ) {
@@ -32,7 +34,14 @@ fun ButtonWidget(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(76.dp)
-                .background(MaterialTheme.colorScheme.primary, CircleShape)
+                .background(
+                    if (widget.state) {
+                        MaterialTheme.colorScheme.inversePrimary
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    CircleShape
+                )
                 .pointerInput(Unit) {
                     if (widget.enabled) {
                         awaitEachGesture {

@@ -29,22 +29,21 @@ fun BoxScope.AddEditControllerWidgetOverlay(
     onEdit: (Int, Int) -> Unit,
     onDelete: (Int) -> Unit,
 ) {
-    IconButton(
-        onClick = { onChangeSize(widget, widget.size.next(limit = columnsCount)) },
-        modifier = Modifier
-            .size(36.dp)
-            .align(Alignment.TopStart)
-    ) {
-        Icon(
-            painter = painterResource(
-                id = if (widget.size.span != columnsCount) {
-                    R.drawable.ic_zoom_out_24
-                } else {
-                    R.drawable.ic_zoom_in_24
-                }
-            ),
-            contentDescription = stringResource(R.string.change_size_button)
-        )
+    onEnabledChange?.let {
+        FilledIconToggleButton(
+            checked = !widget.enabled,
+            onCheckedChange = { onEnabledChange(widget, !it) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .size(34.dp)
+                .padding(2.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = stringResource(R.string.enabled_button),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 
     IconButton(
@@ -59,27 +58,28 @@ fun BoxScope.AddEditControllerWidgetOverlay(
         )
     }
 
-    onEnabledChange?.let {
-        FilledIconToggleButton(
-            checked = !widget.enabled,
-            onCheckedChange = { onEnabledChange(widget, !it) },
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(34.dp)
-                .padding(4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Lock,
-                contentDescription = stringResource(R.string.enabled_button),
-                modifier = Modifier.size(20.dp)
-            )
-        }
+    IconButton(
+        onClick = { onChangeSize(widget, widget.size.next(limit = columnsCount)) },
+        modifier = Modifier
+            .size(32.dp)
+            .align(Alignment.BottomStart)
+    ) {
+        Icon(
+            painter = painterResource(
+                id = if (widget.size.span != columnsCount) {
+                    R.drawable.ic_zoom_out_24
+                } else {
+                    R.drawable.ic_zoom_in_24
+                }
+            ),
+            contentDescription = stringResource(R.string.change_size_button)
+        )
     }
 
     IconButton(
         onClick = { onEdit(widget.id, columnsCount) },
         modifier = Modifier
-            .size(36.dp)
+            .size(32.dp)
             .align(Alignment.BottomEnd)
     ) {
         Icon(

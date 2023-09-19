@@ -28,6 +28,9 @@ sealed class Widget<T>(
             Slider::class ->
                 Slider(id, controllerId, messageTag, title, icon, size, enabled, position) as T
 
+            Text::class ->
+                Text(id, controllerId, messageTag, title, icon, size, enabled, position) as T
+
             else -> Empty(id, controllerId, icon, size, position) as T
         }
 
@@ -42,6 +45,7 @@ sealed class Widget<T>(
         position: Int = this.position,
     ): Widget<*> = when (this) {
         is Empty -> Empty(id, controllerId, icon, size, position)
+
         is Button -> Button(
             id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
         )
@@ -51,6 +55,10 @@ sealed class Widget<T>(
         )
 
         is Slider -> Slider(
+            id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
+        )
+
+        is Text -> Text(
             id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
         )
     }
@@ -159,8 +167,7 @@ sealed class Widget<T>(
         val step: Int = DEFAULT_STEPS,
     ) : Widget<Int>(id, controllerId, messageTag, title, icon, size, enabled, position, state) {
 
-        override fun convertStateToMessageValue(state: Int): String =
-            state.toString()
+        override fun convertStateToMessageValue(state: Int): String = state.toString()
 
         override fun copyWithState(stateValue: String): Slider =
             Slider(
@@ -185,5 +192,26 @@ sealed class Widget<T>(
             const val DEFAULT_MAX_VALUE = 255
             const val DEFAULT_STEPS = 5
         }
+    }
+
+    class Text(
+        id: Int = 0,
+        controllerId: Int,
+        messageTag: String,
+        title: String,
+        icon: WidgetIcon = WidgetIcon.NO_ICON,
+        size: WidgetSize = WidgetSize.SMALL,
+        enabled: Boolean = true,
+        position: Int = -1,
+        state: String = "",
+    ) : Widget<String>(id, controllerId, messageTag, title, icon, size, enabled, position, state) {
+
+        override fun convertStateToMessageValue(state: String): String = state
+
+        override fun copyWithState(stateValue: String): Text =
+            Text(
+                id, controllerId, messageTag, title, icon, size, enabled, position,
+                state = stateValue
+            )
     }
 }

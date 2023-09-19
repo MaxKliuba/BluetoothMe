@@ -49,6 +49,17 @@ fun WidgetEntity.toWidget(): Widget<*> =
             maxValue = maxValue ?: Widget.Slider.DEFAULT_MAX_VALUE,
             step = step ?: Widget.Slider.DEFAULT_STEPS,
         )
+
+        WidgetType.TEXT -> Widget.Text(
+            id = id,
+            controllerId = controllerId,
+            messageTag = messageTag,
+            title = title,
+            icon = icon,
+            size = size,
+            enabled = enabled,
+            position = position,
+        )
     }
 
 fun Widget<*>.toWidgetEntity(): WidgetEntity =

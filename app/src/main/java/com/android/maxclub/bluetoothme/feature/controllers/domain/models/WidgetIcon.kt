@@ -32,5 +32,8 @@ enum class WidgetIcon(
     LOCK(20, R.drawable.widget_icons__lock, R.string.widget_icons__lock),
     SAVE(21, R.drawable.widget_icons__save, R.string.widget_icons__save),
     SPECIAL(22, R.drawable.widget_icons__special, R.string.widget_icons__special),
-    ANDROID(23, R.drawable.widget_icons__android, R.string.widget_icons__android),
+    ANDROID(23, R.drawable.widget_icons__android, R.string.widget_icons__android);
+
+    val isValid: Boolean
+        get() = drawableResId != 0
 }

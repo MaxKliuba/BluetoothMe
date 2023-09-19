@@ -123,7 +123,7 @@ fun AddEditWidgetScreen(
                                 widget = state.widget,
                                 onChangeWidgetSize = viewModel::updateWidgetSize,
                                 onChangeWidgetEnable = viewModel::updateWidgetEnable,
-                                modifier = Modifier.padding(vertical = 20.dp)
+                                modifier = Modifier.padding(top = 12.dp, bottom = 20.dp)
                             )
 
                             Column(

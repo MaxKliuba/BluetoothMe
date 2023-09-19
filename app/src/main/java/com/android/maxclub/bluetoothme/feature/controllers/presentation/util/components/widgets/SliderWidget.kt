@@ -36,13 +36,20 @@ import kotlin.math.roundToInt
 @Composable
 fun SliderWidget(
     widget: Widget.Slider,
-    isIncDecButtonsVisible: Boolean,
     onAction: (String, String) -> Unit,
     modifier: Modifier = Modifier,
+    withTitlePadding: Boolean = false,
+    isIncDecButtonsVisible: Boolean = true,
     overlay: @Composable BoxScope.() -> Unit,
 ) {
+    val onSliderAction: (Int) -> Unit = { newValue ->
+        if (widget.enabled) {
+            onAction(widget.messageTag, widget.convertStateToMessageValue(newValue))
+        }
+    }
     BasicWidget(
         widgetTitle = widget.title,
+        withTitlePadding = withTitlePadding,
         modifier = modifier,
         overlay = overlay,
     ) {
@@ -52,62 +59,46 @@ fun SliderWidget(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(2.dp)
+                .padding(4.dp)
         ) {
             Slider(
                 value = widget.state.toFloat(),
-                onValueChange = {
-                    onAction(widget.messageTag, widget.convertStateToMessageValue(it.roundToInt()))
-                },
+                onValueChange = { onSliderAction(it.roundToInt()) },
                 valueRange = widget.minValue.toFloat()..widget.maxValue.toFloat(),
                 steps = widget.maxValue.minus(1) / widget.step,
-                enabled = widget.enabled,
                 interactionSource = interactionSource,
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     SliderDefaults.Thumb(
                         interactionSource = interactionSource,
                         colors = SliderDefaults.colors(),
-                        enabled = widget.enabled,
                         thumbSize = DpSize(36.dp, 36.dp),
                     )
                     widget.icon.AsIcon(tint = MaterialTheme.colorScheme.onPrimary)
                 }
             }
-            if (isIncDecButtonsVisible) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(
-                        onClick = {
-                            onAction(
-                                widget.messageTag,
-                                widget.convertStateToMessageValue(widget.decValue())
-                            )
-                        }
-                    ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (isIncDecButtonsVisible && widget.enabled) {
+                    IconButton(onClick = { onSliderAction(widget.decValue()) }) {
                         Icon(
                             imageVector = Icons.Default.Remove,
                             contentDescription = stringResource(R.string.dec_value_button)
                         )
                     }
+                }
 
-                    Text(
-                        text = widget.convertStateToMessageValue(widget.state),
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        modifier = Modifier.weight(1f)
-                    )
+                Text(
+                    text = widget.convertStateToMessageValue(widget.state),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
+                )
 
-                    IconButton(
-                        onClick = {
-                            onAction(
-                                widget.messageTag,
-                                widget.convertStateToMessageValue(widget.incValue())
-                            )
-                        }
-                    ) {
+                if (isIncDecButtonsVisible && widget.enabled) {
+                    IconButton(onClick = { onSliderAction(widget.incValue()) }) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = stringResource(R.string.inc_value_button)

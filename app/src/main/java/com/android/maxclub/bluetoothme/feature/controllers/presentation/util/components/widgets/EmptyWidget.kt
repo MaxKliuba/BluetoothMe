@@ -13,6 +13,7 @@ fun EmptyWidget(
 ) {
     BasicWidget(
         widgetTitle = widget.title,
+        withTitlePadding = false,
         modifier = modifier,
         overlay = overlay,
     ) {

@@ -13,6 +13,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.com
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.TextWidget
 
 @Composable
 fun WidgetPreviewGrid(
@@ -49,6 +50,7 @@ fun WidgetPreviewGrid(
 
             is Widget.Button -> ButtonWidget(
                 widget = widget,
+                withTitlePadding = true,
                 onAction = { _, _ -> },
                 modifier = widgetModifier
             ) {
@@ -62,6 +64,7 @@ fun WidgetPreviewGrid(
 
             is Widget.Switch -> SwitchWidget(
                 widget = widget,
+                withTitlePadding = true,
                 onAction = { _, _ -> },
                 modifier = widgetModifier
             ) {
@@ -75,7 +78,22 @@ fun WidgetPreviewGrid(
 
             is Widget.Slider -> SliderWidget(
                 widget = widget,
+                withTitlePadding = true,
                 isIncDecButtonsVisible = false,
+                onAction = { _, _ -> },
+                modifier = widgetModifier
+            ) {
+                WidgetPreviewOverlay(
+                    widget = widget,
+                    columnsCount = columnsCount,
+                    onChangeSize = onChangeWidgetSize,
+                    onEnabledChange = onChangeWidgetEnable,
+                )
+            }
+
+            is Widget.Text -> TextWidget(
+                widget = widget,
+                withTitlePadding = true,
                 onAction = { _, _ -> },
                 modifier = widgetModifier
             ) {

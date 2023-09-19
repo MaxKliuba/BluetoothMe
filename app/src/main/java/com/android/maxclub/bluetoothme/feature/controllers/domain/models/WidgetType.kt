@@ -7,6 +7,7 @@ enum class WidgetType {
     BUTTON,
     SWITCH,
     SLIDER,
+    TEXT,
     // Append new here
 }
 
@@ -17,6 +18,7 @@ inline fun <reified T : Widget<*>> WidgetType.toWidgetClass(): KClass<T> =
         WidgetType.BUTTON -> Widget.Button::class as KClass<T>
         WidgetType.SWITCH -> Widget.Switch::class as KClass<T>
         WidgetType.SLIDER -> Widget.Slider::class as KClass<T>
+        WidgetType.TEXT -> Widget.Text::class as KClass<T>
     }
 
 fun Widget<*>.toWidgetType() =
@@ -25,4 +27,5 @@ fun Widget<*>.toWidgetType() =
         is Widget.Button -> WidgetType.BUTTON
         is Widget.Switch -> WidgetType.SWITCH
         is Widget.Slider -> WidgetType.SLIDER
+        is Widget.Text -> WidgetType.TEXT
     }

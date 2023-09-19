@@ -25,11 +25,28 @@ fun BoxScope.WidgetPreviewOverlay(
     onChangeSize: (Widget<*>, WidgetSize) -> Unit,
     onEnabledChange: ((Widget<*>, Boolean) -> Unit)?,
 ) {
+    onEnabledChange?.let {
+        FilledIconToggleButton(
+            checked = !widget.enabled,
+            onCheckedChange = { onEnabledChange(widget, !it) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .size(34.dp)
+                .padding(2.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = stringResource(R.string.enabled_button),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+
     IconButton(
         onClick = { onChangeSize(widget, widget.size.next(limit = columnsCount)) },
         modifier = Modifier
-            .size(36.dp)
-            .align(Alignment.TopStart)
+            .size(32.dp)
+            .align(Alignment.BottomStart)
     ) {
         Icon(
             painter = painterResource(
@@ -41,22 +58,5 @@ fun BoxScope.WidgetPreviewOverlay(
             ),
             contentDescription = stringResource(R.string.change_size_button)
         )
-    }
-
-    onEnabledChange?.let {
-        FilledIconToggleButton(
-            checked = !widget.enabled,
-            onCheckedChange = { onEnabledChange(widget, !it) },
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(34.dp)
-                .padding(4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Lock,
-                contentDescription = stringResource(R.string.enabled_button),
-                modifier = Modifier.size(20.dp)
-            )
-        }
     }
 }

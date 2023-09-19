@@ -13,10 +13,12 @@ fun SwitchWidget(
     widget: Widget.Switch,
     onAction: (String, String) -> Unit,
     modifier: Modifier = Modifier,
+    withTitlePadding: Boolean = false,
     overlay: @Composable BoxScope.() -> Unit,
 ) {
     BasicWidget(
         widgetTitle = widget.title,
+        withTitlePadding = withTitlePadding,
         modifier = modifier,
         overlay = overlay,
     ) {
@@ -25,11 +27,12 @@ fun SwitchWidget(
         Switch(
             checked = widget.state,
             onCheckedChange = {
-                onAction(widget.messageTag, widget.convertStateToMessageValue(it))
+                if (widget.enabled) {
+                    onAction(widget.messageTag, widget.convertStateToMessageValue(it))
+                }
             },
-            enabled = widget.enabled,
             thumbContent = { widget.icon.AsIcon(modifier = Modifier.scale(1f / scaleValue)) },
-            modifier = modifier.scale(scaleValue)
+            modifier = Modifier.scale(scaleValue)
         )
     }
 }

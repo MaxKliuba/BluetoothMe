@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 fun BasicWidget(
     widgetTitle: String,
     modifier: Modifier = Modifier,
+    withTitlePadding: Boolean,
     overlay: @Composable BoxScope.() -> Unit,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -31,7 +32,7 @@ fun BasicWidget(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(horizontal = 36.dp, vertical = 6.dp)
+                    .padding(horizontal = if (withTitlePadding) 36.dp else 6.dp, vertical = 6.dp)
                     .align(Alignment.TopCenter)
             )
 

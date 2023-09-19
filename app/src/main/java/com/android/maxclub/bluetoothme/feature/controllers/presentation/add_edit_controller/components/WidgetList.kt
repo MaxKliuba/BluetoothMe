@@ -22,6 +22,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.com
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.TextWidget
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyGridState
@@ -91,6 +92,7 @@ fun WidgetList(
 
                     is Widget.Button -> ButtonWidget(
                         widget = widget,
+                        withTitlePadding = true,
                         onAction = { _, _ -> }
                     ) {
                         AddEditControllerWidgetOverlay(
@@ -105,6 +107,7 @@ fun WidgetList(
 
                     is Widget.Switch -> SwitchWidget(
                         widget = widget,
+                        withTitlePadding = true,
                         onAction = { _, _ -> }
                     ) {
                         AddEditControllerWidgetOverlay(
@@ -119,7 +122,23 @@ fun WidgetList(
 
                     is Widget.Slider -> SliderWidget(
                         widget = widget,
+                        withTitlePadding = true,
                         isIncDecButtonsVisible = false,
+                        onAction = { _, _ -> }
+                    ) {
+                        AddEditControllerWidgetOverlay(
+                            widget = widget,
+                            columnsCount = columnsCount,
+                            onChangeSize = onChangeWidgetSize,
+                            onEnabledChange = onChangeWidgetEnable,
+                            onEdit = onEditWidget,
+                            onDelete = onDeleteWidget,
+                        )
+                    }
+
+                    is Widget.Text -> TextWidget(
+                        widget = widget,
+                        withTitlePadding = true,
                         onAction = { _, _ -> }
                     ) {
                         AddEditControllerWidgetOverlay(
