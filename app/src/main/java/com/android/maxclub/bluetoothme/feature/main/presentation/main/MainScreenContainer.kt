@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -40,6 +39,7 @@ import com.android.maxclub.bluetoothme.feature.main.presentation.main.components
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.getNavDrawerItems
+import com.android.maxclub.bluetoothme.feature.main.presentation.navigateToHelpScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -190,7 +190,7 @@ fun MainScreenContainer() {
                 }
 
                 is NavDrawerItem.Type.Url -> {
-                    Toast.makeText(context, selectedItem.value, Toast.LENGTH_SHORT).show()
+                    navigateToHelpScreen(selectedItem.value, context)
                 }
             }
         }

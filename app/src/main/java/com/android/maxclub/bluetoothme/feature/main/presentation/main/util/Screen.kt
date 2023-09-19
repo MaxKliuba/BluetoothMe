@@ -34,5 +34,5 @@ sealed class Screen(val route: String) {
     }
 
     object Chat : Screen("terminal")
-    object Help : Screen("help")
+    object Help : Screen("https://www.arduino.cc/")
 }
