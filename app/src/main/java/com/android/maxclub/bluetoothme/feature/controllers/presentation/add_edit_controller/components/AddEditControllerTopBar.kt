@@ -3,7 +3,6 @@ package com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
@@ -50,7 +49,7 @@ fun AddEditControllerTopBar(
             }
         },
         actions = {
-            FilledIconToggleButton(
+            /*FilledIconToggleButton(
                 checked = withAccelerometer,
                 onCheckedChange = onWithAccelerometerChange,
             ) {
@@ -58,7 +57,7 @@ fun AddEditControllerTopBar(
                     imageVector = Icons.Filled.MyLocation,
                     contentDescription = stringResource(R.string.with_accelerometer_button),
                 )
-            }
+            }*/
 
             FilledIconToggleButton(
                 checked = withVoiceInput,

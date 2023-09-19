@@ -1,5 +1,9 @@
 package com.android.maxclub.bluetoothme.feature.controllers.presentation.controller
 
+import android.app.Activity
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,13 +35,27 @@ fun ControllerScreen(
 
     val context = LocalContext.current
 
+    val speechRecognizerIntentResultLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { words ->
+                val messageValue = words.joinToString(separator = " ")
+                viewModel.writeVoiceInputMessage(messageValue)
+            }
+        }
+    }
+
     LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is ControllerUiAction.ShowSendingErrorMessage -> {
                     onShowSendingErrorMessage()
                 }
-                // TODO
+
+                is ControllerUiAction.LaunchSpeechRecognizerIntent -> {
+                    speechRecognizerIntentResultLauncher.launch(action.intent)
+                }
             }
         }
     }
@@ -48,8 +66,8 @@ fun ControllerScreen(
                 ControllerTopBar(
                     controllerTitle = state.controller.title,
                     bluetoothState = bluetoothState.toString(context),
-                    onClickWithAccelerometer = if (state.controller.withAccelerometer) viewModel::enableAccelerometer else null,
-                    onClickWithVoiceInput = if (state.controller.withVoiceInput) viewModel::showVoiceInputDialog else null,
+                    onClickWithAccelerometer = null,
+                    onClickWithVoiceInput = if (state.controller.withVoiceInput) viewModel::showSpeechRecognizerDialog else null,
                     onClickWithRefresh = if (state.controller.withRefresh) viewModel::refreshState else null,
                     onNavigateUp = onNavigateUp,
                 )
