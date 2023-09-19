@@ -1,5 +1,6 @@
 package com.android.maxclub.bluetoothme.feature.controllers.domain.repositories
 
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
@@ -33,4 +34,8 @@ interface ControllerRepository {
     suspend fun tryRestoreWidgetById(widgetId: Int)
 
     suspend fun deleteMarkedAsDeletedWidgets()
+
+    fun getControllerWithWidgetsJsonById(controllerId: Int): Flow<ControllerWithWidgetsJson>
+
+    suspend fun addControllerWithWidgets(controllerWithWidgetsJson: ControllerWithWidgetsJson)
 }

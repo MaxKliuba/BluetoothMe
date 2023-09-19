@@ -5,15 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.maxclub.bluetoothme.core.util.update
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllersWithWidgetCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +39,7 @@ class ControllersViewModel @Inject constructor(
 
     private var getControllersWithWidgetCountJob: Job? = null
     private var swapControllersJob: Job? = null
+    private var getControllerWithWidgetsJsonJob: Job? = null
 
     init {
         getControllersWithWidgetCount()
@@ -47,8 +53,33 @@ class ControllersViewModel @Inject constructor(
         setFabState(!_uiState.value.isFabOpen)
     }
 
+    fun addControllerFromFile() {
+        val json = """{"ctr":{"tl":"Json Test","wa":false,"wv":true,"wr":true,"ct":2},"wds":[]}"""
+        try {
+            val controllerWithWidgetsJson = Json.decodeFromString<ControllerWithWidgetsJson>(json)
+            viewModelScope.launch {
+                controllerRepository.addControllerWithWidgets(controllerWithWidgetsJson)
+            }
+        } catch (e: SerializationException) {
+            e.printStackTrace()
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
+    }
+
     fun shareController(controllerId: Int) {
-        // TODO
+        getControllerWithWidgetsJsonJob?.cancel()
+        getControllerWithWidgetsJsonJob = viewModelScope.launch {
+            controllerRepository.getControllerWithWidgetsJsonById(controllerId)
+                .onEach {
+                    val json = Json.encodeToString(it)
+                    println(json)
+                }
+                .catch {
+                    it.printStackTrace()
+                }
+                .first()
+        }
     }
 
     fun setSelectedController(controllerId: Int?) {

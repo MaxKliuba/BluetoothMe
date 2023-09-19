@@ -5,6 +5,9 @@ plugins {
 
     // Hilt
     id("com.google.dagger.hilt.android")
+
+    // Serialization
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -93,6 +96,9 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$roomVersion")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     // Browser tabs
     implementation("androidx.browser:browser:1.6.0")

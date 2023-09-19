@@ -1,8 +1,11 @@
 package com.android.maxclub.bluetoothme.feature.controllers.data.mappers
 
+import com.android.maxclub.bluetoothme.feature.controllers.data.local.Converters
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.ControllerEntity
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetCountResult
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.results.ControllerWithWidgetsResult
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerJson
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
@@ -39,4 +42,28 @@ fun Controller.toControllerEntity(): ControllerEntity =
         withRefresh = withRefresh,
         columnsCount = columnsCount,
         position = position,
+    )
+
+fun ControllerEntity.toControllerJson(): ControllerJson =
+    ControllerJson(
+        title = title,
+        withAccelerometer = withAccelerometer,
+        withVoiceInput = withVoiceInput,
+        withRefresh = withRefresh,
+        columnsCount = columnsCount.count,
+    )
+
+fun ControllerWithWidgetsResult.toControllerWithWidgetsJson(): ControllerWithWidgetsJson =
+    ControllerWithWidgetsJson(
+        controller = controller.toControllerJson(),
+        widgets = widgets.filterNot { it.isDeleted }.map { it.toWidgetJson() },
+    )
+
+fun ControllerJson.toControllerEntity(): ControllerEntity =
+    ControllerEntity(
+        title = title,
+        withAccelerometer = withAccelerometer,
+        withVoiceInput = withVoiceInput,
+        withRefresh = withRefresh,
+        columnsCount = Converters().toControllerColumns(columnsCount),
     )

@@ -4,8 +4,10 @@ import com.android.maxclub.bluetoothme.feature.controllers.data.local.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toControllerEntity
 import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toControllerWithWidgets
+import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toWidget
 import com.android.maxclub.bluetoothme.feature.controllers.data.mappers.toWidgetEntity
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Controller
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgets
@@ -95,5 +97,18 @@ class ControllerRepositoryImpl @Inject constructor(
     override suspend fun deleteMarkedAsDeletedWidgets() =
         withContext(Dispatchers.IO) {
             controllerDao.deleteMarkedAsDeletedWidgets()
+        }
+
+    override fun getControllerWithWidgetsJsonById(controllerId: Int): Flow<ControllerWithWidgetsJson> =
+        controllerDao.getControllerWithWidgetsById(controllerId)
+            .map { it.toControllerWithWidgetsJson() }
+            .flowOn(Dispatchers.IO)
+
+    override suspend fun addControllerWithWidgets(controllerWithWidgetsJson: ControllerWithWidgetsJson) =
+        withContext(Dispatchers.IO) {
+            controllerDao.insertControllerWithWidgets(
+                controller = controllerWithWidgetsJson.controller.toControllerEntity(),
+                widgets = controllerWithWidgetsJson.widgets.map { it.toWidgetEntity(0) }
+            )
         }
 }

@@ -75,7 +75,7 @@ fun ControllerListScreen(
                     isOpen = state.isFabOpen,
                     onClickOptions = viewModel::switchFabState,
                     onAddEdit = { onNavigateToAddEditController(null) },
-                    onAddFromFile = { /*TODO*/ },
+                    onAddFromFile = viewModel::addControllerFromFile,
                     onAddFromQrCode = { /*TODO*/ }
                 )
             } else {

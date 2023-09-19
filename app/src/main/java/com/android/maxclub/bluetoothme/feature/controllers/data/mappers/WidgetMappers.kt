@@ -1,6 +1,8 @@
 package com.android.maxclub.bluetoothme.feature.controllers.data.mappers
 
+import com.android.maxclub.bluetoothme.feature.controllers.data.local.Converters
 import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.WidgetEntity
+import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.WidgetJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.toWidgetType
@@ -77,4 +79,33 @@ fun Widget<*>.toWidgetEntity(): WidgetEntity =
         minValue = (this as? Widget.Slider)?.minValue,
         maxValue = (this as? Widget.Slider)?.maxValue,
         step = (this as? Widget.Slider)?.step,
+    )
+
+fun WidgetEntity.toWidgetJson(): WidgetJson =
+    WidgetJson(
+        type = type.ordinal,
+        messageTag = messageTag,
+        title = title,
+        icon = icon.id,
+        size = size.span,
+        enabled = enabled,
+        position = position,
+        minValue = minValue ?: 0,
+        maxValue = maxValue ?: 0,
+        step = step ?: 0,
+    )
+
+fun WidgetJson.toWidgetEntity(controllerId: Int): WidgetEntity =
+    WidgetEntity(
+        controllerId = controllerId,
+        type = Converters().toWidgetType(type),
+        messageTag = messageTag,
+        title = title,
+        icon = Converters().toWidgetIcon(icon),
+        size = Converters().toWidgetSize(size),
+        enabled = enabled,
+        position = position,
+        minValue = minValue,
+        maxValue = maxValue,
+        step = step,
     )

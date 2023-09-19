@@ -6,12 +6,12 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.Control
 
 @Entity(tableName = "controllers")
 data class ControllerEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val withAccelerometer: Boolean,
     val withVoiceInput: Boolean,
     val withRefresh: Boolean,
     val columnsCount: ControllerColumns,
-    val position: Int,
+    val position: Int = -1,
     val isDeleted: Boolean = false,
 )

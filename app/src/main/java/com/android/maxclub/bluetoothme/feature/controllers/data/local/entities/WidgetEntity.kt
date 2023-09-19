@@ -21,7 +21,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetT
     indices = [Index("controllerId")]
 )
 data class WidgetEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val controllerId: Int,
     val type: WidgetType,
     val messageTag: String,
@@ -30,8 +30,8 @@ data class WidgetEntity(
     val size: WidgetSize,
     val enabled: Boolean,
     val position: Int,
+    val minValue: Int?,
+    val maxValue: Int?,
+    val step: Int?,
     val isDeleted: Boolean = false,
-    val minValue: Int? = null,
-    val maxValue: Int? = null,
-    val step: Int? = null,
 )
