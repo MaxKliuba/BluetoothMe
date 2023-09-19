@@ -92,6 +92,8 @@
 
     <string name="widget_title_label">Widget Title</string>
     <string name="message_tag_label">Message Tag</string>
+    <string name="slider_range_label">Range</string>
+    <string name="slider_step_label">Step</string>
     <string name="dec_value_button">Minus</string>
     <string name="inc_value_button">Plus</string>
 

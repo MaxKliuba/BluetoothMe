@@ -65,7 +65,7 @@ fun SliderWidget(
                 value = widget.state.toFloat(),
                 onValueChange = { onSliderAction(it.roundToInt()) },
                 valueRange = widget.minValue.toFloat()..widget.maxValue.toFloat(),
-                steps = widget.maxValue.minus(1) / widget.step,
+                steps = (widget.maxValue - widget.minValue - 1) / widget.step,
                 interactionSource = interactionSource,
             ) {
                 Box(contentAlignment = Alignment.Center) {

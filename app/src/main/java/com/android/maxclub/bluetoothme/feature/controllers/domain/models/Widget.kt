@@ -56,6 +56,7 @@ sealed class Widget<T>(
 
         is Slider -> Slider(
             id, controllerId, messageTag, title, icon, size, enabled, position, this.state,
+            this.minValue, this.maxValue, this.step,
         )
 
         is Text -> Text(
@@ -164,7 +165,7 @@ sealed class Widget<T>(
         state: Int = DEFAULT_MIN_VALUE,
         val minValue: Int = DEFAULT_MIN_VALUE,
         val maxValue: Int = DEFAULT_MAX_VALUE,
-        val step: Int = DEFAULT_STEPS,
+        val step: Int = DEFAULT_STEP,
     ) : Widget<Int>(id, controllerId, messageTag, title, icon, size, enabled, position, state) {
 
         override fun convertStateToMessageValue(state: Int): String = state.toString()
@@ -172,8 +173,20 @@ sealed class Widget<T>(
         override fun copyWithState(stateValue: String): Slider =
             Slider(
                 id, controllerId, messageTag, title, icon, size, enabled, position,
-                state = stateValue.toIntOrNull() ?: DEFAULT_MIN_VALUE
+                state = stateValue.toIntOrNull()?.takeIf { it in minValue..maxValue } ?: minValue,
+                minValue, maxValue, step,
             )
+
+        fun copySliderParams(
+            minValue: Int = this.minValue,
+            maxValue: Int = this.maxValue,
+            step: Int = this.step,
+        ): Slider = Slider(
+            id, controllerId, messageTag, title, icon, size, enabled, position, state,
+            minValue = minValue,
+            maxValue = maxValue,
+            step = step,
+        )
 
         fun incValue(): Int {
             val newValue = state.plus(step)
@@ -187,10 +200,37 @@ sealed class Widget<T>(
             return if (newValue in minValue..maxValue) newValue else state
         }
 
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            if (!super.equals(other)) return false
+
+            other as Slider
+
+            if (minValue != other.minValue) return false
+            if (maxValue != other.maxValue) return false
+            if (step != other.step) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = super.hashCode()
+            result = 31 * result + minValue
+            result = 31 * result + maxValue
+            result = 31 * result + step
+            return result
+        }
+
+
         companion object {
-            const val DEFAULT_MIN_VALUE = 0
-            const val DEFAULT_MAX_VALUE = 255
-            const val DEFAULT_STEPS = 5
+            const val MIN_VALUE = 0
+            const val MAX_VALUE = 360
+            const val MIN_STEP = 1
+
+            const val DEFAULT_MIN_VALUE = MIN_VALUE
+            const val DEFAULT_MAX_VALUE = MAX_VALUE
+            const val DEFAULT_STEP = MIN_STEP
         }
     }
 

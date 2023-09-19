@@ -47,7 +47,7 @@ fun WidgetEntity.toWidget(): Widget<*> =
             position = position,
             minValue = minValue ?: Widget.Slider.DEFAULT_MIN_VALUE,
             maxValue = maxValue ?: Widget.Slider.DEFAULT_MAX_VALUE,
-            step = step ?: Widget.Slider.DEFAULT_STEPS,
+            step = step ?: Widget.Slider.DEFAULT_STEP,
         )
 
         WidgetType.TEXT -> Widget.Text(

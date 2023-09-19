@@ -60,6 +60,17 @@ class AddEditWidgetViewModel @Inject constructor(
             }
         }
 
+    private val onUpdateWidgetSliderParamsWithDebounce: (Widget.Slider, Triple<Int, Int, Int>) -> Unit =
+        viewModelScope.debounce { widget, params ->
+            controllerRepository.updateWidgets(
+                widget.copySliderParams(
+                    minValue = params.first,
+                    maxValue = params.second,
+                    step = params.third,
+                )
+            )
+        }
+
     init {
         (_uiState.value as? AddEditWidgetUiState.Loading)?.let {
             getWidget()
@@ -109,6 +120,23 @@ class AddEditWidgetViewModel @Inject constructor(
     fun updateWidgetIcon(widget: Widget<*>, newWidgetIcon: WidgetIcon) {
         viewModelScope.launch {
             controllerRepository.updateWidgets(widget.copy(icon = newWidgetIcon))
+        }
+    }
+
+    fun updateSliderWidgetRange(sliderWidget: Widget.Slider, minValue: Int, maxValue: Int) {
+        viewModelScope.launch {
+            val maxStep = maxValue - minValue
+            val step = if (sliderWidget.step > maxStep) maxStep else sliderWidget.step
+
+            onUpdateWidgetSliderParamsWithDebounce(sliderWidget, Triple(minValue, maxValue, step))
+        }
+    }
+
+    fun updateSliderWidgetStep(sliderWidget: Widget.Slider, step: Int) {
+        viewModelScope.launch {
+            onUpdateWidgetSliderParamsWithDebounce(
+                sliderWidget, Triple(sliderWidget.minValue, sliderWidget.maxValue, step)
+            )
         }
     }
 

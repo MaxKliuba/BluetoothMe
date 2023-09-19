@@ -38,6 +38,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetI
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.toWidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.AddEditWidgetTextField
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.SliderWidgetParamsSection
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetIconList
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetPreviewGrid
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetTypeDropdownMenu
@@ -128,7 +129,7 @@ fun AddEditWidgetScreen(
 
                             Column(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .fillMaxWidth()
                                     .padding(horizontal = 16.dp)
                             ) {
                                 Divider()
@@ -175,6 +176,19 @@ fun AddEditWidgetScreen(
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 )
+                            }
+
+                            if (state.widget is Widget.Slider) {
+                                SliderWidgetParamsSection(
+                                    sliderWidget = state.widget,
+                                    onRangeValueChange = viewModel::updateSliderWidgetRange,
+                                    onStepValueChange = viewModel::updateSliderWidgetStep,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
                             }
                         }
                     }
