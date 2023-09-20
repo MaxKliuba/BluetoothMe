@@ -36,7 +36,7 @@ fun AddControllerFab(
             SmallFloatingActionButton(onClick = onAddFromQrCode) {
                 Icon(
                     imageVector = Icons.Outlined.QrCodeScanner,
-                    contentDescription = stringResource(R.string.scan_from_qr_code_button)
+                    contentDescription = stringResource(R.string.scan_qr_code_button)
                 )
             }
 

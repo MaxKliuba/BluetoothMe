@@ -76,9 +76,10 @@ fun ConnectionScreen(
                 }
 
                 is ConnectionUiAction.ShowDeviceType -> {
-                    showDeviceTypeSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        deviceType = action.deviceType,
+                    snackbarHostState.showSnackbar(
+                        message = action.deviceType,
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
                     )
                 }
 
@@ -208,15 +209,4 @@ fun ConnectionScreen(
 private fun launchBluetoothSettingsIntent(context: Context) {
     val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
     context.startActivity(intent)
-}
-
-private suspend fun showDeviceTypeSnackbar(
-    snackbarHostState: SnackbarHostState,
-    deviceType: String
-) {
-    snackbarHostState.showSnackbar(
-        message = deviceType,
-        withDismissAction = true,
-        duration = SnackbarDuration.Short,
-    )
 }

@@ -7,4 +7,5 @@ data class ControllersUiState(
     val controllers: List<ControllerWithWidgetCount>,
     val selectedControllerId: Int?,
     val isFabOpen: Boolean,
+    val isCameraPermissionRationaleDialogVisible: Boolean,
 )

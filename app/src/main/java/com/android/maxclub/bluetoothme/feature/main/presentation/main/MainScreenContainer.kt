@@ -1,10 +1,6 @@
 package com.android.maxclub.bluetoothme.feature.main.presentation.main
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -26,7 +22,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
-import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.ChatScreen
 import com.android.maxclub.bluetoothme.feature.bluetooth.presentation.connection.ConnectionScreen
@@ -39,6 +34,7 @@ import com.android.maxclub.bluetoothme.feature.main.presentation.main.components
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.getNavDrawerItems
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.launchPermissionSettingsIntent
 import com.android.maxclub.bluetoothme.feature.main.presentation.navigateToHelpScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -93,16 +89,18 @@ fun MainScreenContainer() {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
                 is MainUiAction.RequestMissingPermissions -> {
-                    requestMissingPermissions(
-                        permissions = action.permissions.toList().toTypedArray(),
-                        context = context,
-                        onShowRationaleDialog = {
-                            viewModel.showBluetoothPermissionRationaleDialog()
-                        },
-                        onLaunchPermissionResultLauncher = {
-                            permissionResultLauncher.launch(it)
-                        }
-                    )
+                    val permissions = action.permissions.toList().toTypedArray()
+
+                    when {
+                        action.permissions.toList().toTypedArray().any { permission ->
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                context as Activity,
+                                permission
+                            )
+                        } -> viewModel.showBluetoothPermissionRationaleDialog()
+
+                        else -> permissionResultLauncher.launch(permissions)
+                    }
                 }
 
                 is MainUiAction.LaunchPermissionSettingsIntent -> {
@@ -114,54 +112,76 @@ fun MainScreenContainer() {
                 }
 
                 is MainUiAction.ShowConnectionErrorMessage -> {
-                    showConnectionErrorSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        context = context,
-                        device = action.device,
-                        onConnect = viewModel::connectBluetoothDevice,
-                    )
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(
+                            R.string.connection_error_message,
+                            action.device.name
+                        ),
+                        actionLabel = context.getString(R.string.reconnect_button),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
+                    ).let { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
+                            viewModel.connectBluetoothDevice(action.device)
+                        }
+                    }
                 }
 
                 is MainUiAction.ShowSendingErrorMessage -> {
-                    showSendingErrorSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        context = context,
-                        device = action.device,
-                        onReconnect = viewModel::connectBluetoothDevice,
-                        onNavigateToConnection = {
-                            navController.navigate(Screen.Connection.route) {
-                                launchSingleTop = true
-                            }
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.send_error_message),
+                        actionLabel = if (action.device != null) {
+                            context.getString(R.string.reconnect_button)
+                        } else {
+                            context.getString(R.string.connect_button)
+                        },
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
+                    ).let { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
+                            action.device?.let { viewModel.connectBluetoothDevice(it) }
+                                ?: navController.navigate(Screen.Connection.route) {
+                                    launchSingleTop = true
+                                }
                         }
-                    )
+                    }
                 }
 
                 is MainUiAction.ShowMessagesCountMessage -> {
-                    showMessagesCountSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        context = context,
-                        inputMessagesCount = action.inputMessagesCount,
-                        outputMessagesCount = action.outputMessagesCount
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(
+                            R.string.messages_count_text,
+                            action.inputMessagesCount,
+                            action.outputMessagesCount
+                        ),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
                     )
                 }
 
                 is MainUiAction.ShowWidgetDeletedMessage -> {
-                    showDeletedItemSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        context = context,
+                    snackbarHostState.showSnackbar(
                         message = context.getString(R.string.widget_deleted_message),
-                    ) {
-                        viewModel.tryRestoreWidgetById(action.widgetId)
+                        actionLabel = context.getString(R.string.undo_button),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
+                    ).let { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
+                            viewModel.tryRestoreWidgetById(action.widgetId)
+                        }
                     }
                 }
 
                 is MainUiAction.ShowControllerDeletedMessage -> {
-                    showDeletedItemSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        context = context,
+                    snackbarHostState.showSnackbar(
                         message = context.getString(R.string.controller_deleted_message),
-                    ) {
-                        viewModel.tryRestoreControllerById(action.controllerId)
+                        actionLabel = context.getString(R.string.undo_button),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
+                    ).let { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
+                            viewModel.tryRestoreControllerById(action.controllerId)
+                        }
                     }
                 }
             }
@@ -226,9 +246,7 @@ fun MainScreenContainer() {
         )
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) { paddingValues ->
+    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { paddingValues ->
         NavigationDrawer(
             drawerState = drawerState,
             currentDestination = state.currentDestination,
@@ -329,107 +347,6 @@ fun MainScreenContainer() {
                     )
                 }
             }
-        }
-    }
-}
-
-private fun requestMissingPermissions(
-    permissions: Array<String>,
-    context: Context,
-    onShowRationaleDialog: () -> Unit,
-    onLaunchPermissionResultLauncher: (Array<String>) -> Unit
-) {
-    when {
-        permissions.any { permission ->
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                context as Activity,
-                permission
-            )
-        } -> onShowRationaleDialog()
-
-        else -> onLaunchPermissionResultLauncher(permissions)
-    }
-}
-
-private fun launchPermissionSettingsIntent(context: Context) {
-    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        data = Uri.fromParts("package", context.packageName, null)
-    }
-    context.startActivity(intent)
-}
-
-private suspend fun showConnectionErrorSnackbar(
-    snackbarHostState: SnackbarHostState,
-    context: Context,
-    device: BluetoothDevice,
-    onConnect: (BluetoothDevice) -> Unit
-) {
-    snackbarHostState.showSnackbar(
-        message = context.getString(R.string.connection_error_message, device.name),
-        actionLabel = context.getString(R.string.reconnect_button),
-        withDismissAction = true,
-        duration = SnackbarDuration.Short,
-    ).let { result ->
-        if (result == SnackbarResult.ActionPerformed) {
-            onConnect(device)
-        }
-    }
-}
-
-private suspend fun showMessagesCountSnackbar(
-    snackbarHostState: SnackbarHostState,
-    context: Context,
-    inputMessagesCount: Int,
-    outputMessagesCount: Int
-) {
-    snackbarHostState.showSnackbar(
-        message = context.getString(
-            R.string.messages_count_text,
-            inputMessagesCount,
-            outputMessagesCount
-        ),
-        withDismissAction = true,
-        duration = SnackbarDuration.Short,
-    )
-}
-
-private suspend fun showSendingErrorSnackbar(
-    snackbarHostState: SnackbarHostState,
-    context: Context,
-    device: BluetoothDevice?,
-    onReconnect: (BluetoothDevice) -> Unit,
-    onNavigateToConnection: () -> Unit
-) {
-    snackbarHostState.showSnackbar(
-        message = context.getString(R.string.send_error_message),
-        actionLabel = if (device != null) {
-            context.getString(R.string.reconnect_button)
-        } else {
-            context.getString(R.string.connect_button)
-        },
-        withDismissAction = true,
-        duration = SnackbarDuration.Short,
-    ).let { result ->
-        if (result == SnackbarResult.ActionPerformed) {
-            device?.let { onReconnect(it) } ?: onNavigateToConnection()
-        }
-    }
-}
-
-private suspend fun showDeletedItemSnackbar(
-    snackbarHostState: SnackbarHostState,
-    context: Context,
-    message: String,
-    onUndo: () -> Unit
-) {
-    snackbarHostState.showSnackbar(
-        message = message,
-        actionLabel = context.getString(R.string.undo_button),
-        withDismissAction = true,
-        duration = SnackbarDuration.Short,
-    ).let { result ->
-        if (result == SnackbarResult.ActionPerformed) {
-            onUndo()
         }
     }
 }

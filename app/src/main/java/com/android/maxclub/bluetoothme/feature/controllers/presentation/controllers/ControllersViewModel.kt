@@ -4,17 +4,21 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllersWithWidgetCount
+import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -33,9 +37,13 @@ class ControllersViewModel @Inject constructor(
             controllers = emptyList(),
             selectedControllerId = null,
             isFabOpen = false,
+            isCameraPermissionRationaleDialogVisible = false,
         )
     )
     val uiState: State<ControllersUiState> = _uiState
+
+    private val uiActionChannel = Channel<ControllersUiAction>()
+    val uiAction = uiActionChannel.receiveAsFlow()
 
     private var getControllersWithWidgetCountJob: Job? = null
     private var swapControllersJob: Job? = null
@@ -53,8 +61,33 @@ class ControllersViewModel @Inject constructor(
         setFabState(!_uiState.value.isFabOpen)
     }
 
-    fun addControllerFromFile() {
-        val json = """{"ctr":{"tl":"Json Test","wa":false,"wv":true,"wr":true,"ct":2},"wds":[]}"""
+    fun showCameraPermissionRationaleDialogVisible() {
+        _uiState.update { it.copy(isCameraPermissionRationaleDialogVisible = true) }
+    }
+
+    fun dismissCameraPermissionRationaleDialog() {
+        _uiState.update { it.copy(isCameraPermissionRationaleDialogVisible = false) }
+    }
+
+    fun confirmCameraPermissionRationaleDialog() {
+        uiActionChannel.sendIn(ControllersUiAction.LaunchPermissionSettingsIntent, viewModelScope)
+        dismissCameraPermissionRationaleDialog()
+    }
+
+    fun launchQrCodeScanner() {
+        setFabState(false)
+
+        val scanOptions = ScanOptions().apply {
+            setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+            setBarcodeImageEnabled(true)
+            setOrientationLocked(false)
+            setBeepEnabled(false)
+            setPrompt("")
+        }
+        uiActionChannel.sendIn(ControllersUiAction.LaunchQrCodeScanner(scanOptions), viewModelScope)
+    }
+
+    fun addControllerFromJson(json: String) {
         try {
             val controllerWithWidgetsJson = Json.decodeFromString<ControllerWithWidgetsJson>(json)
             viewModelScope.launch {
@@ -62,8 +95,10 @@ class ControllersViewModel @Inject constructor(
             }
         } catch (e: SerializationException) {
             e.printStackTrace()
+            uiActionChannel.sendIn(ControllersUiAction.ShowJsonDecodingErrorMessage, viewModelScope)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
+            uiActionChannel.sendIn(ControllersUiAction.ShowJsonDecodingErrorMessage, viewModelScope)
         }
     }
 

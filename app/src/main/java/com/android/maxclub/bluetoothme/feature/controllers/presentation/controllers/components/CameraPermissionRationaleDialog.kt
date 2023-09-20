@@ -1,4 +1,4 @@
-package com.android.maxclub.bluetoothme.feature.main.presentation.main.components
+package com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.android.maxclub.bluetoothme.R
 
 @Composable
-fun BluetoothPermissionRationaleDialog(
+fun CameraPermissionRationaleDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier
@@ -21,12 +21,12 @@ fun BluetoothPermissionRationaleDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.bluetooth_permission_dialog_title),
+                text = stringResource(R.string.camera_permission_dialog_title),
                 textAlign = TextAlign.Center
             )
         },
         text = {
-            Text(text = stringResource(R.string.bluetooth_permission_dialog_text))
+            Text(text = stringResource(R.string.camera_permission_dialog_text))
         },
         icon = {
             Icon(

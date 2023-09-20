@@ -100,6 +100,9 @@ dependencies {
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
-    // Browser tabs
+    // Browser
     implementation("androidx.browser:browser:1.6.0")
+
+    // QR code
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
