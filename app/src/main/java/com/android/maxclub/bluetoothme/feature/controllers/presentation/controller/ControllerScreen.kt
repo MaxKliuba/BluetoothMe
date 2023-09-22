@@ -12,7 +12,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +34,9 @@ fun ControllerScreen(
     viewModel: ControllerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState
+    val withRefreshButton by remember {
+        derivedStateOf { (state as? ControllerUiState.Success)?.controller?.withRefresh != null }
+    }
 
     val context = LocalContext.current
 
@@ -43,6 +48,12 @@ fun ControllerScreen(
                 val messageValue = words.joinToString(separator = " ")
                 viewModel.writeVoiceInputMessage(messageValue)
             }
+        }
+    }
+
+    LaunchedEffect(bluetoothState, withRefreshButton) {
+        if (withRefreshButton && bluetoothState is BluetoothState.On.Connected) {
+            viewModel.refreshState()
         }
     }
 
