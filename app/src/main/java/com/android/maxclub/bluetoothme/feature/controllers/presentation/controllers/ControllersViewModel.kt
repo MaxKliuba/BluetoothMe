@@ -14,14 +14,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -47,10 +45,11 @@ class ControllersViewModel @Inject constructor(
 
     private var getControllersWithWidgetCountJob: Job? = null
     private var swapControllersJob: Job? = null
-    private var getControllerWithWidgetsJsonJob: Job? = null
 
     init {
-        getControllersWithWidgetCount()
+        if (_uiState.value.isLoading) {
+            getControllersWithWidgetCount()
+        }
     }
 
     fun setFabState(isOpen: Boolean) {
@@ -79,7 +78,6 @@ class ControllersViewModel @Inject constructor(
 
         val scanOptions = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-            setBarcodeImageEnabled(true)
             setOrientationLocked(false)
             setBeepEnabled(false)
             setPrompt("")
@@ -99,21 +97,6 @@ class ControllersViewModel @Inject constructor(
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             uiActionChannel.sendIn(ControllersUiAction.ShowJsonDecodingErrorMessage, viewModelScope)
-        }
-    }
-
-    fun shareController(controllerId: Int) {
-        getControllerWithWidgetsJsonJob?.cancel()
-        getControllerWithWidgetsJsonJob = viewModelScope.launch {
-            controllerRepository.getControllerWithWidgetsJsonById(controllerId)
-                .onEach {
-                    val json = Json.encodeToString(it)
-                    println(json)
-                }
-                .catch {
-                    it.printStackTrace()
-                }
-                .first()
         }
     }
 

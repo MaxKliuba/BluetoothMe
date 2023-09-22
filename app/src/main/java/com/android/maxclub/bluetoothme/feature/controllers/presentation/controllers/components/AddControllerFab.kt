@@ -7,8 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SmallFloatingActionButton
@@ -24,8 +24,8 @@ fun AddControllerFab(
     isOpen: Boolean,
     onClickOptions: () -> Unit,
     onAddEdit: () -> Unit,
-    onAddFromFile: () -> Unit,
-    onAddFromQrCode: () -> Unit,
+    onOpenFile: () -> Unit,
+    onScanQrCode: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -33,7 +33,7 @@ fun AddControllerFab(
         modifier = modifier
     ) {
         if (isOpen) {
-            SmallFloatingActionButton(onClick = onAddFromQrCode) {
+            SmallFloatingActionButton(onClick = onScanQrCode) {
                 Icon(
                     imageVector = Icons.Outlined.QrCodeScanner,
                     contentDescription = stringResource(R.string.scan_qr_code_button)
@@ -42,10 +42,10 @@ fun AddControllerFab(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SmallFloatingActionButton(onClick = onAddFromFile) {
+            SmallFloatingActionButton(onClick = onOpenFile) {
                 Icon(
-                    imageVector = Icons.Outlined.UploadFile,
-                    contentDescription = stringResource(R.string.upload_from_file_button)
+                    imageVector = Icons.Outlined.FileOpen,
+                    contentDescription = stringResource(R.string.open_file_button)
                 )
             }
 

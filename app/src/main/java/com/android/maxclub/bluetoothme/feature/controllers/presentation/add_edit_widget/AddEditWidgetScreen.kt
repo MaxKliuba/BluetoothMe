@@ -10,17 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,6 +34,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetI
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.toWidgetType
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.AddEditWidgetTextField
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.AddEditWidgetTopBar
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.SliderWidgetParamsSection
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetIconList
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetPreviewGrid
@@ -62,34 +59,17 @@ fun AddEditWidgetScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back_button),
-                        )
-                    }
-                },
-                actions = {
-                    (state as? AddEditWidgetUiState.Success)?.let {
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    onDeleteWidget(it.widget.id)
-                                    delay(150)
-                                    onNavigateUp()
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = stringResource(R.string.delete_widget_button),
-                            )
+            AddEditWidgetTopBar(
+                onDeleteWidget = (state as? AddEditWidgetUiState.Success)?.let {
+                    {
+                        scope.launch {
+                            onDeleteWidget(it.widget.id)
+                            delay(150)
+                            onNavigateUp()
                         }
                     }
-                }
+                },
+                onNavigateUp = onNavigateUp,
             )
         },
         floatingActionButton = {

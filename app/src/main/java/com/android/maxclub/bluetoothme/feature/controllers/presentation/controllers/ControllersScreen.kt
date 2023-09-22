@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun ControllerListScreen(
     onOpenNavigationDrawer: () -> Unit,
     onNavigateToController: (Int) -> Unit,
+    onNavigateToShareController: (Int) -> Unit,
     onNavigateToAddEditController: (Int?) -> Unit,
     onDeleteController: (Int) -> Unit,
     viewModel: ControllersViewModel = hiltViewModel(),
@@ -105,7 +106,9 @@ fun ControllerListScreen(
                         ActivityCompat.shouldShowRequestPermissionRationale(
                             context as Activity,
                             cameraPermission
-                        ) -> viewModel.showCameraPermissionRationaleDialogVisible()
+                        ) -> {
+                            viewModel.showCameraPermissionRationaleDialogVisible()
+                        }
 
                         else -> permissionResultLauncher.launch(cameraPermission)
                     }
@@ -148,7 +151,9 @@ fun ControllerListScreen(
                     viewModel.setSelectedController(null)
                 },
                 onEditController = { onNavigateToAddEditController(state.selectedControllerId) },
-                onShareController = { state.selectedControllerId?.let { viewModel.shareController(it) } },
+                onShareController = {
+                    state.selectedControllerId?.let { onNavigateToShareController(it) }
+                },
             )
         },
         floatingActionButton = {
@@ -157,8 +162,8 @@ fun ControllerListScreen(
                     isOpen = state.isFabOpen,
                     onClickOptions = viewModel::switchFabState,
                     onAddEdit = { onNavigateToAddEditController(null) },
-                    onAddFromFile = { /* TODO */ },
-                    onAddFromQrCode = viewModel::launchQrCodeScanner,
+                    onOpenFile = { /* TODO */ },
+                    onScanQrCode = viewModel::launchQrCodeScanner,
                 )
             } else {
                 FloatingActionButton(onClick = { viewModel.setSelectedController(null) }) {
@@ -186,7 +191,7 @@ fun ControllerListScreen(
                     controllers = state.controllers,
                     selectedControllerId = state.selectedControllerId,
                     onOpenController = onNavigateToController,
-                    onShareController = viewModel::shareController,
+                    onShareController = onNavigateToShareController,
                     onSelectController = viewModel::setSelectedController,
                     onUnselectController = { viewModel.setSelectedController(null) },
                     onReorderController = viewModel::swapControllers,

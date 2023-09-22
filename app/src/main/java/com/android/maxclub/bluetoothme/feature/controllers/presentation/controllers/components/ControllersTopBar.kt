@@ -1,9 +1,9 @@
 package com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,7 +50,7 @@ fun ControllersTopBar(
 
                 IconButton(onClick = onEditController) {
                     Icon(
-                        imageVector = Icons.Outlined.Edit,
+                        imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.edit_controller_button)
                     )
                 }

@@ -29,6 +29,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.AddEditWidgetScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.ControllerScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllerListScreen
+import com.android.maxclub.bluetoothme.feature.controllers.presentation.share_controller.ShareControllerScreen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
@@ -274,6 +275,9 @@ fun MainScreenContainer() {
                         onNavigateToController = { controllerId ->
                             navController.navigate("${Screen.Controller.route}/$controllerId")
                         },
+                        onNavigateToShareController = { controllerId ->
+                            navController.navigate("${Screen.ShareController.route}/$controllerId")
+                        },
                         onNavigateToAddEditController = { controllerId ->
                             navController.navigate(
                                 "${Screen.AddEditController.route}?${
@@ -322,6 +326,17 @@ fun MainScreenContainer() {
                         onNavigateUp = navController::navigateUp,
                         onDeleteWidget = viewModel::deleteWidget,
                     )
+                }
+
+                composable(
+                    route = Screen.ShareController.routeWithArgs,
+                    arguments = listOf(
+                        navArgument(name = Screen.ShareController.ARG_CONTROLLER_ID) {
+                            type = NavType.IntType
+                        }
+                    ),
+                ) {
+                    ShareControllerScreen(onNavigateUp = navController::navigateUp)
                 }
 
                 composable(
