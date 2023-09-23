@@ -1,5 +1,7 @@
 package com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -78,6 +80,22 @@ class ControllersViewModel @Inject constructor(
             setPrompt("")
         }
         uiActionChannel.sendIn(ControllersUiAction.LaunchQrCodeScanner(scanOptions), viewModelScope)
+    }
+
+    fun launchOpenJsonFileIntent() {
+        setFabState(false)
+
+        uiActionChannel.sendIn(
+            ControllersUiAction.LaunchOpenJsonFileIntent("application/json"),
+            viewModelScope
+        )
+    }
+
+    fun addControllerFromJsonFile(context: Context, jsonFileUri: Uri) {
+        context.contentResolver.openInputStream(jsonFileUri)?.use { inputStream ->
+            val json = String(inputStream.readBytes())
+            addControllerFromJson(json)
+        }
     }
 
     fun addControllerFromJson(json: String) {

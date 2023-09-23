@@ -69,10 +69,16 @@ fun ControllerListScreen(
         }
     }
 
-    val qrCodeLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
+    val qrCodeScannerResultLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         result.contents?.let { json ->
             viewModel.addControllerFromJson(json)
         }
+    }
+
+    val openJsonFileResultLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { jsonFileUri ->
+        jsonFileUri?.let { viewModel.addControllerFromJsonFile(context, it) }
     }
 
     LaunchedEffect(key1 = true) {
@@ -99,7 +105,7 @@ fun ControllerListScreen(
                             context,
                             cameraPermission
                         ) == PackageManager.PERMISSION_GRANTED -> {
-                            qrCodeLauncher.launch(action.scanOptions)
+                            qrCodeScannerResultLauncher.launch(action.scanOptions)
                         }
 
                         ActivityCompat.shouldShowRequestPermissionRationale(
@@ -117,6 +123,10 @@ fun ControllerListScreen(
                         withDismissAction = true,
                         duration = SnackbarDuration.Short,
                     )
+                }
+
+                is ControllersUiAction.LaunchOpenJsonFileIntent -> {
+                    openJsonFileResultLauncher.launch(action.contentType)
                 }
             }
         }
@@ -156,7 +166,7 @@ fun ControllerListScreen(
                     isOpen = state.isFabOpen,
                     onClickOptions = viewModel::switchFabState,
                     onAddEdit = { onNavigateToAddEditController(null) },
-                    onOpenFile = { /* TODO */ },
+                    onOpenFile = viewModel::launchOpenJsonFileIntent,
                     onScanQrCode = viewModel::launchQrCodeScanner,
                 )
             } else {

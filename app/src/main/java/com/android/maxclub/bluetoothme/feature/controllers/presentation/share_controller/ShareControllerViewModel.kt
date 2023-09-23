@@ -35,7 +35,6 @@ import java.io.IOException
 import javax.inject.Inject
 
 private const val QR_CODE_SIZE = 2048
-private const val PROVIDER_AUTHORITY = "com.android.maxclub.bluetoothme.provider"
 
 @HiltViewModel
 class ShareControllerViewModel @Inject constructor(
@@ -101,8 +100,10 @@ class ShareControllerViewModel @Inject constructor(
     fun shareFile(context: Context) {
         (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
             val jsonFile = createJsonFile(state.controllerTitle)
+            val authority = "${context.packageName}.provider"
+
             try {
-                val jsonFileUri = FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, jsonFile)
+                val jsonFileUri = FileProvider.getUriForFile(context, authority, jsonFile)
 
                 val sharingIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "application/json"

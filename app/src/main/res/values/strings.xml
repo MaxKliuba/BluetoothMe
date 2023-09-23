@@ -76,7 +76,7 @@
     <string name="camera_is_unavailable_message">The camera is unavailable</string>
     <string name="camera_permission_dialog_title">This app would like to use the camera</string>
     <string name="camera_permission_dialog_text">Used to scan QR codes</string>
-    <string name="json_decoding_error_message">Failed to scan QR code</string>
+    <string name="json_decoding_error_message">Failed to add Controller</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
         <item quantity="other">%1$d widgets</item>
