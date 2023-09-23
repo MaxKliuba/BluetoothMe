@@ -26,6 +26,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.util.com
 @Composable
 fun TextWidget(
     widget: Widget.Text,
+    enabled: Boolean,
     onAction: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     withTitlePadding: Boolean = false,
@@ -43,8 +44,8 @@ fun TextWidget(
     ) {
         TextField(
             value = value,
-            onValueChange = { if (widget.enabled) value = it },
-            readOnly = !widget.enabled,
+            onValueChange = { if (enabled) value = it },
+            readOnly = !enabled,
             leadingIcon = if (widget.icon.isValid) {
                 { widget.icon.AsIcon() }
             } else null,

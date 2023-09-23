@@ -70,19 +70,25 @@
     <string name="open_file_button">Open file</string>
     <string name="scan_qr_code_button">Scan QR code</string>
     <string name="share_controller_button">Share Controller</string>
-    <string name="save_as_file_button">Save as File</string>
     <string name="delete_controller_button">Delete Controller</string>
     <string name="edit_controller_button">Edit Controller</string>
+    <string name="controller_deleted_message">Controller deleted</string>
     <string name="camera_is_unavailable_message">The camera is unavailable</string>
     <string name="camera_permission_dialog_title">This app would like to use the camera</string>
     <string name="camera_permission_dialog_text">Used to scan QR codes</string>
     <string name="json_decoding_error_message">Failed to scan QR code</string>
-    <string name="qr_code_error_message">QR code is unavailable</string>
-    <string name="controller_deleted_message">Controller deleted</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
         <item quantity="other">%1$d widgets</item>
     </plurals>
+
+    <string name="save_as_file_button">Save as File</string>
+    <string name="qr_code_error_message">QR code is unavailable</string>
+    <string name="storage_permission_dialog_title">This app would like to access the storage</string>
+    <string name="storage_permission_dialog_text">Used to save Controllers as files</string>
+    <string name="json_successfully_saved_message">Successfully saved to %1$s</string>
+    <string name="json_saving_error_message">Failed to save</string>
+    <string name="sharing_error_message">Failed to share</string>
 
     <string name="controller_title_placeholder">New Controller</string>
     <string name="with_accelerometer_button">With Accelerometer</string>

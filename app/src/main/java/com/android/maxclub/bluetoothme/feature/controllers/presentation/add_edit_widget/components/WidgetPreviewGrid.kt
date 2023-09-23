@@ -93,6 +93,7 @@ fun WidgetPreviewGrid(
 
             is Widget.Text -> TextWidget(
                 widget = widget,
+                enabled = false,
                 withTitlePadding = true,
                 onAction = { _, _ -> },
                 modifier = widgetModifier

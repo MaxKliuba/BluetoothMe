@@ -60,17 +60,12 @@ class ControllersViewModel @Inject constructor(
         setFabState(!_uiState.value.isFabOpen)
     }
 
-    fun showCameraPermissionRationaleDialogVisible() {
+    fun showCameraPermissionRationaleDialog() {
         _uiState.update { it.copy(isCameraPermissionRationaleDialogVisible = true) }
     }
 
     fun dismissCameraPermissionRationaleDialog() {
         _uiState.update { it.copy(isCameraPermissionRationaleDialogVisible = false) }
-    }
-
-    fun confirmCameraPermissionRationaleDialog() {
-        uiActionChannel.sendIn(ControllersUiAction.LaunchPermissionSettingsIntent, viewModelScope)
-        dismissCameraPermissionRationaleDialog()
     }
 
     fun launchQrCodeScanner() {

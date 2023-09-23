@@ -8,6 +8,7 @@ sealed class ShareControllerUiState {
         val controllerTitle: String,
         val json: String,
         val qrCode: Bitmap?,
+        val isStoragePermissionRationaleDialogVisible: Boolean,
     ) : ShareControllerUiState()
 
     object Error : ShareControllerUiState()

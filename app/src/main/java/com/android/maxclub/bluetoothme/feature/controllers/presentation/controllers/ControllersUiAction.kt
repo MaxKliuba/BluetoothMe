@@ -4,6 +4,5 @@ import com.journeyapps.barcodescanner.ScanOptions
 
 sealed class ControllersUiAction {
     data class LaunchQrCodeScanner(val scanOptions: ScanOptions) : ControllersUiAction()
-    object LaunchPermissionSettingsIntent : ControllersUiAction()
     object ShowJsonDecodingErrorMessage : ControllersUiAction()
 }

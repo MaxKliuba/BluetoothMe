@@ -6,27 +6,32 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.android.maxclub.bluetoothme.R
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.launchPermissionSettingsIntent
 
 @Composable
-fun BluetoothPermissionRationaleDialog(
+fun PermissionRationaleDialog(
+    title: String,
+    text: String,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.bluetooth_permission_dialog_title),
+                text = title,
                 textAlign = TextAlign.Center
             )
         },
         text = {
-            Text(text = stringResource(R.string.bluetooth_permission_dialog_text))
+            Text(text = text)
         },
         icon = {
             Icon(
@@ -35,7 +40,12 @@ fun BluetoothPermissionRationaleDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                    launchPermissionSettingsIntent(context)
+                }
+            ) {
                 Text(text = stringResource(R.string.allow_in_settings_button))
             }
         },

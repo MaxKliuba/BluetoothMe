@@ -65,6 +65,7 @@ fun WidgetList(
 
                 is Widget.Text -> TextWidget(
                     widget = widget,
+                    enabled = widget.enabled,
                     withTitlePadding = !widget.enabled,
                     onAction = onAction,
                 ) {

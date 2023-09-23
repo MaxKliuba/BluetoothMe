@@ -138,6 +138,7 @@ fun WidgetList(
 
                     is Widget.Text -> TextWidget(
                         widget = widget,
+                        enabled = false,
                         withTitlePadding = true,
                         onAction = { _, _ -> }
                     ) {

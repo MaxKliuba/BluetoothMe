@@ -1,10 +1,16 @@
 package com.android.maxclub.bluetoothme.feature.controllers.presentation.share_controller
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.FileProvider
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.maxclub.bluetoothme.core.util.sendIn
 import com.android.maxclub.bluetoothme.core.util.update
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
@@ -14,15 +20,22 @@ import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 private const val QR_CODE_SIZE = 2048
+private const val PROVIDER_AUTHORITY = "com.android.maxclub.bluetoothme.provider"
 
 @HiltViewModel
 class ShareControllerViewModel @Inject constructor(
@@ -36,6 +49,9 @@ class ShareControllerViewModel @Inject constructor(
     private val _uiState = mutableStateOf<ShareControllerUiState>(ShareControllerUiState.Loading)
     val uiState: State<ShareControllerUiState> = _uiState
 
+    private val uiActionChannel = Channel<ShareControllerUiAction>()
+    val uiAction = uiActionChannel.receiveAsFlow()
+
     private var getControllerWithWidgetsJsonJob: Job? = null
 
     init {
@@ -45,7 +61,82 @@ class ShareControllerViewModel @Inject constructor(
     }
 
     fun saveControllerAsFile() {
-        // TODO
+        (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
+            val jsonFile = createJsonFile(state.controllerTitle)
+
+            try {
+                FileOutputStream(jsonFile).use { outputStream ->
+                    outputStream.write(state.json.toByteArray())
+                    uiActionChannel.sendIn(
+                        ShareControllerUiAction.ShowSavedSuccessfullyMessage(jsonFile.path),
+                        viewModelScope
+                    )
+                }
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.RequestMissingStoragePermission(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
+                    viewModelScope
+                )
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.RequestMissingStoragePermission(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
+                    viewModelScope
+                )
+            } catch (e: IOException) {
+                e.printStackTrace()
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.ShowSavingErrorMessage,
+                    viewModelScope
+                )
+            }
+        }
+    }
+
+    fun shareFile(context: Context) {
+        (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
+            val jsonFile = createJsonFile(state.controllerTitle)
+            try {
+                val jsonFileUri = FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, jsonFile)
+
+                val sharingIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_SUBJECT, state.controllerTitle)
+                    putExtra(Intent.EXTRA_STREAM, jsonFileUri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                val chooserIntent = Intent.createChooser(sharingIntent, null)
+
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.LaunchFileSharingIntent(chooserIntent),
+                    viewModelScope
+                )
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.ShowSharingErrorMessage,
+                    viewModelScope
+                )
+            }
+        }
+    }
+
+    fun showStoragePermissionRationaleDialog() {
+        (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
+            _uiState.update { state.copy(isStoragePermissionRationaleDialogVisible = true) }
+        }
+    }
+
+    fun dismissStoragePermissionRationaleDialog() {
+        (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
+            _uiState.update { state.copy(isStoragePermissionRationaleDialogVisible = false) }
+        }
     }
 
     private fun getControllerWithWidgetsJson(controllerId: Int) {
@@ -76,6 +167,7 @@ class ShareControllerViewModel @Inject constructor(
                             controllerTitle = controllerWithWidgetsJson.controller.title,
                             json = json,
                             qrCode = qrCode,
+                            isStoragePermissionRationaleDialogVisible = false,
                         )
                     }
                 }
@@ -85,4 +177,10 @@ class ShareControllerViewModel @Inject constructor(
                 }
                 .launchIn(viewModelScope)
     }
+
+    private fun createJsonFile(filename: String): File =
+        File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+            "$filename.json"
+        )
 }

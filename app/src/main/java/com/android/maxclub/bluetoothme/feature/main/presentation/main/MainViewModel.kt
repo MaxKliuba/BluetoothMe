@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor(
 
     fun requestMissingPermissions(vararg permissions: String) {
         uiActionChannel.sendIn(
-            MainUiAction.RequestMissingPermissions(*permissions),
+            MainUiAction.RequestMissingBluetoothPermissions(*permissions),
             viewModelScope
         )
     }
@@ -84,11 +84,6 @@ class MainViewModel @Inject constructor(
         _uiState.update { it.copy(isBluetoothPermissionRationaleDialogVisible = false) }
     }
 
-    fun confirmBluetoothPermissionRationaleDialog() {
-        uiActionChannel.sendIn(MainUiAction.LaunchPermissionSettingsIntent, viewModelScope)
-        dismissBluetoothPermissionRationaleDialog()
-    }
-
     fun enableBluetoothAdapter() {
         try {
             bluetoothUseCases.enableAdapter()
@@ -96,7 +91,7 @@ class MainViewModel @Inject constructor(
             e.printStackTrace()
 
             uiActionChannel.sendIn(
-                MainUiAction.RequestMissingPermissions(*e.permissions),
+                MainUiAction.RequestMissingBluetoothPermissions(*e.permissions),
                 viewModelScope
             )
         } catch (e: EnableBluetoothAdapterException) {
@@ -116,7 +111,7 @@ class MainViewModel @Inject constructor(
                 e.printStackTrace()
 
                 uiActionChannel.sendIn(
-                    MainUiAction.RequestMissingPermissions(*e.permissions),
+                    MainUiAction.RequestMissingBluetoothPermissions(*e.permissions),
                     viewModelScope
                 )
             } catch (e: BluetoothConnectionException) {
@@ -137,7 +132,7 @@ class MainViewModel @Inject constructor(
             e.printStackTrace()
 
             uiActionChannel.sendIn(
-                MainUiAction.RequestMissingPermissions(*e.permissions),
+                MainUiAction.RequestMissingBluetoothPermissions(*e.permissions),
                 viewModelScope
             )
         }

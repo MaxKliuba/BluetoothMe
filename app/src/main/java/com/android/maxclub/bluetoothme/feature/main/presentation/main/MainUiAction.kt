@@ -4,8 +4,7 @@ import android.content.Intent
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 
 sealed class MainUiAction {
-    class RequestMissingPermissions(vararg val permissions: String) : MainUiAction()
-    object LaunchPermissionSettingsIntent : MainUiAction()
+    class RequestMissingBluetoothPermissions(vararg val permissions: String) : MainUiAction()
     data class LaunchBluetoothAdapterEnableIntent(val intent: Intent) : MainUiAction()
     data class ShowConnectionErrorMessage(val device: BluetoothDevice) : MainUiAction()
     data class ShowMessagesCountMessage(

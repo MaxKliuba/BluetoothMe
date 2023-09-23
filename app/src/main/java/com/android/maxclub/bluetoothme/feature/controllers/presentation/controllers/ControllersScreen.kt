@@ -36,10 +36,9 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.android.maxclub.bluetoothme.R
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.AddControllerFab
-import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.CameraPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
-import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.launchPermissionSettingsIntent
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
 import com.journeyapps.barcodescanner.ScanContract
 import kotlinx.coroutines.flow.collectLatest
 
@@ -62,7 +61,7 @@ fun ControllerListScreen(
         state = rememberTopAppBarState()
     )
 
-    val permissionResultLauncher = rememberLauncherForActivityResult(
+    val cameraPermissionResultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
@@ -106,16 +105,10 @@ fun ControllerListScreen(
                         ActivityCompat.shouldShowRequestPermissionRationale(
                             context as Activity,
                             cameraPermission
-                        ) -> {
-                            viewModel.showCameraPermissionRationaleDialogVisible()
-                        }
+                        ) -> viewModel.showCameraPermissionRationaleDialog()
 
-                        else -> permissionResultLauncher.launch(cameraPermission)
+                        else -> cameraPermissionResultLauncher.launch(cameraPermission)
                     }
-                }
-
-                is ControllersUiAction.LaunchPermissionSettingsIntent -> {
-                    launchPermissionSettingsIntent(context)
                 }
 
                 is ControllersUiAction.ShowJsonDecodingErrorMessage -> {
@@ -134,9 +127,10 @@ fun ControllerListScreen(
     }
 
     if (state.isCameraPermissionRationaleDialogVisible) {
-        CameraPermissionRationaleDialog(
+        PermissionRationaleDialog(
+            title = stringResource(R.string.camera_permission_dialog_title),
+            text = stringResource(R.string.camera_permission_dialog_text),
             onDismiss = viewModel::dismissCameraPermissionRationaleDialog,
-            onConfirm = viewModel::confirmCameraPermissionRationaleDialog,
         )
     }
 

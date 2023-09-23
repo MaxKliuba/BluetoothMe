@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -30,12 +31,11 @@ import com.android.maxclub.bluetoothme.feature.controllers.presentation.add_edit
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controller.ControllerScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.controllers.ControllerListScreen
 import com.android.maxclub.bluetoothme.feature.controllers.presentation.share_controller.ShareControllerScreen
-import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.BluetoothPermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.NavigationDrawer
+import com.android.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawerItem
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.getNavDrawerItems
-import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.launchPermissionSettingsIntent
 import com.android.maxclub.bluetoothme.feature.main.presentation.navigateToHelpScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -81,7 +81,7 @@ fun MainScreenContainer() {
         }
     }
 
-    val permissionResultLauncher = rememberLauncherForActivityResult(
+    val bluetoothPermissionResultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
     }
@@ -89,7 +89,7 @@ fun MainScreenContainer() {
     LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
-                is MainUiAction.RequestMissingPermissions -> {
+                is MainUiAction.RequestMissingBluetoothPermissions -> {
                     val permissions = action.permissions.toList().toTypedArray()
 
                     when {
@@ -100,12 +100,8 @@ fun MainScreenContainer() {
                             )
                         } -> viewModel.showBluetoothPermissionRationaleDialog()
 
-                        else -> permissionResultLauncher.launch(permissions)
+                        else -> bluetoothPermissionResultLauncher.launch(permissions)
                     }
-                }
-
-                is MainUiAction.LaunchPermissionSettingsIntent -> {
-                    launchPermissionSettingsIntent(context)
                 }
 
                 is MainUiAction.LaunchBluetoothAdapterEnableIntent -> {
@@ -241,9 +237,10 @@ fun MainScreenContainer() {
     )
 
     if (state.isBluetoothPermissionRationaleDialogVisible) {
-        BluetoothPermissionRationaleDialog(
+        PermissionRationaleDialog(
+            title = stringResource(R.string.bluetooth_permission_dialog_title),
+            text = stringResource(R.string.bluetooth_permission_dialog_text),
             onDismiss = viewModel::dismissBluetoothPermissionRationaleDialog,
-            onConfirm = viewModel::confirmBluetoothPermissionRationaleDialog,
         )
     }
 
