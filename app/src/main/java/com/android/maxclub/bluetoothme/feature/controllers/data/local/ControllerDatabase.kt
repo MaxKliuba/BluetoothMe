@@ -11,7 +11,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.data.local.entities.W
 @Database(
     entities = [ControllerEntity::class, WidgetEntity::class],
     version = 1,
-    exportSchema = false,
+    exportSchema = true,
 )
 @TypeConverters(Converters::class)
 abstract class ControllerDatabase : RoomDatabase() {
