@@ -61,7 +61,7 @@ class ShareControllerViewModel @Inject constructor(
 
     fun saveControllerAsFile() {
         (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
-            val jsonFile = createJsonFile(state.controllerTitle)
+            val jsonFile = renameJsonFileWithNumber(createJsonFile(state.controllerTitle))
 
             try {
                 FileOutputStream(jsonFile).use { outputStream ->
@@ -179,9 +179,25 @@ class ShareControllerViewModel @Inject constructor(
                 .launchIn(viewModelScope)
     }
 
-    private fun createJsonFile(filename: String): File =
+    private fun createJsonFile(fileName: String): File =
         File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-            "$filename.json"
+            "${fileName.ifBlank { "Controller" }}.json"
         )
+
+    private fun renameJsonFileWithNumber(file: File): File {
+        var renamedFile = file
+
+        val parentFile = renamedFile.parentFile
+        val fileNameWithoutExtension = renamedFile.nameWithoutExtension
+        val fileExtension = renamedFile.extension
+
+        var counter = 1
+        while (renamedFile.exists()) {
+            val newFileName = "$fileNameWithoutExtension (${counter++}).$fileExtension"
+            renamedFile = File(parentFile, newFileName)
+        }
+
+        return renamedFile
+    }
 }
