@@ -48,9 +48,9 @@ fun getNavDrawerItems(
     val helpItem by remember {
         mutableStateOf(
             NavDrawerItem(
-                type = NavDrawerItem.Type.Url(Screen.Help.route),
-                icon = R.drawable.ic_help_24,
-                label = R.string.help_screen_title,
+                type = NavDrawerItem.Type.Url(Screen.QuickStart.route),
+                icon = R.drawable.ic_quickstart_24,
+                label = R.string.quickstart_screen_title,
                 badge = null,
             )
         )

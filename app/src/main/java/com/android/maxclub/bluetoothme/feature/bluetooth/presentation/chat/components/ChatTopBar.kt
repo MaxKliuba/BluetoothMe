@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.bluetooth.presentation.chat.comp
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -12,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.android.maxclub.bluetoothme.R
 
@@ -39,7 +39,7 @@ fun ChatTopBar(
         navigationIcon = {
             IconButton(onClick = onOpenNavigationDrawer) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_menu_24),
+                    imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.menu_button)
                 )
             }

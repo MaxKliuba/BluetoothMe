@@ -2,6 +2,7 @@ package com.android.maxclub.bluetoothme.feature.controllers.presentation.control
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.android.maxclub.bluetoothme.R
 
@@ -34,7 +34,7 @@ fun ControllersTopBar(
         navigationIcon = {
             IconButton(onClick = onOpenNavigationDrawer) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_menu_24),
+                    imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.menu_button)
                 )
             }

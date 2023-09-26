@@ -42,5 +42,5 @@ sealed class Screen(val route: String) {
     }
 
     object Chat : Screen("terminal")
-    object Help : Screen("https://www.arduino.cc/")
+    object QuickStart : Screen("https://github.com/BluetoothMe/QuickStart")
 }
