@@ -10,5 +10,7 @@ sealed class AddEditWidgetUiState {
         val columnsCount: Int,
         val widgetTitle: TextFieldValue,
         val widgetTag: TextFieldValue,
+        val rangeSliderPosition: IntRange,
+        val stepSliderPosition: Int,
     ) : AddEditWidgetUiState()
 }

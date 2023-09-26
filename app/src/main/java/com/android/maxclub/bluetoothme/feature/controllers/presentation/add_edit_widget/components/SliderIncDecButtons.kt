@@ -22,12 +22,12 @@ fun SliderIncDecButtons(
     step: Int,
     minValue: Int,
     maxValue: Int,
-    onChangeValue: (Float) -> Unit,
+    onChangeValue: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tryChangeValue: (Int) -> Unit = { newValue ->
         val isValid = newValue in minValue..maxValue
-        if (isValid) onChangeValue(newValue.toFloat())
+        if (isValid) onChangeValue(newValue)
     }
 
     Row(

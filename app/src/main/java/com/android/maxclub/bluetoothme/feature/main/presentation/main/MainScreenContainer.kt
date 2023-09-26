@@ -3,6 +3,9 @@ package com.android.maxclub.bluetoothme.feature.main.presentation.main
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -255,6 +258,10 @@ fun MainScreenContainer() {
             NavHost(
                 navController = navController,
                 startDestination = Screen.Connection.route,
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) },
+                popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+                popExitTransition = { fadeOut(animationSpec = tween(300)) },
             ) {
                 composable(route = Screen.Connection.route) {
                     ConnectionScreen(

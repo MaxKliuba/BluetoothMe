@@ -16,6 +16,7 @@ import com.android.maxclub.bluetoothme.feature.controllers.domain.models.WidgetT
 import com.android.maxclub.bluetoothme.feature.controllers.domain.models.toWidgetClass
 import com.android.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.android.maxclub.bluetoothme.feature.controllers.domain.validators.MessageTagValidator
+import com.android.maxclub.bluetoothme.feature.controllers.domain.validators.WidgetSliderRangeValidator
 import com.android.maxclub.bluetoothme.feature.controllers.domain.validators.WidgetTitleValidator
 import com.android.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,7 @@ class AddEditWidgetViewModel @Inject constructor(
     private val controllerRepository: ControllerRepository,
     private val widgetTitleValidator: WidgetTitleValidator,
     private val messageTagValidator: MessageTagValidator,
+    private val widgetSliderRangeValidator: WidgetSliderRangeValidator,
 ) : ViewModel() {
     private val id: Int = savedStateHandle[Screen.AddEditWidget.ARG_ID]
         ?: Screen.AddEditWidget.DEFAULT_ID
@@ -98,8 +100,8 @@ class AddEditWidgetViewModel @Inject constructor(
     fun tryUpdateWidgetTitle(value: TextFieldValue): Boolean =
         if (widgetTitleValidator(value.text)) {
             (_uiState.value as? AddEditWidgetUiState.Success)?.let { state ->
-                onUpdateWidgetTitleWithDebounce(state.widget, value.text)
                 _uiState.update { state.copy(widgetTitle = value) }
+                onUpdateWidgetTitleWithDebounce(state.widget, value.text)
             }
             true
         } else {
@@ -109,8 +111,8 @@ class AddEditWidgetViewModel @Inject constructor(
     fun tryUpdateWidgetTag(value: TextFieldValue): Boolean =
         if (messageTagValidator(value.text)) {
             (_uiState.value as? AddEditWidgetUiState.Success)?.let { state ->
-                onUpdateWidgetTagWithDebounce(state.widget, value.text)
                 _uiState.update { state.copy(widgetTag = value) }
+                onUpdateWidgetTagWithDebounce(state.widget, value.text)
             }
             true
         } else {
@@ -123,22 +125,35 @@ class AddEditWidgetViewModel @Inject constructor(
         }
     }
 
-    fun updateSliderWidgetRange(sliderWidget: Widget.Slider, minValue: Int, maxValue: Int) {
-        viewModelScope.launch {
-            val maxStep = maxValue - minValue
-            val step = if (sliderWidget.step > maxStep) maxStep else sliderWidget.step
-
-            onUpdateWidgetSliderParamsWithDebounce(sliderWidget, Triple(minValue, maxValue, step))
+    fun tryUpdateSliderWidgetRange(
+        sliderWidget: Widget.Slider,
+        minValue: Int,
+        maxValue: Int
+    ): Boolean =
+        if (widgetSliderRangeValidator(minValue, maxValue, sliderWidget.step)) {
+            (_uiState.value as? AddEditWidgetUiState.Success)?.let { state ->
+                _uiState.update { state.copy(rangeSliderPosition = minValue..maxValue) }
+            }
+            onUpdateWidgetSliderParamsWithDebounce(
+                sliderWidget, Triple(minValue, maxValue, sliderWidget.step)
+            )
+            true
+        } else {
+            false
         }
-    }
 
-    fun updateSliderWidgetStep(sliderWidget: Widget.Slider, step: Int) {
-        viewModelScope.launch {
+    fun tryUpdateSliderWidgetStep(sliderWidget: Widget.Slider, step: Int): Boolean =
+        if (widgetSliderRangeValidator(sliderWidget.minValue, sliderWidget.maxValue, step)) {
+            (_uiState.value as? AddEditWidgetUiState.Success)?.let { state ->
+                _uiState.update { state.copy(stepSliderPosition = step) }
+            }
             onUpdateWidgetSliderParamsWithDebounce(
                 sliderWidget, Triple(sliderWidget.minValue, sliderWidget.maxValue, step)
             )
+            true
+        } else {
+            false
         }
-    }
 
     private fun getWidget() {
         getWidgetsJob?.cancel()
@@ -157,6 +172,16 @@ class AddEditWidgetViewModel @Inject constructor(
                 .onEach { widget ->
                     val widgetTitle = widget.title
                     val widgetTag = widget.messageTag
+                    val rangeSliderPosition = if (widget is Widget.Slider) {
+                        widget.minValue..widget.maxValue
+                    } else {
+                        Widget.Slider.DEFAULT_MIN_VALUE..Widget.Slider.DEFAULT_MAX_VALUE
+                    }
+                    val stepSliderPosition = if (widget is Widget.Slider) {
+                        widget.step
+                    } else {
+                        Widget.Slider.DEFAULT_STEP
+                    }
 
                     _uiState.update {
                         if (it is AddEditWidgetUiState.Success) {
@@ -173,6 +198,8 @@ class AddEditWidgetViewModel @Inject constructor(
                                 } else {
                                     TextFieldValue(widgetTag, TextRange(widgetTag.length))
                                 },
+                                rangeSliderPosition = rangeSliderPosition,
+                                stepSliderPosition = stepSliderPosition,
                             )
                         } else {
                             AddEditWidgetUiState.Success(
@@ -182,7 +209,9 @@ class AddEditWidgetViewModel @Inject constructor(
                                     widgetTitle,
                                     TextRange(widgetTitle.length)
                                 ),
-                                widgetTag = TextFieldValue(widgetTag, TextRange(widgetTag.length))
+                                widgetTag = TextFieldValue(widgetTag, TextRange(widgetTag.length)),
+                                rangeSliderPosition = rangeSliderPosition,
+                                stepSliderPosition = stepSliderPosition,
                             )
                         }
                     }

@@ -161,8 +161,10 @@ fun AddEditWidgetScreen(
                             if (state.widget is Widget.Slider) {
                                 SliderWidgetParamsSection(
                                     sliderWidget = state.widget,
-                                    onRangeValueChange = viewModel::updateSliderWidgetRange,
-                                    onStepValueChange = viewModel::updateSliderWidgetStep,
+                                    rangeSliderPosition = state.rangeSliderPosition,
+                                    onRangeValueChange = viewModel::tryUpdateSliderWidgetRange,
+                                    stepSliderPosition = state.stepSliderPosition,
+                                    onStepValueChange = viewModel::tryUpdateSliderWidgetStep,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp)
