@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MessagesLocalDataSource @Inject constructor() : MessagesDataSource {
+class MessagesTempDataSource @Inject constructor() : MessagesDataSource {
 
     private val messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
 
@@ -16,10 +16,6 @@ class MessagesLocalDataSource @Inject constructor() : MessagesDataSource {
 
     override fun addMessage(message: Message) {
         messages.value += message
-    }
-
-    override fun deleteMessage(message: Message) {
-        messages.value -= message
     }
 
     override fun deleteMessages() {

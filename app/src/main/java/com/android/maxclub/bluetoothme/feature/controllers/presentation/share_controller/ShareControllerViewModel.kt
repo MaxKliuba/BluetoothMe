@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.FileWriter
 import java.io.IOException
 import javax.inject.Inject
 
@@ -61,11 +62,22 @@ class ShareControllerViewModel @Inject constructor(
 
     fun saveControllerAsFile() {
         (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
-            val jsonFile = renameJsonFileWithNumber(createJsonFile(state.controllerTitle))
-
             try {
+                val directory = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                    "BluetoothMe"
+                )
+                if (!directory.exists()) {
+                    directory.mkdir()
+                }
+
+                val jsonFile = renameJsonFileWithNumber(
+                    File(directory, "${state.controllerTitle}.json")
+                )
+
                 FileOutputStream(jsonFile).use { outputStream ->
                     outputStream.write(state.json.toByteArray())
+
                     uiActionChannel.sendIn(
                         ShareControllerUiAction.ShowSavedSuccessfullyMessage(jsonFile.path),
                         viewModelScope
@@ -99,10 +111,15 @@ class ShareControllerViewModel @Inject constructor(
 
     fun shareFile(context: Context) {
         (_uiState.value as? ShareControllerUiState.Success)?.let { state ->
-            val jsonFile = createJsonFile(state.controllerTitle)
-            val authority = "${context.packageName}.provider"
+            val authority = "${context.packageName}.fileprovider"
+            val fileName = "${state.controllerTitle}.json"
+            val jsonFile = File(context.cacheDir, fileName)
 
             try {
+                FileWriter(jsonFile).use { fileWriter ->
+                    fileWriter.write(state.json)
+                }
+
                 val jsonFileUri = FileProvider.getUriForFile(context, authority, jsonFile)
 
                 val sharingIntent = Intent(Intent.ACTION_SEND).apply {
@@ -110,12 +127,17 @@ class ShareControllerViewModel @Inject constructor(
                     putExtra(Intent.EXTRA_SUBJECT, state.controllerTitle)
                     putExtra(Intent.EXTRA_STREAM, jsonFileUri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
                 val chooserIntent = Intent.createChooser(sharingIntent, null)
 
                 uiActionChannel.sendIn(
                     ShareControllerUiAction.LaunchFileSharingIntent(chooserIntent),
+                    viewModelScope
+                )
+            } catch (e: IOException) {
+                e.printStackTrace()
+                uiActionChannel.sendIn(
+                    ShareControllerUiAction.ShowSharingErrorMessage,
                     viewModelScope
                 )
             } catch (e: IllegalArgumentException) {
@@ -165,7 +187,7 @@ class ShareControllerViewModel @Inject constructor(
 
                     _uiState.update {
                         ShareControllerUiState.Success(
-                            controllerTitle = controllerWithWidgetsJson.controller.title,
+                            controllerTitle = controllerWithWidgetsJson.controller.title.ifBlank { "Controller" },
                             json = json,
                             qrCode = qrCode,
                             isStoragePermissionRationaleDialogVisible = false,
@@ -178,12 +200,6 @@ class ShareControllerViewModel @Inject constructor(
                 }
                 .launchIn(viewModelScope)
     }
-
-    private fun createJsonFile(fileName: String): File =
-        File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-            "${fileName.ifBlank { "Controller" }}.json"
-        )
 
     private fun renameJsonFileWithNumber(file: File): File {
         var renamedFile = file

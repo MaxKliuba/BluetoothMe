@@ -2,7 +2,9 @@ package com.android.maxclub.bluetoothme.feature.main.presentation.main.util
 
 sealed class Screen(val route: String) {
     object Connection : Screen("connection")
+
     object Controllers : Screen("controllers")
+
     object AddEditController : Screen("add_edit_controller") {
         const val ARG_CONTROLLER_ID = "controllerId" // optional
         const val DEFAULT_CONTROLLER_ID = 0
@@ -42,5 +44,6 @@ sealed class Screen(val route: String) {
     }
 
     object Chat : Screen("terminal")
+
     object QuickStart : Screen("https://github.com/BluetoothMe/QuickStart")
 }

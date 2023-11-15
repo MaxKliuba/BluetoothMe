@@ -6,7 +6,7 @@ import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothClassicService
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothDeviceServiceWithBleScanner
 import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth.BluetoothLeService
-import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.messages.MessagesLocalDataSource
+import com.android.maxclub.bluetoothme.feature.bluetooth.data.sources.messages.MessagesTempDataSource
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothDeviceService
 import com.android.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothService
@@ -96,7 +96,7 @@ abstract class MessagesDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindMessagesDataSource(
-        messagesDataSource: MessagesLocalDataSource
+        messagesDataSource: MessagesTempDataSource
     ): MessagesDataSource
 }
 

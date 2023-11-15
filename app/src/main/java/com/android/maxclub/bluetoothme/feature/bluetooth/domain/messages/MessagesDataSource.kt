@@ -8,7 +8,5 @@ interface MessagesDataSource {
 
     fun addMessage(message: Message)
 
-    fun deleteMessage(message: Message)
-
     fun deleteMessages()
 }
