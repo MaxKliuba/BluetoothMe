@@ -8,7 +8,7 @@ fun ByteArray.toMessage(type: Message.Type): Message =
 
 fun String.toMessage(type: Message.Type): Message {
     val tag = this.substringBefore(Message.TAG_TERMINATOR, missingDelimiterValue = "")
-    val value = (if (tag.isNotEmpty()) this.substringAfter(Message.TAG_TERMINATOR) else this)
+    val value = this.substringAfter(Message.TAG_TERMINATOR)
         .substringBefore(Message.MESSAGE_TERMINATOR)
 
     return Message(
