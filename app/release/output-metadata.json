@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.android.maxclub.bluetoothme",
+  "applicationId": "com.tech.maxclub.bluetoothme",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "0.1.1",
+      "versionCode": 3,
+      "versionName": "0.2.1",
       "outputFile": "app-release.apk"
     }
   ],

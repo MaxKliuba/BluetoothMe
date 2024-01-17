@@ -11,15 +11,15 @@ plugins {
 }
 
 android {
-    namespace = "com.android.maxclub.bluetoothme"
+    namespace = "com.tech.maxclub.bluetoothme"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.android.maxclub.bluetoothme"
+        applicationId = "com.tech.maxclub.bluetoothme"
         minSdk = 23
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
