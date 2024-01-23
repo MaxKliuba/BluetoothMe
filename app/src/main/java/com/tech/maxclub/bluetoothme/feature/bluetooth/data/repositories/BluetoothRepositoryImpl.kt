@@ -90,7 +90,6 @@ class BluetoothRepositoryImpl @Inject constructor(
                 }
             }
             .distinctUntilChanged()
-            .flowOn(Dispatchers.IO)
 
     override fun updateBluetoothDevice(device: BluetoothDevice) {
         updatedBluetoothDevices.value += device.address to device

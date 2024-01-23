@@ -8,15 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.tech.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
 import com.tech.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
 import com.tech.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
-import com.tech.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.tech.maxclub.bluetoothme.core.util.sendIn
 import com.tech.maxclub.bluetoothme.core.util.update
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toFullString
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.repositories.BluetoothRepository
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.usecases.messages.MessagesUseCases
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
+import com.tech.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -30,16 +30,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val bluetoothUseCases: BluetoothUseCases,
     private val messagesUseCases: MessagesUseCases,
+    private val bluetoothRepository: BluetoothRepository,
     private val controllerRepository: ControllerRepository,
     application: Application,
 ) : AndroidViewModel(application) {
 
     private val _uiState = mutableStateOf(
         MainUiState(
-            bluetoothState = bluetoothUseCases.getState().value,
-            favoriteBluetoothDevice = bluetoothUseCases.getFavoriteBluetoothDevice().value,
+            bluetoothState = bluetoothRepository.getState().value,
+            favoriteBluetoothDevice = bluetoothRepository.getFavoriteBluetoothDevice().value,
             controllersCount = 0,
             inputMessagesCount = 0,
             outputMessagesCount = 0,
@@ -86,7 +86,7 @@ class MainViewModel @Inject constructor(
 
     fun enableBluetoothAdapter() {
         try {
-            bluetoothUseCases.enableAdapter()
+            bluetoothRepository.enableAdapter()
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
 
@@ -106,7 +106,7 @@ class MainViewModel @Inject constructor(
         connectJob?.cancel()
         connectJob = viewModelScope.launch {
             try {
-                bluetoothUseCases.connect(device)
+                bluetoothRepository.connect(device)
             } catch (e: MissingBluetoothPermissionException) {
                 e.printStackTrace()
 
@@ -127,7 +127,7 @@ class MainViewModel @Inject constructor(
 
     fun disconnectBluetoothDevice(device: BluetoothDevice?) {
         try {
-            bluetoothUseCases.disconnect(device)
+            bluetoothRepository.disconnect(device)
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
 
@@ -185,7 +185,7 @@ class MainViewModel @Inject constructor(
 
     private fun getState() {
         getStateJob?.cancel()
-        getStateJob = bluetoothUseCases.getState()
+        getStateJob = bluetoothRepository.getState()
             .distinctUntilChangedBy { it::class }
             .onEach { state ->
                 if (_uiState.value.bluetoothState != state) {
@@ -205,7 +205,7 @@ class MainViewModel @Inject constructor(
 
     private fun getFavoriteDevice() {
         getFavoriteDeviceJob?.cancel()
-        getFavoriteDeviceJob = bluetoothUseCases.getFavoriteBluetoothDevice()
+        getFavoriteDeviceJob = bluetoothRepository.getFavoriteBluetoothDevice()
             .onEach { favoriteDevice ->
                 _uiState.update { it.copy(favoriteBluetoothDevice = favoriteDevice) }
             }

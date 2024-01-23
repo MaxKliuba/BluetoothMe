@@ -6,16 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
 import com.tech.maxclub.bluetoothme.core.util.sendIn
+import com.tech.maxclub.bluetoothme.core.util.toUuidOrElse
 import com.tech.maxclub.bluetoothme.core.util.update
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.validators.UuidValueValidator
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.BluetoothUseCases
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.repositories.BluetoothRepository
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.usecases.bluetooth.GetBluetoothDevices
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.validators.UuidValueValidator
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileDialogData
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.BleProfileType
-import com.tech.maxclub.bluetoothme.core.util.toUuidOrElse
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.util.toBleProfileType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -29,15 +30,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConnectionViewModel @Inject constructor(
-    private val bluetoothUseCases: BluetoothUseCases,
+    private val getBluetoothDevicesUseCase: GetBluetoothDevices,
+    private val bluetoothRepository: BluetoothRepository,
     private val uuidValueValidator: UuidValueValidator,
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(
         ConnectionUiState(
-            bluetoothState = bluetoothUseCases.getState().value,
+            bluetoothState = bluetoothRepository.getState().value,
             devices = emptyList(),
-            isScanning = bluetoothUseCases.getScanState().value,
+            isScanning = bluetoothRepository.getScanState().value,
             bleProfileDialogData = null,
         )
     )
@@ -66,7 +68,7 @@ class ConnectionViewModel @Inject constructor(
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             try {
-                bluetoothUseCases.startScan()
+                bluetoothRepository.startScan(duration = 10L)
             } catch (e: MissingBluetoothPermissionException) {
                 e.printStackTrace()
 
@@ -80,7 +82,7 @@ class ConnectionViewModel @Inject constructor(
 
     fun stopScan() {
         try {
-            bluetoothUseCases.stopScan()
+            bluetoothRepository.stopScan()
         } catch (e: MissingBluetoothPermissionException) {
             e.printStackTrace()
 
@@ -96,7 +98,7 @@ class ConnectionViewModel @Inject constructor(
     }
 
     fun setConnectionType(bluetoothDevice: BluetoothDevice, newConnectionType: ConnectionType) {
-        bluetoothUseCases.updateBluetoothDevice(
+        bluetoothRepository.updateBluetoothDevice(
             bluetoothDevice.copy(type = bluetoothDevice.type.copy(connectionType = newConnectionType))
         )
     }
@@ -153,7 +155,7 @@ class ConnectionViewModel @Inject constructor(
 
     private fun getState() {
         getStateJob?.cancel()
-        getStateJob = bluetoothUseCases.getState()
+        getStateJob = bluetoothRepository.getState()
             .onEach { state ->
                 _uiState.update { it.copy(bluetoothState = state) }
 
@@ -172,7 +174,7 @@ class ConnectionViewModel @Inject constructor(
 
     private fun getScanState() {
         getScanStateJob?.cancel()
-        getScanStateJob = bluetoothUseCases.getScanState()
+        getScanStateJob = bluetoothRepository.getScanState()
             .onEach { isScanning ->
                 _uiState.update { it.copy(isScanning = isScanning) }
             }
@@ -182,7 +184,7 @@ class ConnectionViewModel @Inject constructor(
 
     private fun getDevices() {
         getDevicesJob?.cancel()
-        getDevicesJob = bluetoothUseCases.getBluetoothDevices()
+        getDevicesJob = getBluetoothDevicesUseCase()
             .onEach { devices ->
                 _uiState.update { it.copy(devices = devices) }
             }
@@ -239,7 +241,7 @@ class ConnectionViewModel @Inject constructor(
         }
 
         return if (connectionType != null) {
-            bluetoothUseCases.updateBluetoothDevice(
+            bluetoothRepository.updateBluetoothDevice(
                 device.copy(type = device.type.copy(connectionType = connectionType))
             )
 

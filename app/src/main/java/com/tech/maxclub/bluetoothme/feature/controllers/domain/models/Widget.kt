@@ -66,9 +66,7 @@ sealed class Widget<T>(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Widget<*>
+        if (other !is Widget<*>) return false
 
         if (id != other.id) return false
         if (controllerId != other.controllerId) return false
@@ -78,9 +76,7 @@ sealed class Widget<T>(
         if (size != other.size) return false
         if (enabled != other.enabled) return false
         if (position != other.position) return false
-        if (state != other.state) return false
-
-        return true
+        return state == other.state
     }
 
     override fun hashCode(): Int {
@@ -202,16 +198,12 @@ sealed class Widget<T>(
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (javaClass != other?.javaClass) return false
+            if (other !is Slider) return false
             if (!super.equals(other)) return false
-
-            other as Slider
 
             if (minValue != other.minValue) return false
             if (maxValue != other.maxValue) return false
-            if (step != other.step) return false
-
-            return true
+            return step == other.step
         }
 
         override fun hashCode(): Int {
@@ -221,7 +213,6 @@ sealed class Widget<T>(
             result = 31 * result + step
             return result
         }
-
 
         companion object {
             const val MIN_VALUE = 0

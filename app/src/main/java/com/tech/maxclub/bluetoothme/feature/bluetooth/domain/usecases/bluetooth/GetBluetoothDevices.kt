@@ -27,22 +27,4 @@ class GetBluetoothDevices @Inject constructor(
                     .thenBy { it.name }
             )
         }
-//        flowOf(
-//            (0..100).map {
-//                BluetoothDevice(
-//                    address = "Address $it",
-//                    name = "Name $it",
-//                    isBonded = true,
-//                    type = listOf(
-//                        DeviceType.Classic(ConnectionType.Classic),
-//                        DeviceType.Ble(ConnectionType.Ble()),
-//                        DeviceType.Dual(),
-//                        DeviceType.Unknown(),
-//                    ).random(),
-//                    state = BluetoothDeviceState.Disconnected,
-//                    isFavorite = false,
-//                )
-//            }
-//        )
-//            .flowOn(Dispatchers.IO)
 }
