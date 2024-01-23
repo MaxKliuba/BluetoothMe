@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.models.Widget
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.models.WidgetSize
-import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.ButtonWidget
+import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.EmptyWidget
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SliderWidget
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.SwitchWidget
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.util.components.widgets.TextWidget
@@ -35,8 +35,8 @@ fun WidgetList(
     onAddWidget: () -> Unit,
     onChangeWidgetSize: (Widget<*>, WidgetSize) -> Unit,
     onChangeWidgetEnable: (Widget<*>, Boolean) -> Unit,
-    onReorderWidget: (Int, Int) -> Unit,
-    onApplyChangedWidgetPositions: () -> Unit,
+    onReorderLocalWidgets: (fromIndex: Int, toIndex: Int) -> Unit,
+    onApplyWidgetsReorder: () -> Unit,
     onEditWidget: (Int, Int) -> Unit,
     onDeleteWidget: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -44,7 +44,10 @@ fun WidgetList(
     val haptic = LocalHapticFeedback.current
     val state = rememberReorderableLazyGridState(
         onMove = { from, to ->
-            onReorderWidget(from.index, to.index)
+            onReorderLocalWidgets(from.index, to.index)
+        },
+        onDragEnd = { _, _ ->
+            onApplyWidgetsReorder()
         }
     )
     var isDragging by remember { mutableStateOf(false) }
@@ -73,8 +76,6 @@ fun WidgetList(
 
                     if (isDraggingFlag) {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    } else {
-                        onApplyChangedWidgetPositions()
                     }
                 }
 

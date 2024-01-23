@@ -23,14 +23,17 @@ fun ControllerList(
     onShareController: (Int) -> Unit,
     onSelectController: (Int) -> Unit,
     onUnselectController: () -> Unit,
-    onReorderController: (Int, Int) -> Unit,
-    onApplyChangedControllerPositions: () -> Unit,
+    onReorderLocalControllers: (fromIndex: Int, toIndex: Int) -> Unit,
+    onApplyControllersReorder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
     val state = rememberReorderableLazyListState(
         onMove = { from, to ->
-            onReorderController(from.index, to.index)
+            onReorderLocalControllers(from.index, to.index)
+        },
+        onDragEnd = { _, _ ->
+            onApplyControllersReorder()
         }
     )
 
@@ -56,8 +59,6 @@ fun ControllerList(
                     if (isDraggingFlag) {
                         onSelectController(controller.controller.id)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    } else {
-                        onApplyChangedControllerPositions()
                     }
                 }
 

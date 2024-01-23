@@ -119,18 +119,21 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun swapWidgets(fromPosition: Int, toPosition: Int) {
+    fun reorderLocalWidgets(fromIndex: Int, toIndex: Int) {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             try {
-                val newCurrentItem = state.widgets[fromPosition].copy(position = toPosition)
-                val newOtherItem = state.widgets[toPosition].copy(position = fromPosition)
+                val fromItem = state.widgets[fromIndex]
+                val toItem = state.widgets[toIndex]
+
+                val newFromItem = fromItem.copy(position = toItem.position)
+                val newToItem = toItem.copy(position = fromItem.position)
 
                 _uiState.update {
                     state.copy(
                         widgets = state.widgets.toMutableList().apply {
-                            set(fromPosition, newCurrentItem)
-                            set(toPosition, newOtherItem)
-                        }.sortedWith(getControllerWithWidgetsUseCase.comparator)
+                            set(toIndex, newFromItem)
+                            set(fromIndex, newToItem)
+                        }
                     )
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -139,7 +142,7 @@ class AddEditControllerViewModel @Inject constructor(
         }
     }
 
-    fun applyChangedWidgetPositions() {
+    fun applyWidgetsReorder() {
         (_uiState.value as? AddEditControllerUiState.Success)?.let { state ->
             swapWidgetsJob?.cancel()
             swapWidgetsJob = viewModelScope.launch {

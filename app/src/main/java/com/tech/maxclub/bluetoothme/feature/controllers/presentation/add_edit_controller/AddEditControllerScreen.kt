@@ -113,8 +113,8 @@ fun AddEditControllerScreen(
                             },
                             onChangeWidgetSize = viewModel::updateWidgetSize,
                             onChangeWidgetEnable = viewModel::updateWidgetEnable,
-                            onReorderWidget = viewModel::swapWidgets,
-                            onApplyChangedWidgetPositions = viewModel::applyChangedWidgetPositions,
+                            onReorderLocalWidgets = viewModel::reorderLocalWidgets,
+                            onApplyWidgetsReorder = viewModel::applyWidgetsReorder,
                             onEditWidget = { widgetId, columnsCount ->
                                 onNavigateToAddEditWidget(widgetId, false, columnsCount)
                             },

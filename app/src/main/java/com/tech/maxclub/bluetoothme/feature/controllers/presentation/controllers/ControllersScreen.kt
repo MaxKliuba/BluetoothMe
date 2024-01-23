@@ -34,12 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.journeyapps.barcodescanner.ScanContract
 import com.tech.maxclub.bluetoothme.R
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.AddControllerFab
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
-import com.journeyapps.barcodescanner.ScanContract
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -198,8 +198,8 @@ fun ControllerListScreen(
                     onShareController = onNavigateToShareController,
                     onSelectController = viewModel::setSelectedController,
                     onUnselectController = { viewModel.setSelectedController(null) },
-                    onReorderController = viewModel::swapControllers,
-                    onApplyChangedControllerPositions = viewModel::applyChangedControllerPositions,
+                    onReorderLocalControllers = viewModel::reorderLocalControllers,
+                    onApplyControllersReorder = viewModel::applyControllersReorder,
                     modifier = Modifier.fillMaxSize()
                 )
             }

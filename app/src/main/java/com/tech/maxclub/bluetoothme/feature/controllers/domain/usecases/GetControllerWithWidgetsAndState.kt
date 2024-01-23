@@ -11,7 +11,6 @@ class GetControllerWithWidgetsAndState @Inject constructor(
     private val controllerRepository: ControllerRepository,
     private val getMessageTagsToValues: GetMessageTagsToValues,
 ) {
-
     operator fun invoke(controllerId: Int): Flow<ControllerWithWidgets> =
         controllerRepository.getControllerWithWidgetsById(controllerId)
             .combine(getMessageTagsToValues()) { controllerWithWidgets, messageTagsToValues ->

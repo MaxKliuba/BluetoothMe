@@ -6,12 +6,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.journeyapps.barcodescanner.ScanOptions
 import com.tech.maxclub.bluetoothme.core.util.sendIn
 import com.tech.maxclub.bluetoothme.core.util.update
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.models.share.ControllerWithWidgetsJson
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.repositories.ControllerRepository
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.usecases.GetControllersWithWidgetCount
-import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -117,21 +117,24 @@ class ControllersViewModel @Inject constructor(
         _uiState.update { it.copy(selectedControllerId = controllerId) }
     }
 
-    fun swapControllers(fromPosition: Int, toPosition: Int) {
+    fun reorderLocalControllers(fromIndex: Int, toIndex: Int) {
         try {
-            val newCurrentItem = _uiState.value.controllers[fromPosition].let {
-                it.copy(controller = it.controller.copy(position = toPosition))
-            }
-            val newOtherItem = _uiState.value.controllers[toPosition].let {
-                it.copy(controller = it.controller.copy(position = fromPosition))
-            }
+            val fromItem = _uiState.value.controllers[fromIndex]
+            val toItem = _uiState.value.controllers[toIndex]
+
+            val newFromItem = fromItem.copy(
+                controller = fromItem.controller.copy(position = toItem.controller.position)
+            )
+            val newToItem = toItem.copy(
+                controller = toItem.controller.copy(position = fromItem.controller.position)
+            )
 
             _uiState.update {
                 it.copy(
                     controllers = it.controllers.toMutableList().apply {
-                        set(fromPosition, newCurrentItem)
-                        set(toPosition, newOtherItem)
-                    }.sortedWith(getControllersWithWidgetCountUseCase.comparator)
+                        set(toIndex, newFromItem)
+                        set(fromIndex, newToItem)
+                    }
                 )
             }
         } catch (e: IndexOutOfBoundsException) {
@@ -139,7 +142,7 @@ class ControllersViewModel @Inject constructor(
         }
     }
 
-    fun applyChangedControllerPositions() {
+    fun applyControllersReorder() {
         swapControllersJob?.cancel()
         swapControllersJob = viewModelScope.launch {
             controllerRepository.updateControllers(
