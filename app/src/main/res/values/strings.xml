@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BluetoothMe</string>
+    <string name="app_name" translatable="false">BluetoothMe</string>
 
     <string name="connection_screen_title">Connection</string>
     <string name="controllers_screen_title">My Controllers</string>
@@ -34,33 +34,33 @@
     <string name="start_scan_button">Scan</string>
     <string name="stop_scan_button">Stop</string>
     <string name="bluetooth_settings_button">Bluetooth Settings</string>
-    <string name="bluetooth_classic_device">Bluetooth Classic</string>
-    <string name="bluetooth_le_device">Bluetooth LE</string>
-    <string name="bluetooth_dual_device">Bluetooth Dual</string>
-    <string name="bluetooth_unknown_device">Bluetooth Unknown</string>
+    <string name="bluetooth_classic_device" translatable="false">Bluetooth Classic</string>
+    <string name="bluetooth_le_device" translatable="false">Bluetooth LE</string>
+    <string name="bluetooth_dual_device" translatable="false">Bluetooth Dual</string>
+    <string name="bluetooth_unknown_device" translatable="false">Bluetooth Unknown</string>
     <string name="favorite_label">Favorite</string>
     <string name="state_bonded_device">Paired</string>
     <string name="state_not_bonded_device">Not paired</string>
-    <string name="bluetooth_classic">Classic</string>
-    <string name="bluetooth_le">BLE</string>
+    <string name="bluetooth_classic" translatable="false">Classic</string>
+    <string name="bluetooth_le" translatable="false">BLE</string>
     <string name="bluetooth_permission_dialog_title">This app would like to use Bluetooth</string>
-    <string name="bluetooth_permission_dialog_text">Used to scan, connect, and transfer data</string>
+    <string name="bluetooth_permission_dialog_text">Used to scan, connect, and transfer data.</string>
     <string name="allow_in_settings_button">Allow in Settings</string>
-    <string name="connection_error_message">Failed to connect to %1$s</string>
+    <string name="connection_error_message">Failed to connect to %1$s.</string>
     <string name="reconnect_button">Reconnect</string>
     <string name="bluetooth_le_profile_title">Bluetooth LE Profile</string>
     <string name="ble_profile_default_button">Default</string>
     <string name="ble_profile_custom_button">Custom</string>
-    <string name="service_uuid_hint">Service UUID</string>
-    <string name="read_characteristic_uuid_hint">Read characteristic UUID</string>
-    <string name="write_characteristic_uuid_hint">Write characteristic UUID</string>
+    <string name="service_uuid_hint" translatable="false">Service UUID</string>
+    <string name="read_characteristic_uuid_hint" translatable="false">Read characteristic UUID</string>
+    <string name="write_characteristic_uuid_hint" translatable="false">Write characteristic UUID</string>
     <string name="ble_profile_dialog_confirm_button">OK</string>
 
     <string name="delete_messages_button">Delete messages</string>
     <string name="message_placeholder">Message</string>
     <string name="send_button">Send</string>
     <string name="error_label">Error</string>
-    <string name="send_error_message">Failed to send message</string>
+    <string name="send_error_message">Failed to send message.</string>
     <string name="connect_button">Connect</string>
     <string name="messages_count_text">Input messages: %1$d\nOutput messages: %2$d</string>
     <string name="clear_button">Clear</string>
@@ -72,11 +72,11 @@
     <string name="share_controller_button">Share Controller</string>
     <string name="delete_controller_button">Delete Controller</string>
     <string name="edit_controller_button">Edit Controller</string>
-    <string name="controller_deleted_message">Controller deleted</string>
-    <string name="camera_is_unavailable_message">The camera is unavailable</string>
+    <string name="controller_deleted_message">Controller deleted.</string>
+    <string name="camera_is_unavailable_message">The camera is unavailable.</string>
     <string name="camera_permission_dialog_title">This app would like to use the camera</string>
-    <string name="camera_permission_dialog_text">Used to scan QR codes</string>
-    <string name="json_decoding_error_message">Failed to add Controller</string>
+    <string name="camera_permission_dialog_text">Used to scan QR codes.</string>
+    <string name="json_decoding_error_message">Failed to add Controller.</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
         <item quantity="other">%1$d widgets</item>
@@ -85,10 +85,10 @@
     <string name="save_as_file_button">Save as File</string>
     <string name="qr_code_error_message">QR code is unavailable</string>
     <string name="storage_permission_dialog_title">This app would like to access the storage</string>
-    <string name="storage_permission_dialog_text">Used to save Controllers as files</string>
-    <string name="json_successfully_saved_message">Successfully saved to %1$s</string>
-    <string name="json_saving_error_message">Failed to save</string>
-    <string name="sharing_error_message">Failed to share</string>
+    <string name="storage_permission_dialog_text">Used to save Controllers as files.</string>
+    <string name="json_successfully_saved_message">Successfully saved to %1$s.</string>
+    <string name="json_saving_error_message">Failed to save.</string>
+    <string name="sharing_error_message">Failed to share.</string>
 
     <string name="controller_title_placeholder">New Controller</string>
     <string name="with_accelerometer_button">With Accelerometer</string>
@@ -100,7 +100,7 @@
     <string name="enabled_button">Enabled</string>
     <string name="edit_widget_button">Edit Widget</string>
     <string name="columns_count_button">Number of columns</string>
-    <string name="widget_deleted_message">Widget deleted</string>
+    <string name="widget_deleted_message">Widget deleted.</string>
 
     <string name="widget_title_label">Widget Title</string>
     <string name="message_tag_label">Message Tag</string>
@@ -109,7 +109,13 @@
     <string name="dec_value_button">Minus</string>
     <string name="inc_value_button">Plus</string>
 
-    <string name="widget_icons__no_icon">None</string>
+    <string name="widget_type_empty">EMPTY</string>
+    <string name="widget_type_button">BUTTON</string>
+    <string name="widget_type_switch">SWITCH</string>
+    <string name="widget_type_slider">SLIDER</string>
+    <string name="widget_type_text">TEXT</string>
+
+    <string name="widget_icons__no_icon" translatable="false">None</string>
     <string name="widget_icons__arrow_up" translatable="false">Arrow up</string>
     <string name="widget_icons__arrow_down" translatable="false">Arrow down</string>
     <string name="widget_icons__arrow_left" translatable="false">Arrow left</string>

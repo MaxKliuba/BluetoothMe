@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connection_screen_title">З\'єднання</string>
+    <string name="controllers_screen_title">Мої Контролери</string>
+    <string name="chat_screen_title">Чат</string>
+    <string name="quickstart_screen_title">Короткий посібник</string>
+
+    <string name="menu_button">Меню</string>
+    <string name="back_button">Назад</string>
+    <string name="close_button">Закрити</string>
+    <string name="done_button">Готово</string>
+    <string name="undo_button">Відмінити</string>
+
+    <string name="turning_off_state">Вимкнення</string>
+    <string name="turned_off_state">Вимкнено</string>
+    <string name="turning_on_state">Увімкнення</string>
+    <string name="connecting_state">Під\'єднання</string>
+    <string name="connected_state">Під\'єднано</string>
+    <string name="disconnecting_state">Від\'єднання</string>
+    <string name="disconnected_state">Від\'єднано</string>
+
+    <string name="turning_off_message">Вимкнення Bluetooth</string>
+    <string name="turned_off_message">Bluetooth вимкнено</string>
+    <string name="turning_on_message">Увімкнення Bluetooth</string>
+    <string name="connecting_message">Під\'єднання до %1$s (%2$s)</string>
+    <string name="connected_message">Під\'єднано до %1$s (%2$s)</string>
+    <string name="disconnecting_message">Від\'єднання від %1$s (%2$s)</string>
+    <string name="disconnected_message">Від\'єднано</string>
+
+    <string name="bluetooth_is_disabled_message">Bluetooth вимкнено</string>
+    <string name="enable_bluetooth_button">Увімкнути</string>
+    <string name="empty_list_message">Список порожній</string>
+    <string name="start_scan_button">Шукати</string>
+    <string name="stop_scan_button">Стоп</string>
+    <string name="bluetooth_settings_button">Налаштування Bluetooth</string>
+    <string name="favorite_label">Улюблений</string>
+    <string name="state_bonded_device">Спарений</string>
+    <string name="state_not_bonded_device">Не спарений</string>
+    <string name="bluetooth_permission_dialog_title">Цей застосунок хоче використовувати Bluetooth</string>
+    <string name="bluetooth_permission_dialog_text">Використовується для пошуку, з’єднання та передачі даних.</string>
+    <string name="allow_in_settings_button">Дозволити у Налаштуваннях</string>
+    <string name="connection_error_message">Не вдалося під\'єднатися до %1$s.</string>
+    <string name="reconnect_button">Повторити</string>
+    <string name="bluetooth_le_profile_title">Профіль Bluetooth LE</string>
+    <string name="ble_profile_default_button">За замовчу-\nванням</string>
+    <string name="ble_profile_custom_button">Користу-\nвацькі</string>
+    <string name="ble_profile_dialog_confirm_button">Готово</string>
+
+    <string name="delete_messages_button">Видалити повідомлення</string>
+    <string name="message_placeholder">Повідомлення</string>
+    <string name="send_button">Надіслати</string>
+    <string name="error_label">Помилка</string>
+    <string name="send_error_message">Не вдалося надіслати повідомлення.</string>
+    <string name="connect_button">Під\'єднатися</string>
+    <string name="messages_count_text">Вхідні повідомлення: %1$d\nВихідні повідомлення: %2$d</string>
+    <string name="clear_button">Очистити</string>
+
+    <string name="add_new_controller_button">Додати новий Контролер</string>
+    <string name="create_manually_button">Створити вручну</string>
+    <string name="open_file_button">Відкрити файл</string>
+    <string name="scan_qr_code_button">Сканувати QR-код</string>
+    <string name="share_controller_button">Поділитися Контролером</string>
+    <string name="delete_controller_button">Видалити Контролер</string>
+    <string name="edit_controller_button">Редагувати Контролер</string>
+    <string name="controller_deleted_message">Контролер видалено.</string>
+    <string name="camera_is_unavailable_message">Камера недоступна.</string>
+    <string name="camera_permission_dialog_title">Цей застосунок хоче використовувати камеру</string>
+    <string name="camera_permission_dialog_text">Використовується для сканування QR-кодів.</string>
+    <string name="json_decoding_error_message">Не вдалося додати Контролер.</string>
+    <plurals name="widget_plural">
+        <item quantity="one">%1$d віджет</item>
+        <item quantity="few">%1$d віджети</item>
+        <item quantity="many">%1$d віджетів</item>
+    </plurals>
+
+    <string name="save_as_file_button">Зберегти як файл</string>
+    <string name="qr_code_error_message">QR-код недоступний</string>
+    <string name="storage_permission_dialog_title">Цей застосунок хоче отримати доступ до сховища</string>
+    <string name="storage_permission_dialog_text">Використовується для збереження Контролерів.</string>
+    <string name="json_successfully_saved_message">Успішно збережено у %1$s.</string>
+    <string name="json_saving_error_message">Не вдалося зберегти.</string>
+    <string name="sharing_error_message">Не вдалося поділитися.</string>
+
+    <string name="controller_title_placeholder">Новий Контролер</string>
+    <string name="with_accelerometer_button">З акселерометром</string>
+    <string name="with_voice_input_button">З голосовим введенням</string>
+    <string name="with_refresh_button">З оновленням стану</string>
+    <string name="add_new_widget_button">Додати новий Віджет</string>
+    <string name="change_size_button">Змінити розмір</string>
+    <string name="delete_widget_button">Видалити Віджет</string>
+    <string name="enabled_button">Доступ</string>
+    <string name="edit_widget_button">Редагувати Віджет</string>
+    <string name="columns_count_button">Кількість стовпців</string>
+    <string name="widget_deleted_message">Віджет видалено.</string>
+
+    <string name="widget_title_label">Назва Віджета</string>
+    <string name="message_tag_label">Теґ повідомлення</string>
+    <string name="slider_range_label">Діапазон</string>
+    <string name="slider_step_label">Крок</string>
+    <string name="dec_value_button">Зменшити</string>
+    <string name="inc_value_button">Збільшити</string>
+
+    <string name="widget_type_empty">ПОРОЖНІЙ</string>
+    <string name="widget_type_button">КНОПКА</string>
+    <string name="widget_type_switch">ПЕРЕМИКАЧ</string>
+    <string name="widget_type_slider">ПОВЗУНОК</string>
+    <string name="widget_type_text">ТЕКСТ</string>
+</resources>

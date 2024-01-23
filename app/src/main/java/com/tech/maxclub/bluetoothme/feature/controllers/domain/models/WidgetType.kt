@@ -1,13 +1,15 @@
 package com.tech.maxclub.bluetoothme.feature.controllers.domain.models
 
+import androidx.annotation.StringRes
+import com.tech.maxclub.bluetoothme.R
 import kotlin.reflect.KClass
 
-enum class WidgetType {
-    EMPTY,
-    BUTTON,
-    SWITCH,
-    SLIDER,
-    TEXT,
+enum class WidgetType(@StringRes val titleResId: Int) {
+    EMPTY(R.string.widget_type_empty),
+    BUTTON(R.string.widget_type_button),
+    SWITCH(R.string.widget_type_switch),
+    SLIDER(R.string.widget_type_slider),
+    TEXT(R.string.widget_type_text),
     // Append new here
 }
 

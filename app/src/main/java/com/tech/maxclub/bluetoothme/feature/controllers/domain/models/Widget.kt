@@ -66,7 +66,9 @@ sealed class Widget<T>(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Widget<*>) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as Widget<*>
 
         if (id != other.id) return false
         if (controllerId != other.controllerId) return false
@@ -91,6 +93,7 @@ sealed class Widget<T>(
         result = 31 * result + (state?.hashCode() ?: 0)
         return result
     }
+
 
     class Empty(
         id: Int = 0,
@@ -198,8 +201,10 @@ sealed class Widget<T>(
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is Slider) return false
+            if (javaClass != other?.javaClass) return false
             if (!super.equals(other)) return false
+
+            other as Slider
 
             if (minValue != other.minValue) return false
             if (maxValue != other.maxValue) return false

@@ -49,18 +49,17 @@ fun BleProfileDialog(
                     BleProfileType.values().forEach {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
                         ) {
                             RadioButton(
                                 selected = it == data.selectedBleProfileType,
                                 onClick = {
-                                    onChangeBleProfileData(
-                                        data.copy(selectedBleProfileType = it)
-                                    )
+                                    onChangeBleProfileData(data.copy(selectedBleProfileType = it))
                                 },
                             )
                             Text(text = stringResource(id = it.titleResId))
-                            Spacer(modifier = Modifier.width(16.dp))
                         }
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                 }
 

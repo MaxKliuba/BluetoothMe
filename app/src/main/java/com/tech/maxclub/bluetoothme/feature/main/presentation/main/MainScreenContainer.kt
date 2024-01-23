@@ -139,11 +139,7 @@ fun MainScreenContainer() {
                 is MainUiAction.ShowSendingErrorMessage -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.send_error_message),
-                        actionLabel = if (action.device != null) {
-                            context.getString(R.string.reconnect_button)
-                        } else {
-                            context.getString(R.string.connect_button)
-                        },
+                        actionLabel = context.getString(R.string.connect_button),
                         withDismissAction = true,
                         duration = SnackbarDuration.Short,
                     ).let { result ->

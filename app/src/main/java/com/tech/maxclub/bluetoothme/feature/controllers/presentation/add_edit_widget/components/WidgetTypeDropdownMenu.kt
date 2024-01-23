@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.models.WidgetType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +34,7 @@ fun WidgetTypeDropdownMenu(
             onExpandedChange = onExpandedChange,
         ) {
             TextField(
-                value = selectedWidgetType.name,
+                value = stringResource(id = selectedWidgetType.titleResId),
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
@@ -49,7 +50,7 @@ fun WidgetTypeDropdownMenu(
                 widgetTypes.forEach { widgetType ->
                     DropdownMenuItem(
                         text = {
-                            Text(text = widgetType.name)
+                            Text(text = stringResource(id = widgetType.titleResId))
                         },
                         onClick = {
                             onSelectWidgetType(widgetType)
