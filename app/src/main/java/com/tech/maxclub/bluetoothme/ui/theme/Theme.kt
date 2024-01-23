@@ -10,21 +10,62 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Color(0xffa4c9ff),
+    onPrimary = Color(0xff00315d),
+    primaryContainer = Color(0xff004884),
+    onPrimaryContainer = Color(0xffd4e3ff),
+    secondary = Color(0xffbcc7db),
+    onSecondary = Color(0xff263141),
+    secondaryContainer = Color(0xff3d4758),
+    onSecondaryContainer = Color(0xffd8e3f8),
+    tertiary = Color(0xfff6bf00),
+    onTertiary = Color(0xff3e2e00),
+    tertiaryContainer = Color(0xff5a4400),
+    onTertiaryContainer = Color(0xffffdf96),
+    error = Color(0xffffb4ab),
+    onError = Color(0xff690005),
+    errorContainer = Color(0xff93000a),
+    onErrorContainer = Color(0xffffdad6),
+    background = Color(0xff1a1c1e),
+    onBackground = Color(0xffe3e2e6),
+    surface = Color(0xff1a1c1e),
+    onSurface = Color(0xffe3e2e6),
+    outline = Color(0xff8d9199),
+    surfaceVariant = Color(0xff43474e),
+    onSurfaceVariant = Color(0xffc3c6cf),
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = Color(0xff005fac),
+    onPrimary = Color(0xffffffff),
+    primaryContainer = Color(0xffd4e3ff),
+    onPrimaryContainer = Color(0xff001c39),
+    secondary = Color(0xff545f71),
+    onSecondary = Color(0xffffffff),
+    secondaryContainer = Color(0xffd8e3f8),
+    onSecondaryContainer = Color(0xff111c2b),
+    tertiary = Color(0xff765a00),
+    onTertiary = Color(0xffffffff),
+    tertiaryContainer = Color(0xffffdf96),
+    onTertiaryContainer = Color(0xff251a00),
+    error = Color(0xffba1a1a),
+    onError = Color(0xffffffff),
+    errorContainer = Color(0xffffdad6),
+    onErrorContainer = Color(0xff410002),
+    background = Color(0xfffdfcff),
+    onBackground = Color(0xff1a1c1e),
+    surface = Color(0xfffdfcff),
+    onSurface = Color(0xff1a1c1e),
+    outline = Color(0xff73777f),
+    surfaceVariant = Color(0xffdfe2eb),
+    onSurfaceVariant = Color(0xff43474e),
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -49,6 +90,7 @@ fun BluetoothMeTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
