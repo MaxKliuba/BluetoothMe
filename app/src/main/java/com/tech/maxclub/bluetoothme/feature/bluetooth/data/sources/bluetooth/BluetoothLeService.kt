@@ -3,24 +3,19 @@ package com.tech.maxclub.bluetoothme.feature.bluetooth.data.sources.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
+import com.tech.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
+import com.tech.maxclub.bluetoothme.core.exceptions.WriteMessageException
+import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothDeviceState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothState
+import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toMessage
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothLeProfileManager
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothService
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.*
-import com.tech.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
-import com.tech.maxclub.bluetoothme.core.exceptions.WriteMessageException
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessagesDataSource
-import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
-import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toMessage
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDeviceState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +30,7 @@ class BluetoothLeService @Inject constructor(
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {
 
-    private val adapter: BluetoothAdapter
+    private val adapter: BluetoothAdapter?
         get() = bluetoothAdapterManager.adapter
 
     private var bluetoothDevice: BluetoothDevice? = null
@@ -46,7 +41,7 @@ class BluetoothLeService @Inject constructor(
     private var payloadSize: Int = DEFAULT_MTU - 3
 
     private val bluetoothStateFlow: MutableStateFlow<BluetoothState> = MutableStateFlow(
-        adapter.state.toBluetoothState()
+        bluetoothAdapterManager.initialState
     )
 
     private val gattCallback = object : BluetoothGattCallback() {
@@ -196,13 +191,13 @@ class BluetoothLeService @Inject constructor(
         }
 
         val remoteDevice = try {
-            adapter.getRemoteDevice(device.address)
+            adapter?.getRemoteDevice(device.address)
         } catch (iae: IllegalArgumentException) {
             throw BluetoothConnectionException(device)
         }
 
         withCheckSelfBluetoothPermission(context) {
-            bluetoothGatt = remoteDevice.connectGatt(context, false, gattCallback)
+            bluetoothGatt = remoteDevice?.connectGatt(context, false, gattCallback)
         }
 
         if (bluetoothGatt == null) {

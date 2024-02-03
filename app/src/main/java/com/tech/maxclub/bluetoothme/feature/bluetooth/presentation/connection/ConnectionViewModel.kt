@@ -4,7 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.maxclub.bluetoothme.core.exceptions.EnableLocationException
 import com.tech.maxclub.bluetoothme.core.exceptions.MissingBluetoothPermissionException
+import com.tech.maxclub.bluetoothme.core.exceptions.MissingLocationPermissionException
 import com.tech.maxclub.bluetoothme.core.util.sendIn
 import com.tech.maxclub.bluetoothme.core.util.toUuidOrElse
 import com.tech.maxclub.bluetoothme.core.util.update
@@ -41,6 +43,8 @@ class ConnectionViewModel @Inject constructor(
             devices = emptyList(),
             isScanning = bluetoothRepository.getScanState().value,
             bleProfileDialogData = null,
+            missingLocationPermissions = emptyList(),
+            isLocationPermissionRationaleDialogVisible = false,
         )
     )
     val uiState: State<ConnectionUiState> = _uiState
@@ -60,6 +64,31 @@ class ConnectionViewModel @Inject constructor(
         startScan()
     }
 
+    fun showLocationPermissionsDialog(vararg permissions: String) {
+        _uiState.update { it.copy(missingLocationPermissions = permissions.toList()) }
+    }
+
+    fun dismissLocationPermissionsDialog() {
+        _uiState.update { it.copy(missingLocationPermissions = emptyList()) }
+    }
+
+    fun requestMissingLocationPermissions(vararg permissions: String) {
+        dismissLocationPermissionsDialog()
+
+        uiActionChannel.sendIn(
+            ConnectionUiAction.RequestMissingLocationPermissions(*permissions),
+            viewModelScope
+        )
+    }
+
+    fun showLocationPermissionRationaleDialog() {
+        _uiState.update { it.copy(isLocationPermissionRationaleDialogVisible = true) }
+    }
+
+    fun dismissLocationPermissionRationaleDialog() {
+        _uiState.update { it.copy(isLocationPermissionRationaleDialogVisible = false) }
+    }
+
     fun startScan() {
         if (getDevicesJob?.isActive != true) {
             getDevices()
@@ -73,7 +102,21 @@ class ConnectionViewModel @Inject constructor(
                 e.printStackTrace()
 
                 uiActionChannel.sendIn(
-                    ConnectionUiAction.RequestMissingPermissions(*e.permissions),
+                    ConnectionUiAction.RequestMissingBluetoothPermissions(*e.permissions),
+                    viewModelScope
+                )
+            } catch (e: MissingLocationPermissionException) {
+                e.printStackTrace()
+
+                uiActionChannel.sendIn(
+                    ConnectionUiAction.ShowMissingLocationPermissionsDialog(*e.permissions),
+                    viewModelScope
+                )
+            } catch (e: EnableLocationException) {
+                e.printStackTrace()
+
+                uiActionChannel.sendIn(
+                    ConnectionUiAction.LaunchLocationEnableIntent(e.intent),
                     viewModelScope
                 )
             }
@@ -87,7 +130,14 @@ class ConnectionViewModel @Inject constructor(
             e.printStackTrace()
 
             uiActionChannel.sendIn(
-                ConnectionUiAction.RequestMissingPermissions(*e.permissions),
+                ConnectionUiAction.RequestMissingBluetoothPermissions(*e.permissions),
+                viewModelScope
+            )
+        } catch (e: MissingLocationPermissionException) {
+            e.printStackTrace()
+
+            uiActionChannel.sendIn(
+                ConnectionUiAction.ShowMissingLocationPermissionsDialog(*e.permissions),
                 viewModelScope
             )
         }
@@ -193,7 +243,7 @@ class ConnectionViewModel @Inject constructor(
 
                 if (e is MissingBluetoothPermissionException) {
                     uiActionChannel.sendIn(
-                        ConnectionUiAction.RequestMissingPermissions(*e.permissions),
+                        ConnectionUiAction.RequestMissingBluetoothPermissions(*e.permissions),
                         viewModelScope
                     )
                 }

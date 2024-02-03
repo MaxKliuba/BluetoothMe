@@ -9,6 +9,8 @@ data class ConnectionUiState(
     val devices: List<BluetoothDevice>,
     val isScanning: Boolean,
     val bleProfileDialogData: BleProfileDialogData?,
+    val missingLocationPermissions: List<String>,
+    val isLocationPermissionRationaleDialogVisible: Boolean,
 ) {
     val isLoading: Boolean
         get() = isScanning ||

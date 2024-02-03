@@ -7,23 +7,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.tech.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
+import com.tech.maxclub.bluetoothme.core.exceptions.WriteMessageException
+import com.tech.maxclub.bluetoothme.core.util.getParcelable
+import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothDeviceState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothState
+import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toMessage
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothService
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.*
-import com.tech.maxclub.bluetoothme.core.exceptions.BluetoothConnectionException
-import com.tech.maxclub.bluetoothme.core.exceptions.WriteMessageException
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.messages.Message
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.messages.MessagesDataSource
-import com.tech.maxclub.bluetoothme.core.util.getParcelable
-import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
-import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toMessage
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDeviceState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.ConnectionType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -45,7 +41,7 @@ class BluetoothClassicService @Inject constructor(
     private val messagesDataSource: MessagesDataSource,
 ) : BluetoothService {
 
-    private val adapter: BluetoothAdapter
+    private val adapter: BluetoothAdapter?
         get() = bluetoothAdapterManager.adapter
 
     private var socket: BluetoothSocket? = null
@@ -53,7 +49,7 @@ class BluetoothClassicService @Inject constructor(
         get() = socket?.remoteDevice
 
     private val bluetoothStateFlow: MutableStateFlow<BluetoothState> = MutableStateFlow(
-        adapter.state.toBluetoothState()
+        bluetoothAdapterManager.initialState
     )
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -119,8 +115,8 @@ class BluetoothClassicService @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 socket = withCheckSelfBluetoothPermission(context) {
-                    adapter.getRemoteDevice(device.address)
-                        .createRfcommSocketToServiceRecord(uuid)
+                    adapter?.getRemoteDevice(device.address)
+                        ?.createRfcommSocketToServiceRecord(uuid)
                 }
                 bluetoothStateFlow.value = BluetoothState.On.Connecting(
                     device.copy(state = BluetoothDeviceState.Connecting)

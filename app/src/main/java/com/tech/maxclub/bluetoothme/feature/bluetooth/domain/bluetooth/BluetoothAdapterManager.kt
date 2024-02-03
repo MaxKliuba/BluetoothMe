@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothAdapter
 
 interface BluetoothAdapterManager : BluetoothStateObserver {
 
-    val adapter: BluetoothAdapter
+    val adapter: BluetoothAdapter?
 
     fun enable()
 }

@@ -7,10 +7,11 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
-import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothDeviceService
+import com.tech.maxclub.bluetoothme.core.util.withCheckLocationAccess
 import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
 import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothScanPermission
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
+import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothDeviceService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -26,11 +27,11 @@ class BluetoothDeviceServiceWithBleScanner @Inject constructor(
     private val bluetoothAdapterManager: BluetoothAdapterManager,
 ) : BluetoothDeviceService {
 
-    private val adapter: BluetoothAdapter
+    private val adapter: BluetoothAdapter?
         get() = bluetoothAdapterManager.adapter
 
     private val bluetoothLeScanner: BluetoothLeScanner?
-        get() = adapter.bluetoothLeScanner
+        get() = adapter?.bluetoothLeScanner
 
     private val scannedDevices: MutableStateFlow<List<BluetoothDevice>> =
         MutableStateFlow(emptyList())
@@ -56,7 +57,7 @@ class BluetoothDeviceServiceWithBleScanner @Inject constructor(
     @SuppressLint("MissingPermission")
     override fun getBondedDevices(): Flow<List<BluetoothDevice>> = flow {
         withCheckSelfBluetoothPermission(context) {
-            emit(adapter.bondedDevices.toList())
+            emit(adapter?.bondedDevices?.toList() ?: emptyList())
         }
     }
 
@@ -67,11 +68,13 @@ class BluetoothDeviceServiceWithBleScanner @Inject constructor(
     @SuppressLint("MissingPermission")
     override suspend fun startScan(duration: Long) {
         scannedDevices.value = emptyList()
-        if (adapter.isEnabled) {
+        if (adapter?.isEnabled == true) {
             withCheckSelfBluetoothScanPermission(context) {
-                bluetoothLeScanner?.startScan(bleScanCallback)
-                scanStateFlow.value = true
-                delay(duration * 1000)
+                withCheckLocationAccess(context) {
+                    bluetoothLeScanner?.startScan(bleScanCallback)
+                    scanStateFlow.value = true
+                    delay(duration * 1000)
+                }
             }
         }
         stopScan()
@@ -79,10 +82,10 @@ class BluetoothDeviceServiceWithBleScanner @Inject constructor(
 
     @SuppressLint("MissingPermission")
     override fun stopScan() {
-        if (adapter.isEnabled) {
+        if (adapter?.isEnabled == true) {
             withCheckSelfBluetoothScanPermission(context) {
                 bluetoothLeScanner?.stopScan(bleScanCallback)
-                adapter.cancelDiscovery()
+                adapter?.cancelDiscovery()
             }
         }
         scanStateFlow.value = false

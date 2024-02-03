@@ -105,7 +105,7 @@ fun MainScreenContainer() {
                     val permissions = action.permissions.toList().toTypedArray()
 
                     when {
-                        action.permissions.toList().toTypedArray().any { permission ->
+                        permissions.any { permission ->
                             ActivityCompat.shouldShowRequestPermissionRationale(
                                 context as Activity,
                                 permission
@@ -145,9 +145,7 @@ fun MainScreenContainer() {
                     ).let { result ->
                         if (result == SnackbarResult.ActionPerformed) {
                             action.device?.let { viewModel.connectBluetoothDevice(it) }
-                                ?: navController.navigate(Screen.Connection.route) {
-                                    launchSingleTop = true
-                                }
+                                ?: navController.navigate(Screen.Connection.route)
                         }
                     }
                 }
@@ -282,7 +280,7 @@ fun MainScreenContainer() {
             ) {
                 composable(route = Screen.Connection.route) {
                     ConnectionScreen(
-                        onRequestMissingPermissions = viewModel::requestMissingPermissions,
+                        onRequestMissingBluetoothPermissions = viewModel::requestMissingPermissions,
                         onEnableAdapter = viewModel::enableBluetoothAdapter,
                         onConnect = viewModel::connectBluetoothDevice,
                         onDisconnect = viewModel::disconnectBluetoothDevice,

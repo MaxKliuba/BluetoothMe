@@ -43,8 +43,12 @@
     <string name="state_not_bonded_device">Not paired</string>
     <string name="bluetooth_classic" translatable="false">Classic</string>
     <string name="bluetooth_le" translatable="false">BLE</string>
+    <string name="location_permission_dialog_title">This app would like to access your location</string>
+    <string name="location_permission_dialog_text">Used only for searching for Bluetooth devices nearby.</string>
+    <string name="allow_button">Allow</string>
+    <string name="allow_later_button">Later</string>
     <string name="bluetooth_permission_dialog_title">This app would like to use Bluetooth</string>
-    <string name="bluetooth_permission_dialog_text">Used to scan, connect, and transfer data.</string>
+    <string name="bluetooth_permission_dialog_text">Used for scanning, connecting, and transferring data.</string>
     <string name="allow_in_settings_button">Allow in Settings</string>
     <string name="connection_error_message">Failed to connect to %1$s.</string>
     <string name="reconnect_button">Reconnect</string>
@@ -75,7 +79,7 @@
     <string name="controller_deleted_message">Controller deleted.</string>
     <string name="camera_is_unavailable_message">The camera is unavailable.</string>
     <string name="camera_permission_dialog_title">This app would like to use the camera</string>
-    <string name="camera_permission_dialog_text">Used to scan QR codes.</string>
+    <string name="camera_permission_dialog_text">Used for scanning QR codes.</string>
     <string name="json_decoding_error_message">Failed to add Controller.</string>
     <plurals name="widget_plural">
         <item quantity="one">%1$d widget</item>
@@ -85,7 +89,7 @@
     <string name="save_as_file_button">Save as File</string>
     <string name="qr_code_error_message">QR code is unavailable</string>
     <string name="storage_permission_dialog_title">This app would like to access the storage</string>
-    <string name="storage_permission_dialog_text">Used to save Controllers as files.</string>
+    <string name="storage_permission_dialog_text">Used for saving Controllers as files.</string>
     <string name="json_successfully_saved_message">Successfully saved to %1$s.</string>
     <string name="json_saving_error_message">Failed to save.</string>
     <string name="sharing_error_message">Failed to share.</string>

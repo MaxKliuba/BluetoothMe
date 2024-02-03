@@ -6,11 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.tech.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
+import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
 import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toBluetoothState
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.BluetoothAdapterManager
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
-import com.tech.maxclub.bluetoothme.core.exceptions.EnableBluetoothAdapterException
-import com.tech.maxclub.bluetoothme.core.util.withCheckSelfBluetoothPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,11 +23,11 @@ class BluetoothAdapterManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : BluetoothAdapterManager {
 
-    override val adapter: BluetoothAdapter
-        get() = context.getSystemService(BluetoothManager::class.java).adapter
+    override val adapter: BluetoothAdapter?
+        get() = context.getSystemService(BluetoothManager::class.java)?.adapter
 
     override val initialState: BluetoothState
-        get() = adapter.state.toBluetoothState()
+        get() = adapter?.state?.toBluetoothState() ?: BluetoothState.Off
 
     override fun getState(): Flow<BluetoothState> = callbackFlow {
         val receiver = object : BroadcastReceiver() {
@@ -52,7 +52,7 @@ class BluetoothAdapterManagerImpl @Inject constructor(
 
     @Throws(EnableBluetoothAdapterException::class)
     override fun enable() {
-        if (!adapter.isEnabled) {
+        if (adapter?.isEnabled == false) {
             withCheckSelfBluetoothPermission(context) {
                 val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 throw EnableBluetoothAdapterException(intent)

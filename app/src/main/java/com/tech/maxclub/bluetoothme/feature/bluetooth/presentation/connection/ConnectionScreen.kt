@@ -1,8 +1,11 @@
 package com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.maxclub.bluetoothme.R
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDeviceState
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothLeProfile
@@ -43,6 +49,8 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.co
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.ConnectionTopBar
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EmptyListPlaceholder
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EnableAdapterPlaceholder
+import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.LocationPermissionDialog
+import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -50,7 +58,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionScreen(
-    onRequestMissingPermissions: (Array<String>) -> Unit,
+    onRequestMissingBluetoothPermissions: (Array<String>) -> Unit,
     onEnableAdapter: () -> Unit,
     onConnect: (BluetoothDevice) -> Unit,
     onDisconnect: (BluetoothDevice?) -> Unit,
@@ -62,7 +70,6 @@ fun ConnectionScreen(
     val isLoading by remember { derivedStateOf { state.isLoading } }
     val isDeviceListEmpty by remember { derivedStateOf { state.devices.isEmpty() } }
 
-
     val context = LocalContext.current
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val scrollState = rememberLazyListState()
@@ -70,11 +77,46 @@ fun ConnectionScreen(
         state = rememberTopAppBarState()
     )
 
+    val locationPermissionResultLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        val isAllGranted = results.all { it.value }
+
+        if (isAllGranted) {
+            viewModel.startScan()
+        }
+    }
+
     LaunchedEffect(key1 = true) {
         viewModel.uiAction.collectLatest { action ->
             when (action) {
-                is ConnectionUiAction.RequestMissingPermissions -> {
-                    onRequestMissingPermissions(action.permissions.toList().toTypedArray())
+                is ConnectionUiAction.RequestMissingBluetoothPermissions -> {
+                    onRequestMissingBluetoothPermissions(action.permissions.toList().toTypedArray())
+                }
+
+                is ConnectionUiAction.ShowMissingLocationPermissionsDialog -> {
+                    val permissions = action.permissions.toList().toTypedArray()
+
+                    when {
+                        permissions.any { permission ->
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                context as Activity,
+                                permission
+                            )
+                        } -> viewModel.showLocationPermissionRationaleDialog()
+
+                        else -> viewModel.showLocationPermissionsDialog(*permissions)
+                    }
+                }
+
+                is ConnectionUiAction.RequestMissingLocationPermissions -> {
+                    val permissions = action.permissions.toList().toTypedArray()
+
+                    locationPermissionResultLauncher.launch(permissions)
+                }
+
+                is ConnectionUiAction.LaunchLocationEnableIntent -> {
+                    context.startActivity(action.intent)
                 }
 
                 is ConnectionUiAction.ShowDeviceType -> {
@@ -110,6 +152,25 @@ fun ConnectionScreen(
         { device, bleProfile ->
             viewModel.showBleProfileDialog(device, bleProfile)
         }
+    }
+
+    if (state.missingLocationPermissions.isNotEmpty()) {
+        LocationPermissionDialog(
+            onDismiss = viewModel::dismissLocationPermissionsDialog,
+            onAllow = {
+                viewModel.requestMissingLocationPermissions(
+                    *state.missingLocationPermissions.toTypedArray()
+                )
+            },
+        )
+    }
+
+    if (state.isLocationPermissionRationaleDialogVisible) {
+        PermissionRationaleDialog(
+            title = stringResource(id = R.string.location_permission_dialog_title),
+            text = stringResource(id = R.string.location_permission_dialog_text),
+            onDismiss = viewModel::dismissLocationPermissionRationaleDialog,
+        )
     }
 
     state.bleProfileDialogData?.let { bleProfileDialogData ->
