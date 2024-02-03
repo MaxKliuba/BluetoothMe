@@ -1,11 +1,10 @@
-package com.tech.maxclub.bluetoothme.feature.main.presentation.main.components
+package com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PermDeviceInformation
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -19,9 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.tech.maxclub.bluetoothme.R
 
 @Composable
-fun PermissionRationaleDialog(
-    title: String,
-    text: String,
+fun EnableLocationDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -31,23 +28,23 @@ fun PermissionRationaleDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = title,
+                text = stringResource(R.string.enable_location_dialog_title),
                 textAlign = TextAlign.Center
             )
         },
         text = {
-            Text(text = text)
+            Text(text = stringResource(id = R.string.location_permission_dialog_text))
         },
         icon = {
             Icon(
-                imageVector = Icons.Default.PermDeviceInformation,
+                imageVector = Icons.Default.MyLocation,
                 contentDescription = null
             )
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    text = stringResource(id = R.string.allow_later_button),
+                    text = stringResource(R.string.close_dialog_buton),
                     color = Color.Gray,
                 )
             }
@@ -56,19 +53,17 @@ fun PermissionRationaleDialog(
             TextButton(
                 onClick = {
                     onDismiss()
-                    launchPermissionSettingsIntent(context)
+                    launchLocationSettingIntent(context)
                 }
             ) {
-                Text(text = stringResource(R.string.allow_in_settings_button))
+                Text(text = stringResource(R.string.enable_in_settings_button))
             }
         },
         modifier = modifier,
     )
 }
 
-private fun launchPermissionSettingsIntent(context: Context) {
-    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        data = Uri.fromParts("package", context.packageName, null)
-    }
+private fun launchLocationSettingIntent(context: Context) {
+    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
     context.startActivity(intent)
 }

@@ -49,6 +49,7 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.co
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.ConnectionTopBar
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EmptyListPlaceholder
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EnableAdapterPlaceholder
+import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EnableLocationDialog
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.LocationPermissionDialog
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
 import kotlinx.coroutines.delay
@@ -115,10 +116,6 @@ fun ConnectionScreen(
                     locationPermissionResultLauncher.launch(permissions)
                 }
 
-                is ConnectionUiAction.LaunchLocationEnableIntent -> {
-                    context.startActivity(action.intent)
-                }
-
                 is ConnectionUiAction.ShowDeviceType -> {
                     snackbarHostState.showSnackbar(
                         message = action.deviceType,
@@ -171,6 +168,10 @@ fun ConnectionScreen(
             text = stringResource(id = R.string.location_permission_dialog_text),
             onDismiss = viewModel::dismissLocationPermissionRationaleDialog,
         )
+    }
+
+    if (state.isEnableLocationDialogVisible) {
+        EnableLocationDialog(onDismiss = viewModel::dismissEnableLocationDialog)
     }
 
     state.bleProfileDialogData?.let { bleProfileDialogData ->

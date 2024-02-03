@@ -11,6 +11,7 @@ data class ConnectionUiState(
     val bleProfileDialogData: BleProfileDialogData?,
     val missingLocationPermissions: List<String>,
     val isLocationPermissionRationaleDialogVisible: Boolean,
+    val isEnableLocationDialogVisible: Boolean,
 ) {
     val isLoading: Boolean
         get() = isScanning ||

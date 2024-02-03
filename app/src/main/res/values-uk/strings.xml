@@ -40,6 +40,9 @@
     <string name="location_permission_dialog_text">Використовується лише для пошуку Bluetooth-пристроїв поблизу.</string>
     <string name="allow_button">Дозволити</string>
     <string name="allow_later_button">Пізніше</string>
+    <string name="enable_location_dialog_title">Увімкнути місцезнаходження</string>
+    <string name="close_dialog_buton">Закрити</string>
+    <string name="enable_in_settings_button">Увімкнути у Налаштуваннях</string>
     <string name="bluetooth_permission_dialog_title">Цей застосунок хоче використовувати Bluetooth</string>
     <string name="bluetooth_permission_dialog_text">Використовується для пошуку, з’єднання та передачі даних.</string>
     <string name="allow_in_settings_button">Дозволити у Налаштуваннях</string>

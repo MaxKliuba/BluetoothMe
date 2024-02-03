@@ -1,6 +1,5 @@
 package com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.tech.maxclub.bluetoothme.R
 import com.tech.maxclub.bluetoothme.feature.controllers.domain.models.ControllerWithWidgetCount
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControllerDraggingItem(
     controller: ControllerWithWidgetCount,
@@ -38,11 +39,11 @@ fun ControllerDraggingItem(
     }
 
     Card(
+        onClick = { onClick(controller.controller.id) },
         colors = cardColors,
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { onClick(controller.controller.id) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

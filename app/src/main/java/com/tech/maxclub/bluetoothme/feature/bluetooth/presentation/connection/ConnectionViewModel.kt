@@ -45,6 +45,7 @@ class ConnectionViewModel @Inject constructor(
             bleProfileDialogData = null,
             missingLocationPermissions = emptyList(),
             isLocationPermissionRationaleDialogVisible = false,
+            isEnableLocationDialogVisible = false,
         )
     )
     val uiState: State<ConnectionUiState> = _uiState
@@ -89,6 +90,10 @@ class ConnectionViewModel @Inject constructor(
         _uiState.update { it.copy(isLocationPermissionRationaleDialogVisible = false) }
     }
 
+    fun dismissEnableLocationDialog() {
+        _uiState.update { it.copy(isEnableLocationDialogVisible = false) }
+    }
+
     fun startScan() {
         if (getDevicesJob?.isActive != true) {
             getDevices()
@@ -115,10 +120,7 @@ class ConnectionViewModel @Inject constructor(
             } catch (e: EnableLocationException) {
                 e.printStackTrace()
 
-                uiActionChannel.sendIn(
-                    ConnectionUiAction.LaunchLocationEnableIntent(e.intent),
-                    viewModelScope
-                )
+                _uiState.update { it.copy(isEnableLocationDialogVisible = true) }
             }
         }
     }

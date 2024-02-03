@@ -47,6 +47,9 @@
     <string name="location_permission_dialog_text">Used only for searching for Bluetooth devices nearby.</string>
     <string name="allow_button">Allow</string>
     <string name="allow_later_button">Later</string>
+    <string name="enable_location_dialog_title">Enable Location</string>
+    <string name="close_dialog_buton">Close</string>
+    <string name="enable_in_settings_button">Enable in Settings</string>
     <string name="bluetooth_permission_dialog_title">This app would like to use Bluetooth</string>
     <string name="bluetooth_permission_dialog_text">Used for scanning, connecting, and transferring data.</string>
     <string name="allow_in_settings_button">Allow in Settings</string>

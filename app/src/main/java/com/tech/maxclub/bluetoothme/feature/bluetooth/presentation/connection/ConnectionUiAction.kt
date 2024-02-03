@@ -1,6 +1,5 @@
 package com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection
 
-import android.content.Intent
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothDevice
 
 sealed class ConnectionUiAction {
@@ -9,7 +8,6 @@ sealed class ConnectionUiAction {
         ConnectionUiAction()
 
     class RequestMissingLocationPermissions(vararg val permissions: String) : ConnectionUiAction()
-    class LaunchLocationEnableIntent(val intent: Intent) : ConnectionUiAction()
     data class ShowDeviceType(val deviceType: String) : ConnectionUiAction()
     data class ScrollToConnectedDevice(val device: BluetoothDevice) : ConnectionUiAction()
 }
