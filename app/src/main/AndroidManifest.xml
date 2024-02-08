@@ -51,7 +51,7 @@
         android:required="false" />
 
     <application
-        android:name="com.tech.maxclub.bluetoothme.BluetoothMeApp"
+        android:name=".BluetoothMeApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -65,7 +65,7 @@
         tools:targetApi="34">
 
         <activity
-            android:name="com.tech.maxclub.bluetoothme.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.BluetoothMe"
             android:windowSoftInputMode="adjustResize">
