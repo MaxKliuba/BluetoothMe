@@ -9,7 +9,7 @@
     <string name="back_button">Назад</string>
     <string name="close_button">Закрити</string>
     <string name="done_button">Готово</string>
-    <string name="undo_button">Відмінити</string>
+    <string name="undo_button">Скасувати</string>
 
     <string name="turning_off_state">Вимкнення</string>
     <string name="turned_off_state">Вимкнено</string>

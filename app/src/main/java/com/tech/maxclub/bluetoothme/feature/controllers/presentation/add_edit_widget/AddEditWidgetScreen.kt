@@ -16,6 +16,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -73,7 +74,11 @@ fun AddEditWidgetScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateUp) {
+            FloatingActionButton(
+                onClick = onNavigateUp,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Done,
                     contentDescription = stringResource(R.string.done_button),

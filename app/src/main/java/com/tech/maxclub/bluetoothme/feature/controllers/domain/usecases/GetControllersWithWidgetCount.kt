@@ -12,6 +12,6 @@ class GetControllersWithWidgetCount @Inject constructor(
     operator fun invoke(): Flow<List<ControllerWithWidgetCount>> =
         repository.getControllersWithWidgetCount()
             .map { list ->
-                list.sortedByDescending { it.controller.position }
+                list.sortedBy { it.controller.position }
             }
 }

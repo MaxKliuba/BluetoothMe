@@ -39,7 +39,7 @@ fun ControllerList(
 
     LazyColumn(
         state = state.listState,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 80.dp),
         modifier = modifier
             .reorderable(state)
             .detectReorderAfterLongPress(state)

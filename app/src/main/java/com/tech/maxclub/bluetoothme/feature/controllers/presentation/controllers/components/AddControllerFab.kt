@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +34,11 @@ fun AddControllerFab(
         modifier = modifier
     ) {
         if (isOpen) {
-            SmallFloatingActionButton(onClick = onScanQrCode) {
+            SmallFloatingActionButton(
+                onClick = onScanQrCode,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.QrCodeScanner,
                     contentDescription = stringResource(R.string.scan_qr_code_button)
@@ -42,7 +47,11 @@ fun AddControllerFab(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SmallFloatingActionButton(onClick = onOpenFile) {
+            SmallFloatingActionButton(
+                onClick = onOpenFile,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.FileOpen,
                     contentDescription = stringResource(R.string.open_file_button)
@@ -51,7 +60,11 @@ fun AddControllerFab(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SmallFloatingActionButton(onClick = onAddEdit) {
+            SmallFloatingActionButton(
+                onClick = onAddEdit,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.create_manually_button)

@@ -19,7 +19,7 @@ import androidx.core.view.ViewCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xffa4c9ff),
     onPrimary = Color(0xff00315d),
-    primaryContainer = Color(0xff004884),
+    primaryContainer = Color(0xff195da1),
     onPrimaryContainer = Color(0xffd4e3ff),
     secondary = Color(0xffbcc7db),
     onSecondary = Color(0xff263141),
@@ -43,10 +43,10 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xff005fac),
+    primary = Color(0xff217bd4),
     onPrimary = Color(0xffffffff),
-    primaryContainer = Color(0xffd4e3ff),
-    onPrimaryContainer = Color(0xff001c39),
+    primaryContainer = Color(0xffbcd7ff),
+    onPrimaryContainer = Color(0xff00315d),
     secondary = Color(0xff545f71),
     onSecondary = Color(0xffffffff),
     secondaryContainer = Color(0xffd8e3f8),
@@ -82,7 +82,7 @@ private val LightColorScheme = lightColorScheme(
 fun BluetoothMeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
