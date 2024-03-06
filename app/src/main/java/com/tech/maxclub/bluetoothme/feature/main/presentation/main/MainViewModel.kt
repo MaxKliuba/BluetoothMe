@@ -99,6 +99,8 @@ class MainViewModel @Inject constructor(
                 MainUiAction.LaunchBluetoothAdapterEnableIntent(e.intent),
                 viewModelScope
             )
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -121,6 +123,8 @@ class MainViewModel @Inject constructor(
                     MainUiAction.ShowConnectionErrorMessage(e.bluetoothDevice ?: device),
                     viewModelScope
                 )
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -135,6 +139,8 @@ class MainViewModel @Inject constructor(
                 MainUiAction.RequestMissingBluetoothPermissions(*e.permissions),
                 viewModelScope
             )
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

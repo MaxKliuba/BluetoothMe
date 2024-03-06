@@ -19,7 +19,7 @@ android {
         minSdk = 23
         targetSdk = 34
         versionCode = 7
-        versionName = "0.6.0"
+        versionName = "0.6.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -89,9 +89,9 @@ dependencies {
     ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
     // Navigation
-    val navVersion = "2.7.6"
+    val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Room
     val roomVersion = "2.6.1"

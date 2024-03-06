@@ -1,5 +1,6 @@
 package com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -12,6 +13,7 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.componen
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.messages.LogMessageItem
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.messages.OutputMessageItem
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageList(
     messages: List<Message>,
@@ -33,22 +35,26 @@ fun MessageList(
                 Message.Type.Input -> InputMessageItem(
                     message = message,
                     onSelect = onSelectMessage,
+                    modifier = Modifier.animateItemPlacement()
                 )
 
                 Message.Type.Output -> OutputMessageItem(
                     message = message,
                     hasError = false,
                     onSelect = onSelectMessage,
+                    modifier = Modifier.animateItemPlacement()
                 )
 
                 Message.Type.Error -> OutputMessageItem(
                     message = message,
                     hasError = true,
-                    onSelect = onSelectMessage
+                    onSelect = onSelectMessage,
+                    modifier = Modifier.animateItemPlacement()
                 )
 
                 Message.Type.Log -> LogMessageItem(
                     message = message,
+                    modifier = Modifier.animateItemPlacement()
                 )
             }
         }

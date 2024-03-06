@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,10 +33,10 @@ fun MessageTextField(
         placeholder = { Text(text = stringResource(R.string.message_placeholder)) },
         trailingIcon = {
             if (value.text.isNotEmpty()) {
-                IconButton(onClick = { onValueChange(TextFieldValue("")) }) {
+                IconButton(onClick = { onSend(value.text) }) {
                     Icon(
-                        imageVector = Icons.Outlined.Clear,
-                        contentDescription = stringResource(R.string.clear_button),
+                        imageVector = Icons.Default.Send,
+                        contentDescription = stringResource(R.string.send_button),
                     )
                 }
             }

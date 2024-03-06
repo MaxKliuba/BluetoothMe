@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="connection_screen_title">З\'єднання</string>
-    <string name="controllers_screen_title">Мої Контролери</string>
+    <string name="connection_screen_title">Пристрої</string>
+    <string name="controllers_screen_title">Контролери</string>
     <string name="chat_screen_title">Чат</string>
     <string name="quickstart_screen_title">Короткий посібник</string>
 

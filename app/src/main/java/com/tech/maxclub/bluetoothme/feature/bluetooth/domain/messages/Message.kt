@@ -16,10 +16,10 @@ data class Message(
     override fun toString(): String = "${toMessageString()}$MESSAGE_TERMINATOR"
 
     sealed class Type {
-        object Input : Type()
-        object Output : Type()
-        object Error : Type()
-        object Log : Type()
+        data object Input : Type()
+        data object Output : Type()
+        data object Error : Type()
+        data object Log : Type()
     }
 
     companion object {

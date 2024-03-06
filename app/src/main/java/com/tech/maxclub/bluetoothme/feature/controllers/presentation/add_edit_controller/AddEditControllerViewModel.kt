@@ -183,10 +183,14 @@ class AddEditControllerViewModel @Inject constructor(
                                 widgets = controllerWithWidgets.widgets,
                             )
                         } else {
-                            uiActionChannel.sendIn(
-                                AddEditControllerUiAction.SetFocusToTitleTextField,
-                                viewModelScope
-                            )
+                            if (controllerTitle.isEmpty()) {
+                                uiActionChannel.sendIn(
+                                    AddEditControllerUiAction.SetFocusToTitleTextField(
+                                        hideKeyboard = controllerWithWidgets.widgets.isNotEmpty()
+                                    ),
+                                    viewModelScope
+                                )
+                            }
 
                             AddEditControllerUiState.Success(
                                 controllerTitle = TextFieldValue(

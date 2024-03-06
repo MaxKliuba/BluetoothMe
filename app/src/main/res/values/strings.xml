@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">BluetoothMe</string>
 
-    <string name="connection_screen_title">Connection</string>
-    <string name="controllers_screen_title">My Controllers</string>
+    <string name="connection_screen_title">Devices</string>
+    <string name="controllers_screen_title">Controllers</string>
     <string name="chat_screen_title">Chat</string>
     <string name="quickstart_screen_title">Quick Start</string>
 

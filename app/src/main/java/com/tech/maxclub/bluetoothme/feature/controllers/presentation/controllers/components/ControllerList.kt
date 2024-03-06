@@ -52,8 +52,8 @@ fun ControllerList(
             val isDragging = selectedControllerId != null
 
             ReorderableItem(
-                state = state,
-                key = controller.controller.id
+                reorderableState  = state,
+                key = controller.controller.id,
             ) { isDraggingFlag ->
                 LaunchedEffect(isDraggingFlag) {
                     if (isDraggingFlag) {

@@ -123,7 +123,7 @@ fun AddEditWidgetScreen(
 
                                 WidgetTypeDropdownMenu(
                                     selectedWidgetType = state.widget.toWidgetType(),
-                                    widgetTypes = WidgetType.values(),
+                                    widgetTypes = WidgetType.entries.toTypedArray(),
                                     onSelectWidgetType = {
                                         viewModel.updateWidgetType(state.widget, it)
                                     },
@@ -155,7 +155,7 @@ fun AddEditWidgetScreen(
                             if (isConfigVisible) {
                                 WidgetIconList(
                                     selectedWidgetIcon = state.widget.icon,
-                                    widgetIcons = WidgetIcon.values(),
+                                    widgetIcons = WidgetIcon.entries.toTypedArray(),
                                     onSelectWidgetIcon = {
                                         viewModel.updateWidgetIcon(state.widget, it)
                                     },

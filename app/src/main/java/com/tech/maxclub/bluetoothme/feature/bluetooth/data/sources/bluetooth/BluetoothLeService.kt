@@ -137,20 +137,29 @@ class BluetoothLeService @Inject constructor(
             if (characteristic == profileManager?.readCharacteristic) {
                 synchronized(readBuffer) {
                     val data = characteristic.value
-                    val index = data.indexOf(Message.MESSAGE_TERMINATOR.toByte())
+                    val lastIndex = data.lastIndexOf(Message.MESSAGE_TERMINATOR.toByte())
 
-                    if (index >= 0) {
+                    if (lastIndex > 0) {
                         val bytes =
                             (readBuffer.reduceOrNull { acc, bytes -> acc + bytes } ?: byteArrayOf())
-                                .plus(data.copyOfRange(0, index))
+                                .plus(data.copyOf(lastIndex))
 
-                        messagesDataSource.addMessage(bytes.toMessage(Message.Type.Input))
+                        String(bytes)
+                            .split(Message.MESSAGE_TERMINATOR)
+                            .filterNot { it.isEmpty() }
+                            .forEach { messageString ->
+                                messagesDataSource.addMessage(messageString.toMessage(Message.Type.Input))
+                            }
 
                         readBuffer.clear()
-                        readBuffer.add(data.copyOfRange(index + 1, data.size))
+                        if (lastIndex < data.size) {
+                            readBuffer.add(data.copyOfRange(lastIndex, data.size))
+                        }
                     } else {
                         readBuffer.add(data)
                     }
+
+                    return@synchronized
                 }
             }
         }

@@ -5,6 +5,6 @@ enum class WidgetSize(val span: Int) {
     MIDDLE(2),
     LARGE(3);
 
-    fun next(limit: Int = values().size): WidgetSize =
-        values()[(ordinal + 1) % minOf(values().size, limit)]
+    fun next(limit: Int = entries.size): WidgetSize =
+        entries[(ordinal + 1) % minOf(entries.size, limit)]
 }

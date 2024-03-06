@@ -45,7 +45,9 @@ fun AddEditControllerScreen(
                     delay(200)
                     try {
                         focusRequester.requestFocus()
-                        @Suppress("DEPRECATION") inputService?.hideSoftwareKeyboard()
+                        if (action.hideKeyboard) {
+                            @Suppress("DEPRECATION") inputService?.hideSoftwareKeyboard()
+                        }
                     } catch (e: IllegalStateException) {
                         e.printStackTrace()
                     }
