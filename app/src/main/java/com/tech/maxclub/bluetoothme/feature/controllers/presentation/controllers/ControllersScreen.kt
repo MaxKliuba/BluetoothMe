@@ -42,6 +42,7 @@ import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
+import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +147,7 @@ fun ControllerListScreen(
         )
     }
 
-    Scaffold(
+    BaseScaffold(
         topBar = {
             ControllersTopBar(
                 scrollBehavior = scrollBehavior,

@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.AddEditControllerBottomBar
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.AddEditControllerTopBar
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_controller.components.WidgetList
+import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ fun AddEditControllerScreen(
         }
     }
 
-    Scaffold(
+    BaseScaffold(
         topBar = {
             (state as? AddEditControllerUiState.Success)?.let { state ->
                 AddEditControllerTopBar(

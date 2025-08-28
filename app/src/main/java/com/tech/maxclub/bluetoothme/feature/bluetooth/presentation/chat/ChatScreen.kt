@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -20,6 +22,7 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.Bl
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.ChatTopBar
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageList
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageTextField
+import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -58,7 +61,7 @@ fun ChatScreen(
         }
     }
 
-    Scaffold(
+    BaseScaffold(
         topBar = {
             ChatTopBar(
                 bluetoothState = bluetoothState.toString(context),

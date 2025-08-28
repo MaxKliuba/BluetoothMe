@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.maxclub.bluetoothme.R
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.share_controller.components.ShareControllerTopBar
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
+import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,7 +119,7 @@ fun ShareControllerScreen(
         }
     }
 
-    Scaffold(
+    BaseScaffold(
         topBar = {
             (state as? ShareControllerUiState.Success)?.let { state ->
                 ShareControllerTopBar(

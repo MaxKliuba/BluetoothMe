@@ -12,13 +12,13 @@ plugins {
 
 android {
     namespace = "com.tech.maxclub.bluetoothme"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.tech.maxclub.bluetoothme"
         minSdk = 23
-        targetSdk = 34
-        versionCode = 8
+        targetSdk = 35
+        versionCode = 9
         versionName = "0.6.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -26,6 +26,7 @@ android {
             useSupportLibrary = true
         }
 
+        //noinspection WrongGradleMethod
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
