@@ -6,13 +6,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.rememberDrawerState
@@ -48,7 +51,8 @@ import com.tech.maxclub.bluetoothme.feature.main.presentation.main.util.NavDrawe
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.util.Screen
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.util.getNavDrawerItems
 import com.tech.maxclub.bluetoothme.feature.main.presentation.navigateToHelpScreen
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.BaseSnackbarHost
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -250,18 +254,13 @@ fun MainScreenContainer() {
         )
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionColor = MaterialTheme.colorScheme.primary,
-                    dismissActionContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    snackbarData = data,
-                )
-            }
-        }
+            BaseSnackbarHost(hostState = snackbarHostState)
+        },
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.navigationBars)
     ) { paddingValues ->
         NavigationDrawer(
             drawerState = drawerState,
@@ -277,6 +276,8 @@ fun MainScreenContainer() {
                 exitTransition = { fadeOut(animationSpec = tween(300)) },
                 popEnterTransition = { fadeIn(animationSpec = tween(300)) },
                 popExitTransition = { fadeOut(animationSpec = tween(300)) },
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
             ) {
                 composable(route = Screen.Connection.route) {
                     ConnectionScreen(

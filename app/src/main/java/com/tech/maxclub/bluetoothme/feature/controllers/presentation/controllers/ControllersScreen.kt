@@ -15,10 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -41,7 +38,8 @@ import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllerList
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controllers.components.ControllersTopBar
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.BaseSnackbarHost
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +144,7 @@ fun ControllerListScreen(
         )
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             ControllersTopBar(
                 scrollBehavior = scrollBehavior,
@@ -181,15 +179,7 @@ fun ControllerListScreen(
             }
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionColor = MaterialTheme.colorScheme.primary,
-                    dismissActionContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    snackbarData = data,
-                )
-            }
+            BaseSnackbarHost(hostState = snackbarHostState)
         },
         modifier = Modifier
             .fillMaxSize()

@@ -22,7 +22,7 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.data.mappers.toString
 import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.BluetoothState
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controller.components.ControllerTopBar
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.controller.components.WidgetList
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +71,7 @@ fun ControllerScreen(
         }
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             (state as? ControllerUiState.Success)?.let { state ->
                 ControllerTopBar(

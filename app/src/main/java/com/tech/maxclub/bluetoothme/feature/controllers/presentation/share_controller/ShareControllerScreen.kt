@@ -17,10 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +35,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.maxclub.bluetoothme.R
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.share_controller.components.ShareControllerTopBar
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
+import com.tech.maxclub.bluetoothme.ui.components.BaseSnackbarHost
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,7 +116,7 @@ fun ShareControllerScreen(
         }
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             (state as? ShareControllerUiState.Success)?.let { state ->
                 ShareControllerTopBar(
@@ -130,15 +128,7 @@ fun ShareControllerScreen(
             }
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionColor = MaterialTheme.colorScheme.primary,
-                    dismissActionContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    snackbarData = data,
-                )
-            }
+            BaseSnackbarHost(hostState = snackbarHostState)
         },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->

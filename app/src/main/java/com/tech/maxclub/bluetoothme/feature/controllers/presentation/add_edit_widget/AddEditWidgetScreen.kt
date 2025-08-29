@@ -39,7 +39,7 @@ import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_wi
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetIconList
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetPreviewGrid
 import com.tech.maxclub.bluetoothme.feature.controllers.presentation.add_edit_widget.components.WidgetTypeDropdownMenu
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ fun AddEditWidgetScreen(
     val scope = rememberCoroutineScope()
     val verticalScrollState = rememberScrollState()
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             AddEditWidgetTopBar(
                 onDeleteWidget = (state as? AddEditWidgetUiState.Success)?.let {

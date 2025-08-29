@@ -1,10 +1,18 @@
 package com.tech.maxclub.bluetoothme.feature.main.presentation.main.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,52 +46,62 @@ fun NavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = items.any { it.type.value == currentDestination },
         drawerContent = {
-            ModalDrawerSheet {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(28.dp)
-                )
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(28.dp)
+                    )
 
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = item.icon),
-                                contentDescription = null,
-                            )
-                        },
-                        label = { Text(text = stringResource(id = item.label)) },
-                        badge = {
-                            when (item.badge) {
-                                is NavDrawerItem.Badge.Text -> {
-                                    Text(text = item.badge.getValue())
-                                }
-
-                                is NavDrawerItem.Badge.Button -> {
-                                    TextButton(
-                                        onClick = item.badge.onClick,
-                                        enabled = item.badge.isEnabled,
-                                        modifier = Modifier.widthIn(min = 40.dp),
-                                    ) {
-                                        if (item.badge.isProgressIndicatorVisible) {
-                                            CircularProgressIndicator(
-                                                strokeWidth = 2.dp,
-                                                modifier = Modifier.size(16.dp),
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                        }
+                    items.forEach { item ->
+                        NavigationDrawerItem(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = item.icon),
+                                    contentDescription = null,
+                                )
+                            },
+                            label = { Text(text = stringResource(id = item.label)) },
+                            badge = {
+                                when (item.badge) {
+                                    is NavDrawerItem.Badge.Text -> {
                                         Text(text = item.badge.getValue())
                                     }
-                                }
 
-                                null -> Unit
-                            }
-                        },
-                        selected = item.type.value == currentDestination,
-                        onClick = { onSelect(item.type) },
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    )
+                                    is NavDrawerItem.Badge.Button -> {
+                                        TextButton(
+                                            onClick = item.badge.onClick,
+                                            enabled = item.badge.isEnabled,
+                                            modifier = Modifier.widthIn(min = 40.dp),
+                                        ) {
+                                            if (item.badge.isProgressIndicatorVisible) {
+                                                CircularProgressIndicator(
+                                                    strokeWidth = 2.dp,
+                                                    modifier = Modifier.size(16.dp),
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                            }
+                                            Text(text = item.badge.getValue())
+                                        }
+                                    }
+
+                                    null -> Unit
+                                }
+                            },
+                            selected = item.type.value == currentDestination,
+                            onClick = { onSelect(item.type) },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                        )
+                    }
                 }
             }
         },

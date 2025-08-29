@@ -22,7 +22,7 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.domain.bluetooth.models.Bl
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.ChatTopBar
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageList
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.chat.components.MessageTextField
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ fun ChatScreen(
         }
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             ChatTopBar(
                 bluetoothState = bluetoothState.toString(context),

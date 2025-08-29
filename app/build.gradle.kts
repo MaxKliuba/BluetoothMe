@@ -12,12 +12,12 @@ plugins {
 
 android {
     namespace = "com.tech.maxclub.bluetoothme"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.tech.maxclub.bluetoothme"
         minSdk = 23
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 9
         versionName = "0.6.1"
 
@@ -83,6 +83,7 @@ dependencies {
     // Compose
     implementation("androidx.compose.material:material-icons-extended")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
 
     // Hilt
     val hiltVersion = "2.48.1"

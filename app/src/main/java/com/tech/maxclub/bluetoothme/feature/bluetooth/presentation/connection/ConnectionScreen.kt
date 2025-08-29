@@ -6,7 +6,6 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,10 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -51,12 +47,13 @@ import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.co
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.EnableLocationDialog
 import com.tech.maxclub.bluetoothme.feature.bluetooth.presentation.connection.components.LocationPermissionDialog
 import com.tech.maxclub.bluetoothme.feature.main.presentation.main.components.PermissionRationaleDialog
-import com.tech.maxclub.bluetoothme.ui.components.BaseScaffold
+import com.tech.maxclub.bluetoothme.ui.components.BaseSnackbarHost
+import com.tech.maxclub.bluetoothme.ui.components.EdgeToEdgeScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionScreen(
     onRequestMissingBluetoothPermissions: (Array<String>) -> Unit,
@@ -183,7 +180,7 @@ fun ConnectionScreen(
         )
     }
 
-    BaseScaffold(
+    EdgeToEdgeScaffold(
         topBar = {
             ConnectionTopBar(
                 isAdapterEnabled = isAdapterEnabled,
@@ -196,15 +193,7 @@ fun ConnectionScreen(
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionColor = MaterialTheme.colorScheme.primary,
-                    dismissActionContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    snackbarData = data,
-                )
-            }
+            BaseSnackbarHost(hostState = snackbarHostState)
         },
         modifier = Modifier
             .fillMaxSize()
@@ -233,7 +222,7 @@ fun ConnectionScreen(
                 !isDeviceListEmpty -> {
                     LazyColumn(
                         state = scrollState,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         items(
                             items = state.devices,
@@ -244,7 +233,7 @@ fun ConnectionScreen(
                                     device = device,
                                     onClickIcon = onClickIcon,
                                     onClickItem = onDisconnect,
-                                    modifier = Modifier.animateItemPlacement(),
+                                    modifier = Modifier.animateItem(),
                                 )
 
                                 BluetoothDeviceState.Connecting,
@@ -252,7 +241,7 @@ fun ConnectionScreen(
                                     device = device,
                                     onClickIcon = onClickIcon,
                                     onClickItem = onDisconnect,
-                                    modifier = Modifier.animateItemPlacement(),
+                                    modifier = Modifier.animateItem(),
                                 )
 
                                 else -> BluetoothDeviceDisconnectedItem(
@@ -261,7 +250,7 @@ fun ConnectionScreen(
                                     onClickItem = onConnect,
                                     onSetConnectionType = onSetConnectionType,
                                     onShowBleProfileDialog = onShowBleProfileDialog,
-                                    modifier = Modifier.animateItemPlacement(),
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
